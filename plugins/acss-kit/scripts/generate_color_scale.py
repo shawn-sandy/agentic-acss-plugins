@@ -81,7 +81,7 @@ def _parse_args(argv: list[str]) -> tuple[str, str, str]:
 
 
 def _validate_hex(hex_str: str) -> str:
-    h = hex_str.lstrip("#")
+    h = hex_str[1:] if hex_str.startswith("#") else hex_str
     if len(h) == 3:
         h = "".join(c * 2 for c in h)
     if len(h) != 6 or not all(c in "0123456789abcdefABCDEF" for c in h):
