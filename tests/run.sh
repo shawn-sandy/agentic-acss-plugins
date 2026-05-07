@@ -194,6 +194,53 @@ else
   exit 1
 fi
 
+section "7e. generate_color_scale.py smoke test"
+GCS_LOG="$TMP_ROOT/color-scale.log"
+if python3 - >"$GCS_LOG" 2>&1 <<'PYEOF'
+import json, re, subprocess, sys
+
+script = "plugins/acss-kit/scripts/generate_color_scale.py"
+seed   = "#4f46e5"
+
+# JSON output: 10 steps, valid hex values, correct step keys
+r = subprocess.run([sys.executable, script, seed, "--name=primary", "--format=json"],
+                   capture_output=True, text=True)
+assert r.returncode == 0, f"exit {r.returncode}: {r.stderr.strip()}"
+data = json.loads(r.stdout)
+assert data["name"] == "primary" and data["seed"] == seed
+assert len(data["steps"]) == 10, f"expected 10 steps, got {len(data['steps'])}"
+assert [s["step"] for s in data["steps"]] == [50,100,200,300,400,500,600,700,800,900]
+hex_re = re.compile(r"^#[0-9a-f]{6}$")
+for s in data["steps"]:
+    assert hex_re.match(s["hex"]), f"invalid hex at step {s['step']}: {s['hex']}"
+
+# CSS output: starts with :root
+r = subprocess.run([sys.executable, script, seed, "--name=primary", "--format=css"],
+                   capture_output=True, text=True)
+assert r.returncode == 0 and r.stdout.startswith(":root {"), "css output malformed"
+
+# Unknown flag → exit 2
+r = subprocess.run([sys.executable, script, seed, "--typo=x"], capture_output=True, text=True)
+assert r.returncode == 2, f"unknown flag: expected exit 2, got {r.returncode}"
+
+# Invalid hex → exit 2
+r = subprocess.run([sys.executable, script, "notahex"], capture_output=True, text=True)
+assert r.returncode == 2, f"bad hex: expected exit 2, got {r.returncode}"
+
+# Invalid --name → exit 2
+r = subprocess.run([sys.executable, script, seed, "--name=Bad Name!"], capture_output=True, text=True)
+assert r.returncode == 2, f"bad name: expected exit 2, got {r.returncode}"
+
+print("generate_color_scale smoke test OK")
+PYEOF
+then
+  green "generate_color_scale self-test OK"
+else
+  red "generate_color_scale self-test FAILED:"
+  cat "$GCS_LOG"
+  exit 1
+fi
+
 section "7d. kit-sync manifest scripts (hash_file + manifest_write + manifest_read + diff_status)"
 KS_LOG="$TMP_ROOT/kit-sync.log"
 if python3 "$REPO_ROOT/plugins/acss-kit/scripts/diff_status.py" --self-test >"$KS_LOG"; then

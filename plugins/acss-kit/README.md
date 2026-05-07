@@ -235,6 +235,17 @@ Extract brand colors from an image or Figma design and generate full theme CSS.
 /theme-extract https://figma.com/design/abc123/Brand-Guide
 ```
 
+### `/color-scale <color> [--name=<name>] [--format=css|json|both]`
+
+Generate a 10-step OKLCH color scale (steps 50–900) from any seed color. Accepts a hex value, a CSS named color, or a theme role name. Output is a `:root { … }` CSS block with `var(--color-<name>-N, <hex>)` fallbacks plus a Markdown table of hex and OKLCH values per step.
+
+```shell
+/color-scale "#4f46e5"
+/color-scale "#4f46e5" --name=primary
+/color-scale background
+/color-scale red --name=red --format=css
+```
+
 ### `/style-tune <natural-language description>`
 
 Adjust visual feel using natural language. Auto-triggers on phrases like "warmer button" / "softer card" / "more elevated dialog" — the slash form is the explicit fallback. Six v1 token families: color, radius, spacing, elevation, size, height.

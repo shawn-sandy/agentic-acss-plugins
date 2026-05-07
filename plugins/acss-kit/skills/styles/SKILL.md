@@ -201,9 +201,10 @@ Default `--name`:
 ### Workflow
 
 1. Resolve `<color>` to hex per the rules above.
-2. Run `${CLAUDE_PLUGIN_ROOT}/scripts/generate_color_scale.py <hex> --name=<name> --format=both`. Capture JSON+CSS stdout.
-   - If exit code 1, print the stderr message and halt.
-3. Parse the JSON to extract the 10 `steps` entries.
+2. Run `${CLAUDE_PLUGIN_ROOT}/scripts/generate_color_scale.py <hex> --name=<name> --format=both`. Capture stdout.
+   - If exit code non-zero, print the stderr message and halt.
+   - The script emits two sections separated by a blank line: **JSON first**, then the **CSS block**. Split on the first blank line to isolate each section.
+3. Parse the JSON section (everything before the first blank line) to extract the 10 `steps` entries.
 4. Display results in this order:
    a. **CSS block** — the `:root { … }` output from the script (ready to paste or write to a file).
    b. **Scale table** — a compact Markdown table:
@@ -226,8 +227,7 @@ Default `--name`:
 |---|---|
 | Resolved hex is invalid | Halt: `"<value>" is not a valid hex color. Use #rrggbb or #rgb.` |
 | Theme role not found in CSS file | Halt: `"--color-<role> not found in <file>. Check the role name or pass a hex directly."` |
-| `generate_color_scale.py` exits 1 | Print stderr message and halt. |
-| `generate_color_scale.py` exits 2 | Print usage hint and halt. |
+| `generate_color_scale.py` exits 2 | Print stderr message and halt. |
 
 ---
 
