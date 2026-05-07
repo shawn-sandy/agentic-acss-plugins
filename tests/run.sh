@@ -194,6 +194,16 @@ else
   exit 1
 fi
 
+section "7d. kit-sync manifest scripts (hash_file + manifest_write + manifest_read + diff_status)"
+KS_LOG="$TMP_ROOT/kit-sync.log"
+if python3 "$REPO_ROOT/plugins/acss-kit/scripts/diff_status.py" --self-test >"$KS_LOG"; then
+  green "kit-sync manifest self-test OK"
+else
+  red "kit-sync manifest self-test FAILED:"
+  cat "$KS_LOG"
+  exit 1
+fi
+
 section "7e. generate_color_scale.py smoke test"
 GCS_LOG="$TMP_ROOT/color-scale.log"
 if python3 - >"$GCS_LOG" 2>&1 <<'PYEOF'
@@ -231,6 +241,10 @@ assert r.returncode == 2, f"unknown flag: expected exit 2, got {r.returncode}"
 r = subprocess.run([sys.executable, script, "notahex"], capture_output=True, text=True)
 assert r.returncode == 2, f"bad hex: expected exit 2, got {r.returncode}"
 
+# ## makes ##fff reject (lstrip would have accepted it)
+r = subprocess.run([sys.executable, script, "##fff"], capture_output=True, text=True)
+assert r.returncode == 2, f"double-hash: expected exit 2, got {r.returncode}"
+
 # Invalid --name → exit 2
 r = subprocess.run([sys.executable, script, seed, "--name=Bad Name!"], capture_output=True, text=True)
 assert r.returncode == 2, f"bad name: expected exit 2, got {r.returncode}"
@@ -242,16 +256,6 @@ then
 else
   red "generate_color_scale self-test FAILED:"
   cat "$GCS_LOG"
-  exit 1
-fi
-
-section "7d. kit-sync manifest scripts (hash_file + manifest_write + manifest_read + diff_status)"
-KS_LOG="$TMP_ROOT/kit-sync.log"
-if python3 "$REPO_ROOT/plugins/acss-kit/scripts/diff_status.py" --self-test >"$KS_LOG"; then
-  green "kit-sync manifest self-test OK"
-else
-  red "kit-sync manifest self-test FAILED:"
-  cat "$KS_LOG"
   exit 1
 fi
 
