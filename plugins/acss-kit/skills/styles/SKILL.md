@@ -182,7 +182,7 @@ The validator's full pair list (10 pairs at default thresholds) is in `scripts/v
 
 ## `/color-scale <color> [--name=<name>] [--format=css|json|both]`
 
-**Purpose:** Generate a 5-step OKLCH color scale (steps 100–900) from any seed color — a hex value, a CSS named color, or a theme role from the project's existing theme.
+**Purpose:** Generate a 10-step OKLCH color scale (steps 50–900) from any seed color — a hex value, a CSS named color, or a theme role from the project's existing theme.
 
 ### Input resolution
 
@@ -210,7 +210,7 @@ Default `--name`:
 
       | Step | Hex | OKLCH |
       |------|-----|-------|
-      | 100  | `#e4e8fe` | `oklch(0.935 0.030 277.6)` |
+      | 50   | `#f3f5fc` | `oklch(0.971 0.010 273.4)` |
       | …    | …   | …     |
       | 900  | `#050128` | `oklch(0.137 0.080 276.5)` |
 
