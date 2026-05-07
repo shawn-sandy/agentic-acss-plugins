@@ -415,11 +415,12 @@ else
   exit 1
 fi
 
-# 11d — prefers-reduced-motion block present
-if grep -q 'prefers-reduced-motion' "$FOUNDATION_CSS"; then
-  green "prefers-reduced-motion block present (P3 enforced)"
+# 11d — P3 reduced-motion block present (checks for unique P3 token zeroing,
+#        not just prefers-reduced-motion which also exists in the vendored reset)
+if grep -q '\-\-tran-all: none' "$FOUNDATION_CSS"; then
+  green "P3 reduced-motion token block present (P3 enforced)"
 else
-  red "foundation.css missing prefers-reduced-motion block (P3 violated)"
+  red "foundation.css missing P3 --tran-all: none block (P3 violated)"
   exit 1
 fi
 

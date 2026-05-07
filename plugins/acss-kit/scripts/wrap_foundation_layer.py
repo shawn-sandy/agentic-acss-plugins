@@ -11,7 +11,6 @@ This is the second step of the foundation.css refresh pipeline.  Run after:
 
 Exit codes:
     0 = success
-    1 = logical failure
     2 = usage / IO error
 """
 from __future__ import annotations
