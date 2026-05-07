@@ -87,9 +87,9 @@ installs, and enforce predictable cascade via CSS `@layer`.
    ├── _index.scss               # project-authored — omits tokens/_color-semantic (P1)
    ├── _reset.scss
    ├── _layout.scss
-   ├── _type.scss                # patched per P2
+   ├── _type.scss
    ├── _properties.scss
-   ├── _globals.scss
+   ├── _globals.scss             # patched per P2 (heading color)
    ├── _elements.scss
    ├── _grid.scss
    ├── _columns.scss
@@ -354,7 +354,7 @@ decision.
   utilities, theme`) so theme always wins; utilities beat foundation;
   components beat foundation. Documented load order alone is too fragile.
 - **Reduced motion:** Token-level — project-authored
-  `@media (prefers-reduced-motion: reduce) { :root { --motion-duration-*: 0; } }`
+  `@media (prefers-reduced-motion: reduce) { :root { --transition: none; --tran-all: none; } }`
   block appended to `foundation.css` (P3).
 - **Visual regression strategy:** Smoke-test 3 representative components
   (Button, Card, Input) for computed-style deltas; manual side-by-side
