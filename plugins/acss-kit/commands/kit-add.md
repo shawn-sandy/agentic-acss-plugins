@@ -51,6 +51,10 @@ Then re-run: /kit-add <component>
 ```
 
 3. Copy `${CLAUDE_PLUGIN_ROOT}/assets/foundation/ui.tsx` into the target directory as `ui.tsx`
+4. Foundation CSS install matrix (see `SKILL.md` Step A4 for full details):
+   - **First-run** (no `ui.tsx` + no `foundation.css`): copy both + `sass/` tree; print import hint
+   - **Existing install** (`ui.tsx` present, `foundation.css` absent): prompt before copying
+   - **Already installed** (both present): skip silently
 
 ### Full Workflow
 

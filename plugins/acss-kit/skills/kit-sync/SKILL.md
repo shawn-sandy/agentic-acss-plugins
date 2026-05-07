@@ -55,7 +55,7 @@ This skill closes both gaps via a manifest at `<project>/.acss-kit/manifest.json
 }
 ```
 
-`kind` is one of `foundation` (the verbatim `ui.tsx`), `component` (a tracked TSX/SCSS pair), `style` (a generated theme CSS file), or `theme` (the user's seed `theme.json`).
+`kind` is one of `foundation` (`ui.tsx`, `foundation.css`, and every file under `foundation/sass/`), `component` (a tracked TSX/SCSS pair), `style` (a generated theme CSS file), or `theme` (the user's seed `theme.json`).
 
 ## Hash normalization (load-bearing)
 
@@ -151,7 +151,39 @@ Re-sync: if a tracked file already exists in the manifest and is `modified` (per
 
 ### Step S6 — Foundation
 
-Copy `${CLAUDE_PLUGIN_ROOT}/assets/foundation/ui.tsx` to `<targetDir>/ui.tsx`. Hash + record in the manifest payload as `kind: "foundation"`. If the file already exists and is `modified`, skip.
+Apply the same three-case matrix as `/kit-add` Step A4:
+
+1. Read the manifest to determine which foundation files are already tracked.
+2. For each file: `ui.tsx`, `foundation.css`, and every file under `foundation/sass/` in the asset tree:
+   - If the file is absent from the target dir and absent from the manifest → copy + hash + record as `kind: "foundation"`.
+   - If the file is in the manifest as `clean` → overwrite + update hash.
+   - If the file is in the manifest as `modified` → skip (list in the skipped summary).
+3. If `foundation.css` is absent from the project but `ui.tsx` is already present as `modified` (existing install signal) → print the backward-compat prompt before copying:
+   ```
+   foundation.css not found. Adding it will apply a CSS reset, base typography,
+   and @layer ordering. To revert: delete foundation.css and remove its import.
+   Add foundation.css now?
+   ```
+   Only copy on confirmation; skip silently otherwise.
+
+Manifest entry shape for foundation files:
+
+```json
+"src/components/fpkit/foundation.css": {
+  "source": "asset:foundation/foundation.css",
+  "sha256": "<hex>",
+  "pluginVersion": "0.11.0",
+  "kind": "foundation"
+},
+"src/components/fpkit/foundation/sass/_index.scss": {
+  "source": "asset:foundation/sass/_index.scss",
+  "sha256": "<hex>",
+  "pluginVersion": "0.11.0",
+  "kind": "foundation"
+}
+```
+
+Add one entry per file in the `foundation/sass/` tree using the same pattern.
 
 ### Step S7 — Styles (skipped under `--skip-styles`)
 

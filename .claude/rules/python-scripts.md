@@ -17,7 +17,8 @@ Current scripts in `plugins/acss-kit/scripts/`:
 - `_oklch.py` — internal shared module exposing `hex_to_oklch`, `oklch_to_hex`, `in_gamut`. Imported by `generate_palette.py` and `oklch_shift.py`. Underscore prefix marks it as internal — no CLI, no detector contract.
 - `css_to_tokens.py` — converts CSS custom properties to palette JSON
 - `tokens_to_css.py` — converts palette JSON to CSS custom property files
-- `validate_theme.py` — checks theme CSS files for WCAG 2.2 AA contrast on semantic role pairs
+- `validate_theme.py` — checks theme CSS files for WCAG 2.2 AA contrast on semantic role pairs (12 pairs including focus-on-surface and focus-on-surface-raised)
+- `wrap_foundation_layer.py` — wraps a compiled raw CSS file in `@layer foundation { }` and appends the P3 reduced-motion block; second step of the `foundation.css` refresh pipeline. Generator/validator contract
 - `hash_file.py` — hashes a file or stdin content with sha256 after the kit-sync normalization rules (LF endings, strip trailing whitespace per line, single trailing newline). Used by `/kit-sync` to record manifest entries and by `/kit-update` to compare on-disk content. Generator/validator contract
 - `manifest_read.py` — reads `.acss-kit/manifest.json` from a project root and emits its contents as JSON. Detector contract
 - `manifest_write.py` — atomically merges a stdin JSON payload into `.acss-kit/manifest.json` (write-temp + rename). Preserves entries not mentioned in the payload; accepts `removePaths` for pruning. Generator/validator contract

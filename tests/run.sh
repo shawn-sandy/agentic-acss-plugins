@@ -299,5 +299,90 @@ else
   yellow "migrate_classnames.py or fixtures not found — skipping"
 fi
 
+# Step 11 — foundation.css structural checks
+section "11. foundation.css structural checks"
+FOUNDATION_CSS="$REPO_ROOT/plugins/acss-kit/assets/foundation/foundation.css"
+SOURCE_MD="$REPO_ROOT/plugins/acss-kit/assets/foundation/SOURCE.md"
+
+if [ ! -f "$FOUNDATION_CSS" ]; then
+  red "foundation.css not found at $FOUNDATION_CSS"
+  exit 1
+fi
+
+# 11a — parse with tinycss2
+PARSE_LOG="$TMP_ROOT/foundation-parse.log"
+python3 - "$FOUNDATION_CSS" >"$PARSE_LOG" 2>&1 <<'PYEOF'
+import sys, tinycss2
+css = open(sys.argv[1]).read()
+rules, _ = tinycss2.parse_stylesheet_bytes(css.encode())
+errors = [r for r in rules if r.type == "error"]
+if errors:
+    for e in errors:
+        print(f"  parse error: {e}")
+    sys.exit(1)
+print("OK")
+PYEOF
+if [ $? -ne 0 ]; then
+  red "foundation.css parse failed:"
+  cat "$PARSE_LOG"
+  exit 1
+fi
+green "foundation.css parses OK"
+
+# 11b — no --color-* semantic roles inside @layer foundation
+python3 - "$FOUNDATION_CSS" <<'PYEOF'
+import sys, re
+text = open(sys.argv[1]).read()
+m = re.search(r'@layer foundation\s*\{(.+?)\n\}', text, re.DOTALL)
+if not m:
+    print("ERROR: @layer foundation block not found")
+    sys.exit(1)
+layer_body = m.group(1)
+# Primitives use hue-based names (--color-neutral-*, --color-blue-*, etc.)
+# Semantic roles do not — catch any --color-* that isn't a primitive scale
+semantic_re = re.compile(
+    r'^\s*(--color-(?!neutral|blue|green|red|amber|cyan)[a-z][\w-]*):', re.MULTILINE
+)
+hits = semantic_re.findall(layer_body)
+if hits:
+    print(f"ERROR: semantic --color-* roles found inside @layer foundation: {hits[:5]}")
+    sys.exit(1)
+print("OK")
+PYEOF
+if [ $? -ne 0 ]; then
+  red "P1 violation: --color-* semantic roles found inside @layer foundation"
+  exit 1
+fi
+green "No semantic --color-* roles inside @layer foundation (P1 enforced)"
+
+# 11c — @layer foundation wrapper present
+if grep -q '@layer foundation {' "$FOUNDATION_CSS"; then
+  green "@layer foundation wrapper present (P4 enforced)"
+else
+  red "foundation.css missing @layer foundation wrapper (P4 violated)"
+  exit 1
+fi
+
+# 11d — prefers-reduced-motion block present
+if grep -q 'prefers-reduced-motion' "$FOUNDATION_CSS"; then
+  green "prefers-reduced-motion block present (P3 enforced)"
+else
+  red "foundation.css missing prefers-reduced-motion block (P3 violated)"
+  exit 1
+fi
+
+# 11e — SOURCE.md lists all four patches
+if [ ! -f "$SOURCE_MD" ]; then
+  red "SOURCE.md not found at $SOURCE_MD"
+  exit 1
+fi
+for patch in "P1" "P2" "P3" "P4"; do
+  if ! grep -q "$patch" "$SOURCE_MD"; then
+    red "SOURCE.md missing patch $patch"
+    exit 1
+  fi
+done
+green "SOURCE.md lists patches P1–P4"
+
 section "ALL STEPS GREEN"
 green "Phase 1 harness passed."

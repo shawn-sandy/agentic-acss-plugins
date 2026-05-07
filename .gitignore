@@ -27,3 +27,4 @@ tests/lib/.tmp-bundle.mjs
 # Python bytecode
 __pycache__/
 *.pyc
+plugins/acss-kit/assets/foundation/_foundation_raw.css

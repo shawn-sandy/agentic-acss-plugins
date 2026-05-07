@@ -90,6 +90,24 @@ The validator's full pair list (10 pairs at default thresholds) is in `scripts/v
 
 ---
 
+## CSS layer ordering
+
+Theme files participate in the canonical `@layer` cascade. `foundation.css`
+declares the layer order at the top of every consumer project:
+
+```css
+@layer foundation, components, utilities, theme;
+```
+
+Generated `light.css` / `dark.css` / `brand-*.css` must be imported **after**
+`foundation.css`. The cascade outcome — **theme > utilities > components >
+foundation** — means `--color-*` values from theme files always win over any
+primitive tokens declared in `@layer foundation`. This is by design: the
+foundation layer intentionally omits `--color-*` semantic roles (P1) so theme
+files hold the only source of truth for every `--color-*` variable.
+
+---
+
 ## `/theme-create <hex-color> [--mode=light|dark|both]`
 
 **Purpose:** Generate `light.css` and/or `dark.css` under `src/styles/theme/` from a seed color.

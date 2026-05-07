@@ -27,16 +27,20 @@ PALETTE_FILE_RE = re.compile(r"^(light|dark|brand-[\w-]+)\.css$")
 # All semantic pairs to validate (fg, bg, min_ratio).
 # Pairs where either role is absent in the file are silently skipped.
 PAIRS = [
-    ("--color-text",          "--color-background", 4.5),
-    ("--color-primary",       "--color-background", 3.0),
-    ("--color-text-inverse",  "--color-primary",    4.5),
-    ("--color-text-muted",    "--color-background", 4.5),
-    ("--color-text",          "--color-surface",    4.5),
-    ("--color-success",       "--color-background", 3.0),
-    ("--color-warning",       "--color-background", 3.0),
-    ("--color-danger",        "--color-background", 3.0),
-    ("--color-info",          "--color-background", 3.0),
-    ("--color-focus-ring",    "--color-background", 3.0),
+    ("--color-text",          "--color-background",      4.5),
+    ("--color-primary",       "--color-background",      3.0),
+    ("--color-text-inverse",  "--color-primary",         4.5),
+    ("--color-text-muted",    "--color-background",      4.5),
+    ("--color-text",          "--color-surface",         4.5),
+    ("--color-success",       "--color-background",      3.0),
+    ("--color-warning",       "--color-background",      3.0),
+    ("--color-danger",        "--color-background",      3.0),
+    ("--color-info",          "--color-background",      3.0),
+    ("--color-focus-ring",    "--color-background",      3.0),
+    # WCAG 1.4.11: focus indicator must contrast 3:1 against adjacent surfaces
+    # (foundation introduces focus on card/panel/popover surfaces)
+    ("--color-focus-ring",    "--color-surface",         3.0),
+    ("--color-focus-ring",    "--color-surface-raised",  3.0),
 ]
 
 VAR_DECL_RE = re.compile(r"^\s*(--[a-z0-9-]+)\s*:\s*([^;]+);", re.IGNORECASE | re.MULTILINE)

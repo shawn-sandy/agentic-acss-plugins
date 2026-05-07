@@ -1,0 +1,14 @@
+/**
+ * Color Tokens - Main Export (project-authored)
+ *
+ * Vendored from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+ *
+ * PROJECT PATCH (P1): _color-semantic is NOT forwarded here.
+ * The acss-kit OKLCH theme files (light.css / dark.css / brand-*.css) own
+ * every --color-* semantic role. Forwarding _color-semantic would silently
+ * override those theme values. _color-semantic.scss is kept in this tree for
+ * reference only — see its file header for details.
+ */
+
+/* Tier 1: Primitive color scales (foundation) */
+@forward "./color-primitives";
