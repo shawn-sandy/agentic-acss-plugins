@@ -65,11 +65,11 @@ installs, and enforce predictable cascade via CSS `@layer`.
    - **Every project-side divergence**, each with a one-line rationale:
      - **(P1)** `tokens/_color-semantic.scss` excluded from `_index.scss` —
        theme files own every `--color-*` role.
-     - **(P2)** `_type.scss` heading rules patched to use
+     - **(P2)** `_globals.scss` heading rules patched to use
        `color: var(--color-text, #212529)` per
        `.claude/rules/scss-conventions.md`.
      - **(P3)** Project-authored
-       `@media (prefers-reduced-motion: reduce) { :root { --motion-duration-*: 0; } }`
+       `@media (prefers-reduced-motion: reduce) { :root { --transition: none; --tran-all: none; } }`
        block appended to the compiled `foundation.css`.
      - **(P4)** Compiled `foundation.css` wrapped in
        `@layer foundation { … }` so theme + utilities + components can win

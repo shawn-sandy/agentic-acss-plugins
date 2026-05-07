@@ -2,7 +2,7 @@
 """
 Validate theme CSS files for WCAG AA contrast on semantic role pairs.
 
-Validates light.css, dark.css, and brand-*.css against 10 contrast pairs
+Validates light.css, dark.css, and brand-*.css against 12 contrast pairs
 covering the full semantic role catalogue.
 
 Usage:

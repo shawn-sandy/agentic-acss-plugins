@@ -158,7 +158,7 @@ Apply the same three-case matrix as `/kit-add` Step A4:
    - If the file is absent from the target dir and absent from the manifest → copy + hash + record as `kind: "foundation"`.
    - If the file is in the manifest as `clean` → overwrite + update hash.
    - If the file is in the manifest as `modified` → skip (list in the skipped summary).
-3. If `foundation.css` is absent from the project but `ui.tsx` is already present as `modified` (existing install signal) → print the backward-compat prompt before copying:
+3. If `foundation.css` is absent from the project but `ui.tsx` is already present (regardless of manifest state — mirrors the "existing install" case in /kit-add Step A4) → print the backward-compat prompt before copying:
    ```
    foundation.css not found. Adding it will apply a CSS reset, base typography,
    and @layer ordering. To revert: delete foundation.css and remove its import.
