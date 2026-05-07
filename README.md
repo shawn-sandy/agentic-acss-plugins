@@ -143,7 +143,7 @@ agentic-acss-plugins/
 │   ├── acss-kit/
 │   │   ├── .claude-plugin/plugin.json     # version source of truth
 │   │   ├── commands/*.md                  # 14 slash commands
-│   │   ├── skills/{components,styles,component-form,component-creator,setup,style-tune}/SKILL.md
+│   │   ├── skills/{components,components-html,styles,setup,kit-sync,prompt-book,component-form,component-creator,style-tune}/SKILL.md
 │   │   ├── scripts/                       # Python 3 stdlib (palette, validate, detect_target, …)
 │   │   ├── assets/                        # ui.tsx foundation, brand template, theme schema
 │   │   └── docs/                          # architecture, recipes, troubleshooting, tutorial
