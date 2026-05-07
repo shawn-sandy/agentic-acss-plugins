@@ -36,7 +36,7 @@ import sys
 
 _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
-from _oklch import hex_to_oklch, oklch_to_hex  # noqa: E402
+from _oklch import hex_to_oklch, in_gamut, oklch_to_hex  # noqa: E402
 
 # 10 perceptually-distributed lightness steps: near-white (50) → near-black (900).
 # Chroma and hue are preserved from the seed; oklch_to_hex clamps to sRGB gamut.
@@ -112,7 +112,15 @@ def build_scale(hex_color: str, name: str) -> dict:
     hex_color = _validate_hex(hex_color)
     seed_L, seed_C, seed_H = hex_to_oklch(hex_color)
     steps = []
+    reasons: list[str] = []
     for step, target_L in _STEPS:
+        clamped = not in_gamut(target_L, seed_C, seed_H)
+        step_reasons = (
+            [f"out of gamut, clamped to sRGB (requested oklch({target_L:.3f} {seed_C:.4f} {seed_H:.1f}))"]
+            if clamped else []
+        )
+        if step_reasons:
+            reasons.append(f"step {step}: {step_reasons[0]}")
         step_hex = oklch_to_hex(target_L, seed_C, seed_H)
         # Re-derive actual OKLCH after gamut clamping for accurate reporting.
         actual_L, actual_C, actual_H = hex_to_oklch(step_hex)
@@ -121,6 +129,8 @@ def build_scale(hex_color: str, name: str) -> dict:
             "hex": step_hex,
             "oklch": _fmt_oklch(actual_L, actual_C, actual_H),
             "css_var": f"--color-{name}-{step}",
+            "clamped": clamped,
+            "reasons": step_reasons,
         })
     return {
         "name": name,
@@ -131,6 +141,7 @@ def build_scale(hex_color: str, name: str) -> dict:
             "H": round(seed_H, 2),
         },
         "steps": steps,
+        "reasons": reasons,
     }
 
 
