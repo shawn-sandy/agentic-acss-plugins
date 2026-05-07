@@ -52,6 +52,8 @@ Inside any Claude Code session running in your React + TS project — register t
 /plugin install acss-utilities@shawn-sandy-agentic-acss-plugins
 ```
 
+> **Do this first:** Run `/setup` once before anything else. Subsequent `/kit-add` and `/theme-create` calls depend on the `.acss-target.json` it writes.
+
 Then bootstrap and add your first component + theme:
 
 ```text
@@ -68,6 +70,10 @@ Then bootstrap and add your first component + theme:
 - React + TypeScript project
 - `sass` or `sass-embedded` in `devDependencies` (`npm install -D sass`)
 - Claude Code 2.x with plugin support
+
+### Configuration
+
+Both plugins read `.acss-target.json` at your project root — created by `/setup` and updated by detection scripts. It records the directories where commands write generated files (`componentsDir`, `stylesDir`, `utilitiesDir`) and the detected `stack` (framework, bundler, CSS pipeline, entrypoint file). Generated artifacts plus this file should be **committed**, not gitignored. If you delete or move it, re-run `/setup` — pass `--target=<dir>` again if your original custom path differed from the default `src/components/fpkit/`. Full schema: [`plugins/acss-kit/skills/setup/SKILL.md`](./plugins/acss-kit/skills/setup/SKILL.md).
 
 ## Command reference
 
