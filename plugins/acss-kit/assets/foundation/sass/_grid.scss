@@ -9,6 +9,7 @@
   --grid-padding: 10px;
   --grid-justify-content: center;
   --grid-align-content: center;
+
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
@@ -24,6 +25,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-block-end: 3rem;
+
   // max-width: 92.5rem;
   margin-inline: auto;
   justify-content: center;
@@ -97,5 +99,6 @@
   margin-inline: auto;
   justify-content: center;
   align-content: start;
+
   // max-width: 92.5rem;
 }

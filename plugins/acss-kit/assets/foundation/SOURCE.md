@@ -108,7 +108,7 @@ gh api "repos/shawn-sandy/acss/contents/packages/fpkit/src/sass/_globals.scss?re
 
 Files to refresh (15 total):
 
-```
+```text
 sass/_reset.scss
 sass/_layout.scss
 sass/_type.scss
@@ -127,7 +127,7 @@ sass/styles/_colors.scss
 ```
 
 Project-authored files (do NOT overwrite):
-```
+```text
 sass/_index.scss              ← P1 applied here
 sass/tokens/_index.scss       ← P1 applied here
 ```
