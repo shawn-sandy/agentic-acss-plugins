@@ -210,9 +210,13 @@ data = json.loads(r.stdout)
 assert data["name"] == "primary" and data["seed"] == seed
 assert len(data["steps"]) == 10, f"expected 10 steps, got {len(data['steps'])}"
 assert [s["step"] for s in data["steps"]] == [50,100,200,300,400,500,600,700,800,900]
+assert "reasons" in data, "top-level reasons missing"
+assert isinstance(data["reasons"], list)
 hex_re = re.compile(r"^#[0-9a-f]{6}$")
 for s in data["steps"]:
     assert hex_re.match(s["hex"]), f"invalid hex at step {s['step']}: {s['hex']}"
+    assert "clamped" in s and isinstance(s["clamped"], bool), f"clamped field missing at step {s['step']}"
+    assert "reasons" in s and isinstance(s["reasons"], list), f"reasons field missing at step {s['step']}"
 
 # CSS output: starts with :root
 r = subprocess.run([sys.executable, script, seed, "--name=primary", "--format=css"],
