@@ -18,4 +18,4 @@ Follow the `/color-scale` section of `${CLAUDE_PLUGIN_ROOT}/skills/styles/SKILL.
 
 1. Resolve `<color>` to a hex value — look up theme role in `light.css` if needed; convert CSS named color to hex.
 2. Run `scripts/generate_color_scale.py <hex> --name=<name> --format=both`.
-3. Display the CSS block and a visual swatch summary of the 10 steps.
+3. Display the CSS block and a Markdown table of all 10 steps (Step / Hex / OKLCH).
