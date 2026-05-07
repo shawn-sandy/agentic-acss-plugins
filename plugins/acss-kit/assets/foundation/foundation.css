@@ -11,7 +11,6 @@
 @layer foundation, components, utilities, theme;
 
 @layer foundation {
-  @charset "UTF-8";
   /**
    * fpkit foundation barrel (project-authored)
    *
@@ -30,7 +29,7 @@
    * To regenerate foundation.css from these sources:
    *   npx sass --style=expanded --no-source-map \
    *     plugins/acss-kit/assets/foundation/sass/_index.scss:_foundation_raw.css
-   *   python3 scripts/wrap_layer.py _foundation_raw.css foundation.css
+   *   python3 plugins/acss-kit/scripts/wrap_foundation_layer.py _foundation_raw.css plugins/acss-kit/assets/foundation/foundation.css
    *   (or see SOURCE.md for the full refresh workflow)
    */
   /**
@@ -364,7 +363,7 @@
     --spc-2: 0.5rem;
     --spc-3: 0.75rem;
     --spc-4: 1rem;
-    --spc-5: 1.5;
+    --spc-5: 1.5rem;
     --spc-6: 2rem;
     --spc-7: 2.5rem;
     --spc-8: 3rem;
@@ -473,7 +472,7 @@
 
   section:not(nav) {
     margin-inline: var(--sect-y, auto);
-    padding-block: var(--sect-x, --spc-4);
+    padding-block: var(--sect-x, var(--spc-4));
   }
 
   p {
@@ -1496,7 +1495,7 @@
       transform: scale(1);
     }
   }
-  .loading-bar {
+  .loading-pulse {
     height: 20px;
     background-color: #3498db;
     animation-name: pulse;

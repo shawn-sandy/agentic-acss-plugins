@@ -49,6 +49,10 @@ P3 = """
 def wrap(raw: str) -> str:
     layered = "@layer foundation {\n"
     for line in raw.splitlines():
+        # @charset is only valid at the top of a stylesheet; strip it so it
+        # doesn't appear nested inside @layer foundation after wrapping.
+        if line.strip().lower().startswith("@charset"):
+            continue
         layered += ("  " + line).rstrip() + "\n"
     layered += "}\n"
     return HEADER + layered + P3

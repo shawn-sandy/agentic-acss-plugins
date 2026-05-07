@@ -16,7 +16,7 @@
  * To regenerate foundation.css from these sources:
  *   npx sass --style=expanded --no-source-map \
  *     plugins/acss-kit/assets/foundation/sass/_index.scss:_foundation_raw.css
- *   python3 scripts/wrap_layer.py _foundation_raw.css foundation.css
+ *   python3 plugins/acss-kit/scripts/wrap_foundation_layer.py _foundation_raw.css plugins/acss-kit/assets/foundation/foundation.css
  *   (or see SOURCE.md for the full refresh workflow)
  */
 

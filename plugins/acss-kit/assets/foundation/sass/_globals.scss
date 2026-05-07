@@ -83,7 +83,7 @@ section {
 section {
   &:not(nav) {
     margin-inline: var(--sect-y, auto);
-    padding-block: var(--sect-x, --spc-4);
+    padding-block: var(--sect-x, var(--spc-4));
   }
 }
 
