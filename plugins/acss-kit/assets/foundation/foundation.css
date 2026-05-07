@@ -1,0 +1,1585 @@
+/* foundation.css
+ * Compiled from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+ * with project patches P1-P4 — see assets/foundation/SOURCE.md for details.
+ *
+ * DO NOT EDIT DIRECTLY. To refresh:
+ *   npx sass --style=expanded --no-source-map \
+ *     plugins/acss-kit/assets/foundation/sass/_index.scss:_foundation_raw.css
+ *   python3 plugins/acss-kit/scripts/wrap_foundation_layer.py \
+ *     _foundation_raw.css plugins/acss-kit/assets/foundation/foundation.css
+ */
+@layer foundation, components, utilities, theme;
+
+@layer foundation {
+  /**
+   * fpkit foundation barrel (project-authored)
+   *
+   * Vendored from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+   *
+   * Mirrors the upstream packages/fpkit/src/index.scss import order with these
+   * intentional divergences — see SOURCE.md for the full patch log:
+   *
+   *   P1  tokens/_color-semantic NOT forwarded — theme files own --color-* roles
+   *   P2  _globals.scss h1–h6 patched with color: var(--color-text, #212529)
+   *
+   * Excluded upstream sections (not part of this barrel):
+   *   - sass/utilities   — covered by the acss-utilities plugin
+   *   - components/**    — generated per-component by /kit-add
+   *
+   * To regenerate foundation.css from these sources:
+   *   npx sass --style=expanded --no-source-map \
+   *     plugins/acss-kit/assets/foundation/sass/_index.scss:_foundation_raw.css
+   *   python3 plugins/acss-kit/scripts/wrap_foundation_layer.py _foundation_raw.css plugins/acss-kit/assets/foundation/foundation.css
+   *   (or see SOURCE.md for the full refresh workflow)
+   */
+  /**
+   * Color Tokens - Main Export (project-authored)
+   *
+   * Vendored from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+   *
+   * PROJECT PATCH (P1): _color-semantic is NOT forwarded here.
+   * The acss-kit OKLCH theme files (light.css / dark.css / brand-*.css) own
+   * every --color-* semantic role. Forwarding _color-semantic would silently
+   * override those theme values. _color-semantic.scss is kept in this tree for
+   * reference only — see its file header for details.
+   */
+  /* Tier 1: Primitive color scales (foundation) */
+  /**
+   * Color Primitives - Foundation Layer (Tier 1)
+   *
+   * Raw color values that form the foundation of the design system.
+   * All colors are WCAG AA compliant (4.5:1 for text, 3:1 for UI components).
+   *
+   * Pattern: --color-{hue}-{scale}
+   * Scale: 50 (lightest) to 900 (darkest)
+   *
+   * Industry-standard palette based on accessible color scales.
+   * No rebeccapurple or purple colors per project requirements.
+   */
+  :root {
+    /* ========================================
+       Neutral Scale (Grays)
+       Purpose: Text, borders, surfaces, backgrounds
+       ======================================== */
+    --color-neutral-0: #ffffff; /* Pure white - Surfaces, text inverse */
+    --color-neutral-50: #fafafa; /* Off-white - Secondary surfaces */
+    --color-neutral-100: #f5f5f5; /* Light gray - Disabled backgrounds, tertiary surfaces */
+    --color-neutral-200: #e5e5e5; /* Border subtle - Light borders, dividers */
+    --color-neutral-300: #d4d4d4; /* Border default - Standard borders */
+    --color-neutral-400: #a3a3a3; /* Border interactive - Hover borders, interactive elements */
+    --color-neutral-500: #737373; /* Text disabled - Disabled text, placeholders */
+    --color-neutral-600: #525252; /* Text tertiary - Less emphasized text */
+    --color-neutral-700: #404040; /* Text secondary - Secondary text */
+    --color-neutral-800: #262626; /* Text primary - Body text, primary content */
+    --color-neutral-900: #171717; /* Text emphasis - Headings, emphasized text */
+    /* ========================================
+       Blue Scale (Primary/Info)
+       Purpose: Primary brand, focus states, links, info messages
+       WCAG: 4.5:1+ contrast ratios verified
+       ======================================== */
+    --color-blue-100: #dbeafe; /* Info background light - Subtle info backgrounds */
+    --color-blue-200: #bfdbfe; /* Info background - Info alert backgrounds */
+    --color-blue-300: #93c5fd; /* Info border light - Light info borders */
+    --color-blue-400: #60a5fa; /* Info hover - Hover states for info elements */
+    --color-blue-500: #3b82f6; /* Info default - Standard info color */
+    --color-blue-600: #2563eb; /* Primary default - Primary brand color */
+    --color-blue-700: #1d4ed8; /* Primary hover - Primary button hover */
+    --color-blue-800: #1e40af; /* Primary active - Primary button active/pressed */
+    --color-blue-900: #1e3a8a; /* Info text - Dark text on info backgrounds (WCAG AAA: 12.6:1) */
+    /* ========================================
+       Green Scale (Success)
+       Purpose: Success states, positive feedback, valid inputs
+       WCAG: 4.5:1+ contrast ratios verified
+       ======================================== */
+    --color-green-100: #dcfce7; /* Success background light - Subtle success backgrounds */
+    --color-green-200: #bbf7d0; /* Success background - Success alert backgrounds */
+    --color-green-300: #86efac; /* Success border light - Light success borders */
+    --color-green-400: #4ade80; /* Success hover - Hover states for success elements */
+    --color-green-500: #22c55e; /* Success default - Standard success color */
+    --color-green-600: #16a34a; /* Success border - Success borders, checkmarks */
+    --color-green-700: #15803d; /* Success dark - Dark success emphasis */
+    --color-green-800: #166534; /* Success text - Dark text on success backgrounds (WCAG AAA: 8.3:1) */
+    --color-green-900: #14532d; /* Success emphasis - Highest contrast success text */
+    /* ========================================
+       Red Scale (Error/Danger)
+       Purpose: Errors, destructive actions, invalid inputs, alerts
+       WCAG: 4.5:1+ contrast ratios verified
+       ======================================== */
+    --color-red-100: #fee2e2; /* Error background light - Subtle error backgrounds */
+    --color-red-200: #fecaca; /* Error background - Error alert backgrounds */
+    --color-red-300: #fca5a5; /* Error border light - Light error borders */
+    --color-red-400: #f87171; /* Error hover - Hover states for error elements */
+    --color-red-500: #ef4444; /* Error default - Standard error color */
+    --color-red-600: #dc2626; /* Error border - Error borders, icons */
+    --color-red-700: #b91c1c; /* Error dark - Dark error emphasis */
+    --color-red-800: #991b1b; /* Error text - Dark text on error backgrounds (WCAG AAA: 10.3:1) */
+    --color-red-900: #7f1d1d; /* Error emphasis - Highest contrast error text */
+    /* ========================================
+       Amber Scale (Warning)
+       Purpose: Warnings, cautions, pending states
+       WCAG: 4.5:1+ contrast ratios verified
+       ======================================== */
+    --color-amber-100: #fef3c7; /* Warning background light - Subtle warning backgrounds */
+    --color-amber-200: #fde68a; /* Warning background - Warning alert backgrounds */
+    --color-amber-300: #fcd34d; /* Warning border light - Light warning borders */
+    --color-amber-400: #fbbf24; /* Warning hover - Hover states for warning elements */
+    --color-amber-500: #f59e0b; /* Warning default - Standard warning color */
+    --color-amber-600: #d97706; /* Warning border - Warning borders, icons */
+    --color-amber-700: #b45309; /* Warning dark - Dark warning emphasis */
+    --color-amber-800: #92400e; /* Warning text - Dark text on warning backgrounds (WCAG AAA: 9.8:1) */
+    --color-amber-900: #78350f; /* Warning emphasis - Highest contrast warning text */
+    /* ========================================
+       Cyan Scale (Info Alternative)
+       Purpose: Alternative info states, highlights, accents
+       WCAG: 4.5:1+ contrast ratios verified
+       Note: Used instead of purple/rebeccapurple per requirements
+       ======================================== */
+    --color-cyan-100: #cffafe; /* Info alt background light - Subtle cyan backgrounds */
+    --color-cyan-200: #a5f3fc; /* Info alt background - Cyan alert backgrounds */
+    --color-cyan-300: #67e8f9; /* Info alt border light - Light cyan borders */
+    --color-cyan-400: #22d3ee; /* Info alt hover - Hover states for cyan elements */
+    --color-cyan-500: #06b6d4; /* Info alt default - Standard cyan color */
+    --color-cyan-600: #0891b2; /* Info alt border - Cyan borders, icons */
+    --color-cyan-700: #0e7490; /* Info alt dark - Dark cyan emphasis */
+    --color-cyan-800: #155e75; /* Info alt text - Dark text on cyan backgrounds (WCAG AAA: 7.2:1) */
+    --color-cyan-900: #164e63; /* Info alt emphasis - Highest contrast cyan text */
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    /* Optional */
+    /* It can be really hard to read highlighted text with a text-shadow, it should be removed when selected */
+    text-shadow: none;
+    /* NOTE: Using this means the color and background-color are set to transparent for selected text... */
+    /* So you can customise your styles below */
+    color: #fff;
+    background-color: #00f;
+  }
+
+  /*
+    3. Allow percentage-based heights in the application
+  */
+  html,
+  body {
+    height: 100%;
+    font-size: 100%;
+  }
+
+  /* Set core root defaults */
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+
+  /* Remove default margin */
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+  /* Set core body defaults */
+  body {
+    min-height: 100vh;
+    text-rendering: optimizespeed;
+    line-height: 1.5;
+  }
+
+  /* A elements that don't have a class get default styles */
+  a:not([class]) {
+    text-decoration-skip-ink: auto;
+  }
+
+  a,
+  button {
+    cursor: pointer;
+  }
+
+  /* Make images easier to work with */
+  img,
+  picture,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+    aspect-ratio: auto;
+  }
+
+  img,
+  video,
+  iframe {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    font-style: italic;
+    background-repeat: no-repeat;
+    background-size: cover;
+    shape-margin: 0.75rem;
+  }
+
+  svg {
+    display: inline-block;
+  }
+
+  /* Inherit fonts for inputs and buttons */
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    font-variant: inherit;
+    line-height: inherit;
+    background-color: inherit;
+  }
+
+  /* Inherit fonts for inputs and buttons */
+  :where(button) {
+    font-family: inherit;
+  }
+
+  /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  /* Create a root stacking context */
+  #root,
+  #__next {
+    isolation: isolate;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  *:focus {
+    outline: none;
+    outline-style: auto;
+  }
+
+  b {
+    font-weight: normal;
+  }
+
+  /* Removes spacing between cells in tables */
+  table {
+    border-collapse: collapse;
+  }
+
+  svg {
+    max-inline-size: 100%;
+    /* Optional - make the SVG's fill be the same as the inherited color */
+    /* Prevent the SVG from altering cursor interaction */
+    pointer-events: none;
+  }
+  svg[role=img] {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+  }
+
+  :root {
+    --fs: clamp(0.96rem, 1vw + 0.5rem, 1.6rem);
+    --p: 1rem;
+    --px: var(--p);
+    --py: var(--p);
+    --m: 0.75rem;
+    --mx: var(--m);
+    --my: var(--m);
+    --weight: 600;
+    --radius: 0.5rem;
+    --placeholder-color: gray;
+    --placeholder-style: italic;
+    --placeholder-fs: smaller;
+    --transition: all 0.25s linear;
+    --tran-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --fs-0: clamp(.9rem, 4vw - 1rem, 1.12rem);
+    --fs-1: clamp(0.65rem, 1.3vw + 0.25rem, 0.75rem);
+    --fs-2: clamp(0.7rem, 2vw - 0.5rem, 0.875rem);
+    --fs-3: clamp(0.85rem, 2vw - 0.25rem, 0.925rem);
+    --fs-4: clamp(0.9rem, 2vw - 0.25rem, 1.313rem);
+    --fs-5: clamp(0.94rem, 2vw - 0.25rem, 1.463rem);
+    --fs-6: clamp(1rem, 2vw + 0.75rem, 2rem);
+    --fs-7: clamp(1.1rem, 4vw - 0.25rem, 2.375rem);
+    --fs-8: clamp(1.2rem, 4vw + 0.25rem, 3rem);
+    --fs-9: clamp(1.2rem, 4vw + 0.5rem, 4rem);
+    --fs-10: clamp(1.2rem, 5vw + 0.5rem, 4.5rem);
+    --fs-11: clamp(1.2rem, 5vw + 0.75rem, 5.063rem);
+    --fs-12: clamp(1.5rem, 5vw + 0.9rem, 6.375rem);
+    --fs-xs: var(--fs-1);
+    --fs-sm: var(--fs-3);
+    --fs-base: var(--fs-0);
+    --fs-md: var(--fs-5);
+    --fs-lg: var(--fs-7);
+    --fs-xl: var(--fs-9);
+    --fs-xxl: var(--fs-11);
+    --fs-xxxl: var(--fs-12);
+    --display: var(--fs-12);
+    --display-md: var(--fs-11);
+    --display-sm: var(--fs-10);
+    --h1: var(--fs-11);
+    --h2: var(--fs-9);
+    --h3: var(--fs-8);
+    --h4: var(--fs-7);
+    --h5: var(--fs-6);
+    --h6: var(--fs-5);
+    --spc-0: 0;
+    --spc-1: 0.25rem;
+    --spc-2: 0.5rem;
+    --spc-3: 0.75rem;
+    --spc-4: 1rem;
+    --spc-5: 1.5rem;
+    --spc-6: 2rem;
+    --spc-7: 2.5rem;
+    --spc-8: 3rem;
+    --spc-9: 3.5rem;
+    --spc-10: 4rem;
+    --spc-11: 4.5rem;
+    --spc-12: 5rem;
+    --spc-13: 6rem;
+    --spc-14: 7rem;
+    --spc-15: 8rem;
+    --spc-16: 9rem;
+    --spc-17: 10rem;
+    --spc-18: 11rem;
+    --spc-19: 12rem;
+    --spc-20: 13rem;
+    --spc: var(--spc-4);
+    --spc-xs: var(--spc-1);
+    --spc-sm: var(--spc-3);
+    --spc-base: var(--spc-5);
+    --spc-md: var(--spc-7);
+    --spc-lg: var(--spc-9);
+    --spc-xl: var(--spc-11);
+    --spc-xxl: var(--spc-13);
+    --vw-xs: 5vw;
+    --vw-sm: 10vw;
+    --vw-md: 20vw;
+    --vw-lg: 50vw;
+    --vw-xl: 80vw;
+    --vw-xxl: 95vw;
+    --vh-xs: 5vh;
+    --vh-sm: 10vh;
+    --vh-md: 20vh;
+    --vh-lg: 50vh;
+    --vh-xl: 80vh;
+    --vh-xxl: 95vh;
+  }
+
+  :root {
+    --font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Helvetica Neue",
+      "Arial", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+    --TRUE: initial;
+    --FALSE: ;
+    --fs-weight: 500;
+    --min-w: 20rem;
+    --border-radius: 0.25rem;
+    --padding: 1.5rem;
+    --spacing-0: 0;
+    --spacing-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem); /* 4-8px */
+    --spacing-sm: clamp(0.5rem, 0.45rem + 0.35vw, 0.75rem); /* 8-12px */
+    --spacing-md: clamp(0.75rem, 0.65rem + 0.45vw, 1.125rem); /* 12-18px */
+    --spacing-lg: clamp(1rem, 0.85rem + 0.6vw, 1.5rem); /* 16-24px */
+    --spacing-xl: clamp(1.5rem, 1.25rem + 0.75vw, 2rem); /* 24-32px */
+    --box-max-width-xs: 30rem; /* 480px */
+    --box-max-width-sm: 40rem; /* 640px */
+    --box-max-width-md: 48rem; /* 768px */
+    --box-max-width-lg: 64rem; /* 1024px */
+    --box-max-width-xl: 80rem; /* 1280px */
+    --box-max-width-container: 75rem; /* 1200px */
+    --box-radius-xs: 0.125rem; /* 2px */
+    --box-radius-sm: 0.25rem; /* 4px */
+    --box-radius-md: 0.375rem; /* 6px */
+    --box-radius-lg: 0.5rem; /* 8px */
+    --box-radius-xl: 0.75rem; /* 12px */
+    --box-radius-full: 9999px;
+  }
+
+  html {
+    font-family: var(--font-family);
+    font-size: 100%;
+  }
+
+  body {
+    display: var(--body-display, flex);
+    min-height: 100%;
+    flex-direction: var(--body-direction, column);
+    min-width: 20.3125rem;
+    font-size: var(--fs-0);
+  }
+  body main {
+    flex-grow: 1;
+  }
+  body > a[href^="#"] {
+    position: absolute;
+    top: -4rem;
+    left: 0;
+    width: 100%;
+    display: block;
+    justify-content: flex-start;
+    padding: 1rem;
+    z-index: 100;
+    transition: top 0.3s;
+    border-radius: 0;
+    background-color: var(--color-skip-link-bg, var(--color-neutral-100));
+  }
+  body > a[href^="#"]:focus {
+    top: 0;
+  }
+
+  main,
+  header,
+  footer,
+  section {
+    font-size: var(--fs-0);
+  }
+
+  section:not(nav) {
+    margin-inline: var(--sect-y, auto);
+    padding-block: var(--sect-x, var(--spc-4));
+  }
+
+  p {
+    max-width: 75ch;
+    font-size: var(--fs-0);
+    line-height: 1.6;
+  }
+  p + p {
+    margin-block-start: 1rem;
+  }
+
+  ul,
+  ol {
+    display: var(--li-display, flex);
+    flex-direction: var(--li-direction, column);
+    gap: var(--li-gap, 0.2rem);
+    flex-wrap: var(--li-wrap, nowrap);
+    padding-inline-start: var(--li-ps, var(--spc-3));
+  }
+  ul[role=list], ul[data-list~=unstyled],
+  ol[role=list],
+  ol[data-list~=unstyled] {
+    list-style: var(--li-style, none);
+    margin-block-end: var(--li-my, 0);
+    margin-block-start: var(--li-mx, 0);
+  }
+  ul[data-list~=inline],
+  ol[data-list~=inline] {
+    --li-direction: row;
+    --li-gap: 1rem;
+    --li-wrap: wrap;
+    --li-ps: 0;
+  }
+
+  sup {
+    vertical-align: super;
+    font-size: smaller;
+  }
+
+  blockquote {
+    --blockquote-padding: 1rem;
+    --blockquote-border-width: 0.3125rem;
+    --blockquote-border-style: solid;
+    --blockquote-border-color: var(--color-border, #dee2e6);
+
+    padding: var(--blockquote-padding);
+    border-left: var(--blockquote-border-width) var(--blockquote-border-style) var(--blockquote-border-color);
+  }
+
+  strong {
+    font-weight: var(--fs-weight);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-text, #212529);
+    font-weight: var(--fs-weight);
+    margin-block-start: 0;
+    margin-block-end: 1rem;
+    line-height: 1.2;
+  }
+
+  hr {
+    --hr-border-width: 0.0625rem;
+    --hr-border-color: var(--color-border-subtle, #e9ecef);
+    --hr-margin-block: 1.5rem;
+    --hr-border-style: solid;
+
+    border: none;
+    border-bottom: var(--hr-border-width) var(--hr-border-style) var(--hr-border-color);
+    margin-block: var(--hr-margin-block);
+    display: block;
+    min-width: 100%;
+  }
+
+  h1[data-ui~=display], h1:has(span:first-of-type) > span,
+  h2[data-ui~=display],
+  h2:has(span:first-of-type) > span,
+  h3[data-ui~=display],
+  h3:has(span:first-of-type) > span,
+  h4[data-ui~=display],
+  h4:has(span:first-of-type) > span,
+  h5[data-ui~=display],
+  h5:has(span:first-of-type) > span,
+  h6[data-ui~=display],
+  h6:has(span:first-of-type) > span {
+    --weight: 600;
+    --title-1: var(--h1);
+    --title-2: var(--h2);
+    --title-3: var(--h3);
+    --title-4: var(--h4);
+    --title-5: var(--h5);
+    --title-6: var(--h6);
+  }
+
+  :root {
+    --gap: 1.75rem;
+  }
+
+  :where([data-grid]) {
+    --gap: 1.5rem;
+    --grid-column-min-width: 20.3125rem;
+    --grid-gap: var(--gap);
+    --grid-padding: 10px;
+    --grid-justify-content: center;
+    --grid-align-content: center;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-column-min-width), 1fr));
+    gap: var(--grid-gap);
+    padding: var(--grid-padding);
+    justify-content: var(--grid-justify-content);
+    align-content: var(--grid-align-content);
+  }
+
+  :where([data-flex]) {
+    display: flex;
+    flex-wrap: wrap;
+    margin-block-end: 3rem;
+    margin-inline: auto;
+    justify-content: center;
+    gap: var(--gap);
+  }
+  :where([data-flex]) > *:has(div, aside, article) {
+    flex-basis: calc(var(--col-w, 100%) - var(--card-gap, 0px));
+    min-width: var(--col-min-w, 18.75rem);
+  }
+
+  :where([data-flex~=start]) {
+    justify-content: start;
+  }
+
+  :where([data-flex~=end]) {
+    justify-content: end;
+  }
+
+  :where([data-flex~=cols-2]) {
+    --col-w: 50%;
+  }
+
+  :where([data-flex~=cols-3]) {
+    --col-w: 33%;
+  }
+
+  :where([data-flex~=cols-4]) {
+    --col-w: 25%;
+  }
+
+  :where([data-flex~=cols-5]) {
+    --col-w: 20%;
+  }
+
+  :where([data-flex~=cols-6]) {
+    --col-w: 16%;
+  }
+
+  :where([data-flex~=cols-7]) {
+    --col-w: 14%;
+  }
+
+  :where([data-flex~=cols-8]) {
+    --col-w: 12%;
+  }
+
+  :where([data-flex~=cols-9]) {
+    --col-w: 11%;
+  }
+
+  :where([data-flex~=cols-10]) {
+    --col-w: 10%;
+  }
+
+  :where([data-flex~=cols-11]) {
+    --col-w: 9%;
+  }
+
+  :where([data-flex~=cols-12]) {
+    --col-w: 8%;
+  }
+
+  :where([data-flex-grid]) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-column-min-width, 20.3125rem), 1fr));
+    gap: var(--gap);
+    margin-block-end: 3rem;
+    margin-inline: auto;
+    justify-content: center;
+    align-content: start;
+  }
+
+  /**
+   * 12-Column Utility System
+   *
+   * Layout-agnostic column width utilities following Bootstrap/Foundation patterns.
+   * Works with Flex, Grid, or standalone elements.
+   *
+   * Responsive Behavior:
+   * - Mobile (< 48rem): All columns 100% width (stacked)
+   * - Desktop (>= 48rem): Fractional percentage widths
+   *
+   * All units in rem (1rem = 16px base).
+   */
+  /* CSS Custom Properties */
+  :root {
+    --col-breakpoint: 48rem; /* 768px - matches fpkit md breakpoint */
+    /* Column width percentages (fractions of 12) */
+    --col-1: 8.333333%;
+    --col-2: 16.666667%;
+    --col-3: 25%;
+    --col-4: 33.333333%;
+    --col-5: 41.666667%;
+    --col-6: 50%;
+    --col-7: 58.333333%;
+    --col-8: 66.666667%;
+    --col-9: 75%;
+    --col-10: 83.333333%;
+    --col-11: 91.666667%;
+    --col-12: 100%;
+  }
+
+  /**
+   * Responsive Breakpoints (mobile-first)
+   * These CSS custom properties document the breakpoint values and can be
+   * accessed via JavaScript. SCSS uses literal values for media queries.
+   */
+  :root {
+    --col-breakpoint-xs: 0rem; /* 0px - base mobile */
+    --col-breakpoint-sm: 30rem; /* 480px - large phones */
+    --col-breakpoint-md: 48rem; /* 768px - tablets */
+    --col-breakpoint-lg: 64rem; /* 1024px - desktops */
+    /* Legacy support - keep for backward compatibility */
+    --col-breakpoint: var(--col-breakpoint-md);
+  }
+
+  /**
+   * Breakpoint map for SCSS loop generation
+   * Uses literal rem values (not CSS custom properties) because
+   * @media queries require compile-time values, not runtime CSS variables.
+   */
+  /* ============================================================================
+     Row Container Utility (Optional)
+     ========================================================================== */
+  /**
+   * .col-row provides a convenient flex container for column layouts.
+   * Alternative to using the Flex component for simple, standalone usage.
+   *
+   * Usage:
+   *   <div className="col-row">
+   *     <div className="col-6">Column 1</div>
+   *     <div className="col-6">Column 2</div>
+   *   </div>
+   */
+  .col-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md); /* Default gap - can be overridden with gap utilities */
+  }
+
+  /* ============================================================================
+     Base Column Classes - Mobile First (100% width)
+     ========================================================================== */
+  .col-1,
+  .col-2,
+  .col-3,
+  .col-4,
+  .col-5,
+  .col-6,
+  .col-7,
+  .col-8,
+  .col-9,
+  .col-10,
+  .col-11,
+  .col-12 {
+    flex: 0 0 100%; /* flex-grow flex-shrink flex-basis */
+    min-width: 0; /* Prevent content overflow in flex containers */
+    box-sizing: border-box;
+  }
+
+  /* Desktop Column Widths (>= 48rem / 768px) */
+  @media (width >= 48rem) {
+    /* Prevent wrapping at desktop - columns shrink to fit instead */
+    .col-row {
+      flex-wrap: nowrap;
+    }
+    .col-1 {
+      flex: 0 1 var(--col-1);
+    }
+    .col-2 {
+      flex: 0 1 var(--col-2);
+    }
+    .col-3 {
+      flex: 0 1 var(--col-3);
+    }
+    .col-4 {
+      flex: 0 1 var(--col-4);
+    }
+    .col-5 {
+      flex: 0 1 var(--col-5);
+    }
+    .col-6 {
+      flex: 0 1 var(--col-6);
+    }
+    .col-7 {
+      flex: 0 1 var(--col-7);
+    }
+    .col-8 {
+      flex: 0 1 var(--col-8);
+    }
+    .col-9 {
+      flex: 0 1 var(--col-9);
+    }
+    .col-10 {
+      flex: 0 1 var(--col-10);
+    }
+    .col-11 {
+      flex: 0 1 var(--col-11);
+    }
+    .col-12 {
+      flex: 0 1 var(--col-12);
+    }
+  }
+  /* ============================================================================
+     Responsive Column Span Utilities (Generated)
+     ========================================================================== */
+  /**
+   * Generate responsive span utilities for all breakpoints
+   * Produces: .col-{sm|md|lg}-{1-12}, .col-{sm|md|lg}-auto, .col-{sm|md|lg}-flex
+   *
+   * These utilities enable mobile-first responsive layouts where columns can
+   * have different widths at different breakpoints. For example:
+   *   .col-12.col-md-6.col-lg-4 creates a layout that:
+   *   - Stacks full-width (100%) on mobile (< 768px)
+   *   - Shows 2 columns (50%) on tablets (>= 768px)
+   *   - Shows 3 columns (33.33%) on desktops (>= 1024px)
+   */
+  @media (width >= 30rem) {
+    .col-sm-1 {
+      flex: 0 1 var(--col-1);
+    }
+    .col-sm-2 {
+      flex: 0 1 var(--col-2);
+    }
+    .col-sm-3 {
+      flex: 0 1 var(--col-3);
+    }
+    .col-sm-4 {
+      flex: 0 1 var(--col-4);
+    }
+    .col-sm-5 {
+      flex: 0 1 var(--col-5);
+    }
+    .col-sm-6 {
+      flex: 0 1 var(--col-6);
+    }
+    .col-sm-7 {
+      flex: 0 1 var(--col-7);
+    }
+    .col-sm-8 {
+      flex: 0 1 var(--col-8);
+    }
+    .col-sm-9 {
+      flex: 0 1 var(--col-9);
+    }
+    .col-sm-10 {
+      flex: 0 1 var(--col-10);
+    }
+    .col-sm-11 {
+      flex: 0 1 var(--col-11);
+    }
+    .col-sm-12 {
+      flex: 0 1 var(--col-12);
+    }
+    .col-sm-auto {
+      flex: 0 0 auto;
+      width: auto;
+    }
+    .col-sm-flex {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+  @media (width >= 48rem) {
+    .col-md-1 {
+      flex: 0 1 var(--col-1);
+    }
+    .col-md-2 {
+      flex: 0 1 var(--col-2);
+    }
+    .col-md-3 {
+      flex: 0 1 var(--col-3);
+    }
+    .col-md-4 {
+      flex: 0 1 var(--col-4);
+    }
+    .col-md-5 {
+      flex: 0 1 var(--col-5);
+    }
+    .col-md-6 {
+      flex: 0 1 var(--col-6);
+    }
+    .col-md-7 {
+      flex: 0 1 var(--col-7);
+    }
+    .col-md-8 {
+      flex: 0 1 var(--col-8);
+    }
+    .col-md-9 {
+      flex: 0 1 var(--col-9);
+    }
+    .col-md-10 {
+      flex: 0 1 var(--col-10);
+    }
+    .col-md-11 {
+      flex: 0 1 var(--col-11);
+    }
+    .col-md-12 {
+      flex: 0 1 var(--col-12);
+    }
+    .col-md-auto {
+      flex: 0 0 auto;
+      width: auto;
+    }
+    .col-md-flex {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+  @media (width >= 64rem) {
+    .col-lg-1 {
+      flex: 0 1 var(--col-1);
+    }
+    .col-lg-2 {
+      flex: 0 1 var(--col-2);
+    }
+    .col-lg-3 {
+      flex: 0 1 var(--col-3);
+    }
+    .col-lg-4 {
+      flex: 0 1 var(--col-4);
+    }
+    .col-lg-5 {
+      flex: 0 1 var(--col-5);
+    }
+    .col-lg-6 {
+      flex: 0 1 var(--col-6);
+    }
+    .col-lg-7 {
+      flex: 0 1 var(--col-7);
+    }
+    .col-lg-8 {
+      flex: 0 1 var(--col-8);
+    }
+    .col-lg-9 {
+      flex: 0 1 var(--col-9);
+    }
+    .col-lg-10 {
+      flex: 0 1 var(--col-10);
+    }
+    .col-lg-11 {
+      flex: 0 1 var(--col-11);
+    }
+    .col-lg-12 {
+      flex: 0 1 var(--col-12);
+    }
+    .col-lg-auto {
+      flex: 0 0 auto;
+      width: auto;
+    }
+    .col-lg-flex {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+  /* ============================================================================
+     DEPRECATED: Proportional Layout Mode
+     ========================================================================== */
+  /**
+   * @deprecated Use responsive utility classes instead (.col-sm-*, .col-md-*, .col-lg-*)
+   * This class will be removed in v5.0.0
+   *
+   * .col-row-proportional prevents columns from stacking on tablets and larger.
+   * Columns still stack on mobile phones (< 30rem / 480px) for readability,
+   * but maintain proportional widths on tablets and desktops (>= 30rem / 480px).
+   *
+   * Migration:
+   *   Before: <Row alwaysProportional><Col span={6} /></Row>
+   *   After:  <Row><div className="col-sm-6" /></Row>
+   *
+   * Backward compatibility maintained for now, but use responsive utilities for new code.
+   */
+  @media (width >= 30rem) {
+    .col-row-proportional .col-1,
+    .col-row-proportional .col-2,
+    .col-row-proportional .col-3,
+    .col-row-proportional .col-4,
+    .col-row-proportional .col-5,
+    .col-row-proportional .col-6,
+    .col-row-proportional .col-7,
+    .col-row-proportional .col-8,
+    .col-row-proportional .col-9,
+    .col-row-proportional .col-10,
+    .col-row-proportional .col-11,
+    .col-row-proportional .col-12 {
+      flex: 0 1 auto; /* Allow proportional sizing with shrink */
+    }
+    .col-row-proportional .col-1 {
+      flex-basis: var(--col-1);
+    }
+    .col-row-proportional .col-2 {
+      flex-basis: var(--col-2);
+    }
+    .col-row-proportional .col-3 {
+      flex-basis: var(--col-3);
+    }
+    .col-row-proportional .col-4 {
+      flex-basis: var(--col-4);
+    }
+    .col-row-proportional .col-5 {
+      flex-basis: var(--col-5);
+    }
+    .col-row-proportional .col-6 {
+      flex-basis: var(--col-6);
+    }
+    .col-row-proportional .col-7 {
+      flex-basis: var(--col-7);
+    }
+    .col-row-proportional .col-8 {
+      flex-basis: var(--col-8);
+    }
+    .col-row-proportional .col-9 {
+      flex-basis: var(--col-9);
+    }
+    .col-row-proportional .col-10 {
+      flex-basis: var(--col-10);
+    }
+    .col-row-proportional .col-11 {
+      flex-basis: var(--col-11);
+    }
+    .col-row-proportional .col-12 {
+      flex-basis: var(--col-12);
+    }
+  }
+  /* Optional: Column Offset Utilities */
+  @media (width >= 48rem) {
+    .col-offset-0 {
+      margin-inline-start: 0;
+    }
+    .col-offset-1 {
+      margin-inline-start: var(--col-1);
+    }
+    .col-offset-2 {
+      margin-inline-start: var(--col-2);
+    }
+    .col-offset-3 {
+      margin-inline-start: var(--col-3);
+    }
+    .col-offset-4 {
+      margin-inline-start: var(--col-4);
+    }
+    .col-offset-5 {
+      margin-inline-start: var(--col-5);
+    }
+    .col-offset-6 {
+      margin-inline-start: var(--col-6);
+    }
+    .col-offset-7 {
+      margin-inline-start: var(--col-7);
+    }
+    .col-offset-8 {
+      margin-inline-start: var(--col-8);
+    }
+    .col-offset-9 {
+      margin-inline-start: var(--col-9);
+    }
+    .col-offset-10 {
+      margin-inline-start: var(--col-10);
+    }
+    .col-offset-11 {
+      margin-inline-start: var(--col-11);
+    }
+  }
+  /* ============================================================================
+     Responsive Column Offset Utilities (Generated)
+     ========================================================================== */
+  @media (width >= 30rem) {
+    .col-sm-offset-0 {
+      margin-inline-start: 0;
+    }
+    .col-sm-offset-1 {
+      margin-inline-start: var(--col-1);
+    }
+    .col-sm-offset-2 {
+      margin-inline-start: var(--col-2);
+    }
+    .col-sm-offset-3 {
+      margin-inline-start: var(--col-3);
+    }
+    .col-sm-offset-4 {
+      margin-inline-start: var(--col-4);
+    }
+    .col-sm-offset-5 {
+      margin-inline-start: var(--col-5);
+    }
+    .col-sm-offset-6 {
+      margin-inline-start: var(--col-6);
+    }
+    .col-sm-offset-7 {
+      margin-inline-start: var(--col-7);
+    }
+    .col-sm-offset-8 {
+      margin-inline-start: var(--col-8);
+    }
+    .col-sm-offset-9 {
+      margin-inline-start: var(--col-9);
+    }
+    .col-sm-offset-10 {
+      margin-inline-start: var(--col-10);
+    }
+    .col-sm-offset-11 {
+      margin-inline-start: var(--col-11);
+    }
+  }
+  @media (width >= 48rem) {
+    .col-md-offset-0 {
+      margin-inline-start: 0;
+    }
+    .col-md-offset-1 {
+      margin-inline-start: var(--col-1);
+    }
+    .col-md-offset-2 {
+      margin-inline-start: var(--col-2);
+    }
+    .col-md-offset-3 {
+      margin-inline-start: var(--col-3);
+    }
+    .col-md-offset-4 {
+      margin-inline-start: var(--col-4);
+    }
+    .col-md-offset-5 {
+      margin-inline-start: var(--col-5);
+    }
+    .col-md-offset-6 {
+      margin-inline-start: var(--col-6);
+    }
+    .col-md-offset-7 {
+      margin-inline-start: var(--col-7);
+    }
+    .col-md-offset-8 {
+      margin-inline-start: var(--col-8);
+    }
+    .col-md-offset-9 {
+      margin-inline-start: var(--col-9);
+    }
+    .col-md-offset-10 {
+      margin-inline-start: var(--col-10);
+    }
+    .col-md-offset-11 {
+      margin-inline-start: var(--col-11);
+    }
+  }
+  @media (width >= 64rem) {
+    .col-lg-offset-0 {
+      margin-inline-start: 0;
+    }
+    .col-lg-offset-1 {
+      margin-inline-start: var(--col-1);
+    }
+    .col-lg-offset-2 {
+      margin-inline-start: var(--col-2);
+    }
+    .col-lg-offset-3 {
+      margin-inline-start: var(--col-3);
+    }
+    .col-lg-offset-4 {
+      margin-inline-start: var(--col-4);
+    }
+    .col-lg-offset-5 {
+      margin-inline-start: var(--col-5);
+    }
+    .col-lg-offset-6 {
+      margin-inline-start: var(--col-6);
+    }
+    .col-lg-offset-7 {
+      margin-inline-start: var(--col-7);
+    }
+    .col-lg-offset-8 {
+      margin-inline-start: var(--col-8);
+    }
+    .col-lg-offset-9 {
+      margin-inline-start: var(--col-9);
+    }
+    .col-lg-offset-10 {
+      margin-inline-start: var(--col-10);
+    }
+    .col-lg-offset-11 {
+      margin-inline-start: var(--col-11);
+    }
+  }
+  /* Optional: Auto-Width Columns */
+  .col-auto {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  /* Optional: Flex-Grow Columns */
+  .col-flex {
+    /* Mobile: Stack like all columns */
+    flex: 0 0 100%;
+    min-width: 0; /* Prevent content overflow */
+    box-sizing: border-box;
+  }
+
+  /* Desktop: Grow to fill available space */
+  @media (width >= 48rem) {
+    .col-flex {
+      flex: 1 1 0%; /* flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+    }
+  }
+  /* Optional: Column Order Utilities */
+  @media (width >= 48rem) {
+    .col-order-first {
+      order: -1;
+    }
+    .col-order-last {
+      order: 13;
+    }
+    .col-order-0 {
+      order: 0;
+    }
+    .col-order-1 {
+      order: 1;
+    }
+    .col-order-2 {
+      order: 2;
+    }
+    .col-order-3 {
+      order: 3;
+    }
+    .col-order-4 {
+      order: 4;
+    }
+    .col-order-5 {
+      order: 5;
+    }
+    .col-order-6 {
+      order: 6;
+    }
+    .col-order-7 {
+      order: 7;
+    }
+    .col-order-8 {
+      order: 8;
+    }
+    .col-order-9 {
+      order: 9;
+    }
+    .col-order-10 {
+      order: 10;
+    }
+    .col-order-11 {
+      order: 11;
+    }
+    .col-order-12 {
+      order: 12;
+    }
+  }
+  /* ============================================================================
+     Responsive Column Order Utilities (Generated)
+     ========================================================================== */
+  @media (width >= 30rem) {
+    .col-sm-order-first {
+      order: -1;
+    }
+    .col-sm-order-last {
+      order: 13;
+    }
+    .col-sm-order-0 {
+      order: 0;
+    }
+    .col-sm-order-1 {
+      order: 1;
+    }
+    .col-sm-order-2 {
+      order: 2;
+    }
+    .col-sm-order-3 {
+      order: 3;
+    }
+    .col-sm-order-4 {
+      order: 4;
+    }
+    .col-sm-order-5 {
+      order: 5;
+    }
+    .col-sm-order-6 {
+      order: 6;
+    }
+    .col-sm-order-7 {
+      order: 7;
+    }
+    .col-sm-order-8 {
+      order: 8;
+    }
+    .col-sm-order-9 {
+      order: 9;
+    }
+    .col-sm-order-10 {
+      order: 10;
+    }
+    .col-sm-order-11 {
+      order: 11;
+    }
+    .col-sm-order-12 {
+      order: 12;
+    }
+  }
+  @media (width >= 48rem) {
+    .col-md-order-first {
+      order: -1;
+    }
+    .col-md-order-last {
+      order: 13;
+    }
+    .col-md-order-0 {
+      order: 0;
+    }
+    .col-md-order-1 {
+      order: 1;
+    }
+    .col-md-order-2 {
+      order: 2;
+    }
+    .col-md-order-3 {
+      order: 3;
+    }
+    .col-md-order-4 {
+      order: 4;
+    }
+    .col-md-order-5 {
+      order: 5;
+    }
+    .col-md-order-6 {
+      order: 6;
+    }
+    .col-md-order-7 {
+      order: 7;
+    }
+    .col-md-order-8 {
+      order: 8;
+    }
+    .col-md-order-9 {
+      order: 9;
+    }
+    .col-md-order-10 {
+      order: 10;
+    }
+    .col-md-order-11 {
+      order: 11;
+    }
+    .col-md-order-12 {
+      order: 12;
+    }
+  }
+  @media (width >= 64rem) {
+    .col-lg-order-first {
+      order: -1;
+    }
+    .col-lg-order-last {
+      order: 13;
+    }
+    .col-lg-order-0 {
+      order: 0;
+    }
+    .col-lg-order-1 {
+      order: 1;
+    }
+    .col-lg-order-2 {
+      order: 2;
+    }
+    .col-lg-order-3 {
+      order: 3;
+    }
+    .col-lg-order-4 {
+      order: 4;
+    }
+    .col-lg-order-5 {
+      order: 5;
+    }
+    .col-lg-order-6 {
+      order: 6;
+    }
+    .col-lg-order-7 {
+      order: 7;
+    }
+    .col-lg-order-8 {
+      order: 8;
+    }
+    .col-lg-order-9 {
+      order: 9;
+    }
+    .col-lg-order-10 {
+      order: 10;
+    }
+    .col-lg-order-11 {
+      order: 11;
+    }
+    .col-lg-order-12 {
+      order: 12;
+    }
+  }
+  /* ============================================================================
+     Row Variant Utilities (for Row React Component)
+     ========================================================================== */
+  /* Row Gap Utilities - Override default gap */
+  .col-row-gap-0 {
+    gap: 0;
+  }
+
+  .col-row-gap-xs {
+    gap: var(--spacing-xs);
+  }
+
+  .col-row-gap-sm {
+    gap: var(--spacing-sm);
+  }
+
+  .col-row-gap-md {
+    gap: var(--spacing-md);
+  }
+
+  .col-row-gap-lg {
+    gap: var(--spacing-lg);
+  }
+
+  .col-row-gap-xl {
+    gap: var(--spacing-xl);
+  }
+
+  /* Row Justify Content Utilities */
+  .col-row-justify-start {
+    justify-content: flex-start;
+  }
+
+  .col-row-justify-center {
+    justify-content: center;
+  }
+
+  .col-row-justify-end {
+    justify-content: flex-end;
+  }
+
+  .col-row-justify-between {
+    justify-content: space-between;
+  }
+
+  .col-row-justify-around {
+    justify-content: space-around;
+  }
+
+  .col-row-justify-evenly {
+    justify-content: space-evenly;
+  }
+
+  /* Row Align Items Utilities */
+  .col-row-align-start {
+    align-items: flex-start;
+  }
+
+  .col-row-align-center {
+    align-items: center;
+  }
+
+  .col-row-align-end {
+    align-items: flex-end;
+  }
+
+  .col-row-align-baseline {
+    align-items: baseline;
+  }
+
+  .col-row-align-stretch {
+    align-items: stretch;
+  }
+
+  /* Row Wrap Utilities */
+  .col-row-nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .col-row-wrap-reverse {
+    flex-wrap: wrap-reverse;
+  }
+
+  @keyframes loading {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  .loading-bar {
+    height: 20px;
+    background-color: #3498db;
+    animation-name: loading;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .loading-pulse {
+    height: 20px;
+    background-color: #3498db;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+
+  :root {
+    --shadow: 0 0 0.525rem 0 rgba(0, 0, 0, 0.1);
+    --shadow-xs: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.1),
+      0 0.0625rem 0.125rem rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1),
+      0 0.125rem 0.25rem rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1),
+      0 0.25rem 0.375rem rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 1.25rem 1.5625rem rgba(0, 0, 0, 0.1),
+      0 0.625rem 0.625rem rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-none {
+    box-shadow: none;
+  }
+
+  .shadow {
+    box-shadow: var(--shadow);
+  }
+
+  .shadow-xs {
+    box-shadow: var(--shadow-xs);
+  }
+
+  .shadow-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-xl {
+    box-shadow: var(--shadow-xl);
+  }
+
+  /**
+   * DEPRECATED: This file is deprecated in favor of the new token system.
+   *
+   * Use tokens from assets/foundation/sass/tokens/ instead:
+   * - Primitives: assets/foundation/sass/tokens/_color-primitives.scss
+   * - Semantic: assets/foundation/sass/tokens/_color-semantic.scss
+   *
+   * Use utility classes from assets/foundation/sass/styles/ for quick styling:
+   * - .text-primary, .text-success, .text-error, etc.
+   * - .bg-primary, .bg-success, .bg-error, etc.
+   * - .border-primary, .border-success, .border-error, etc.
+   *
+   * Deprecated upstream — retained here for backward compatibility only.
+   */
+  :root {
+    --transparent: transparent;
+  }
+
+  .transparent {
+    background-color: var(--transparent);
+  }
+  .transparent-border {
+    border-color: var(--transparent);
+  }
+  .transparent-color {
+    color: var(--transparent);
+  }
+}
+
+/* P3: Collapse transition tokens for prefers-reduced-motion.
+   Zeroes the named transition custom properties so components that
+   reference --transition or --tran-all also honour the user preference. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition: none;
+    --tran-all: none;
+  }
+}

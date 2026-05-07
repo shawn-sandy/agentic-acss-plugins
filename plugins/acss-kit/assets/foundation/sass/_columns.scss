@@ -1,0 +1,476 @@
+/**
+ * 12-Column Utility System
+ *
+ * Layout-agnostic column width utilities following Bootstrap/Foundation patterns.
+ * Works with Flex, Grid, or standalone elements.
+ *
+ * Responsive Behavior:
+ * - Mobile (< 48rem): All columns 100% width (stacked)
+ * - Desktop (>= 48rem): Fractional percentage widths
+ *
+ * All units in rem (1rem = 16px base).
+ */
+
+/* CSS Custom Properties */
+:root {
+  --col-breakpoint: 48rem; /* 768px - matches fpkit md breakpoint */
+
+  /* Column width percentages (fractions of 12) */
+  --col-1: 8.333333%;
+  --col-2: 16.666667%;
+  --col-3: 25%;
+  --col-4: 33.333333%;
+  --col-5: 41.666667%;
+  --col-6: 50%;
+  --col-7: 58.333333%;
+  --col-8: 66.666667%;
+  --col-9: 75%;
+  --col-10: 83.333333%;
+  --col-11: 91.666667%;
+  --col-12: 100%;
+}
+
+/**
+ * Responsive Breakpoints (mobile-first)
+ * These CSS custom properties document the breakpoint values and can be
+ * accessed via JavaScript. SCSS uses literal values for media queries.
+ */
+:root {
+  --col-breakpoint-xs: 0rem; /* 0px - base mobile */
+  --col-breakpoint-sm: 30rem; /* 480px - large phones */
+  --col-breakpoint-md: 48rem; /* 768px - tablets */
+  --col-breakpoint-lg: 64rem; /* 1024px - desktops */
+
+  /* Legacy support - keep for backward compatibility */
+  --col-breakpoint: var(--col-breakpoint-md);
+}
+
+/**
+ * Breakpoint map for SCSS loop generation
+ * Uses literal rem values (not CSS custom properties) because
+ * @media queries require compile-time values, not runtime CSS variables.
+ */
+$col-breakpoints: (
+  "sm": 30rem,
+  "md": 48rem,
+  "lg": 64rem,
+);
+
+/* ============================================================================
+   Row Container Utility (Optional)
+   ========================================================================== */
+
+/**
+ * .col-row provides a convenient flex container for column layouts.
+ * Alternative to using the Flex component for simple, standalone usage.
+ *
+ * Usage:
+ *   <div className="col-row">
+ *     <div className="col-6">Column 1</div>
+ *     <div className="col-6">Column 2</div>
+ *   </div>
+ */
+.col-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(
+    --spacing-md
+  ); /* Default gap - can be overridden with gap utilities */
+}
+
+/* ============================================================================
+   Base Column Classes - Mobile First (100% width)
+   ========================================================================== */
+
+.col-1,
+.col-2,
+.col-3,
+.col-4,
+.col-5,
+.col-6,
+.col-7,
+.col-8,
+.col-9,
+.col-10,
+.col-11,
+.col-12 {
+  flex: 0 0 100%; /* flex-grow flex-shrink flex-basis */
+  min-width: 0; /* Prevent content overflow in flex containers */
+  box-sizing: border-box;
+}
+
+/* Desktop Column Widths (>= 48rem / 768px) */
+@media (width >= 48rem) {
+  /* Prevent wrapping at desktop - columns shrink to fit instead */
+  .col-row {
+    flex-wrap: nowrap;
+  }
+
+  .col-1 {
+    flex: 0 1 var(--col-1);
+  }
+
+  .col-2 {
+    flex: 0 1 var(--col-2);
+  }
+  .col-3 {
+    flex: 0 1 var(--col-3);
+  }
+  .col-4 {
+    flex: 0 1 var(--col-4);
+  }
+  .col-5 {
+    flex: 0 1 var(--col-5);
+  }
+  .col-6 {
+    flex: 0 1 var(--col-6);
+  }
+  .col-7 {
+    flex: 0 1 var(--col-7);
+  }
+  .col-8 {
+    flex: 0 1 var(--col-8);
+  }
+  .col-9 {
+    flex: 0 1 var(--col-9);
+  }
+  .col-10 {
+    flex: 0 1 var(--col-10);
+  }
+  .col-11 {
+    flex: 0 1 var(--col-11);
+  }
+  .col-12 {
+    flex: 0 1 var(--col-12);
+  }
+}
+
+/* ============================================================================
+   Responsive Column Span Utilities (Generated)
+   ========================================================================== */
+
+/**
+ * Generate responsive span utilities for all breakpoints
+ * Produces: .col-{sm|md|lg}-{1-12}, .col-{sm|md|lg}-auto, .col-{sm|md|lg}-flex
+ *
+ * These utilities enable mobile-first responsive layouts where columns can
+ * have different widths at different breakpoints. For example:
+ *   .col-12.col-md-6.col-lg-4 creates a layout that:
+ *   - Stacks full-width (100%) on mobile (< 768px)
+ *   - Shows 2 columns (50%) on tablets (>= 768px)
+ *   - Shows 3 columns (33.33%) on desktops (>= 1024px)
+ */
+@each $breakpoint, $min-width in $col-breakpoints {
+  @media (width >= #{$min-width}) {
+    // Generate .col-{breakpoint}-{1-12} classes
+    @for $i from 1 through 12 {
+      .col-#{$breakpoint}-#{$i} {
+        flex: 0 1 var(--col-#{$i});
+      }
+    }
+
+    // Auto-width variant - sizes to content
+    .col-#{$breakpoint}-auto {
+      flex: 0 0 auto;
+      width: auto;
+    }
+
+    // Flex-grow variant - grows to fill remaining space
+    .col-#{$breakpoint}-flex {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+}
+
+/* ============================================================================
+   DEPRECATED: Proportional Layout Mode
+   ========================================================================== */
+
+/**
+ * @deprecated Use responsive utility classes instead (.col-sm-*, .col-md-*, .col-lg-*)
+ * This class will be removed in v5.0.0
+ *
+ * .col-row-proportional prevents columns from stacking on tablets and larger.
+ * Columns still stack on mobile phones (< 30rem / 480px) for readability,
+ * but maintain proportional widths on tablets and desktops (>= 30rem / 480px).
+ *
+ * Migration:
+ *   Before: <Row alwaysProportional><Col span={6} /></Row>
+ *   After:  <Row><div className="col-sm-6" /></Row>
+ *
+ * Backward compatibility maintained for now, but use responsive utilities for new code.
+ */
+@media (width >= 30rem) {
+  .col-row-proportional {
+    .col-1,
+    .col-2,
+    .col-3,
+    .col-4,
+    .col-5,
+    .col-6,
+    .col-7,
+    .col-8,
+    .col-9,
+    .col-10,
+    .col-11,
+    .col-12 {
+      flex: 0 1 auto; /* Allow proportional sizing with shrink */
+    }
+
+    .col-1 {
+      flex-basis: var(--col-1);
+    }
+    .col-2 {
+      flex-basis: var(--col-2);
+    }
+    .col-3 {
+      flex-basis: var(--col-3);
+    }
+    .col-4 {
+      flex-basis: var(--col-4);
+    }
+    .col-5 {
+      flex-basis: var(--col-5);
+    }
+    .col-6 {
+      flex-basis: var(--col-6);
+    }
+    .col-7 {
+      flex-basis: var(--col-7);
+    }
+    .col-8 {
+      flex-basis: var(--col-8);
+    }
+    .col-9 {
+      flex-basis: var(--col-9);
+    }
+    .col-10 {
+      flex-basis: var(--col-10);
+    }
+    .col-11 {
+      flex-basis: var(--col-11);
+    }
+    .col-12 {
+      flex-basis: var(--col-12);
+    }
+  }
+}
+
+/* Optional: Column Offset Utilities */
+@media (width >= 48rem) {
+  .col-offset-0 {
+    margin-inline-start: 0;
+  }
+  .col-offset-1 {
+    margin-inline-start: var(--col-1);
+  }
+  .col-offset-2 {
+    margin-inline-start: var(--col-2);
+  }
+  .col-offset-3 {
+    margin-inline-start: var(--col-3);
+  }
+  .col-offset-4 {
+    margin-inline-start: var(--col-4);
+  }
+  .col-offset-5 {
+    margin-inline-start: var(--col-5);
+  }
+  .col-offset-6 {
+    margin-inline-start: var(--col-6);
+  }
+  .col-offset-7 {
+    margin-inline-start: var(--col-7);
+  }
+  .col-offset-8 {
+    margin-inline-start: var(--col-8);
+  }
+  .col-offset-9 {
+    margin-inline-start: var(--col-9);
+  }
+  .col-offset-10 {
+    margin-inline-start: var(--col-10);
+  }
+  .col-offset-11 {
+    margin-inline-start: var(--col-11);
+  }
+}
+
+/* ============================================================================
+   Responsive Column Offset Utilities (Generated)
+   ========================================================================== */
+
+@each $breakpoint, $min-width in $col-breakpoints {
+  @media (width >= #{$min-width}) {
+    @for $i from 0 through 11 {
+      .col-#{$breakpoint}-offset-#{$i} {
+        @if $i == 0 {
+          margin-inline-start: 0;
+        } @else {
+          margin-inline-start: var(--col-#{$i});
+        }
+      }
+    }
+  }
+}
+
+/* Optional: Auto-Width Columns */
+.col-auto {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* Optional: Flex-Grow Columns */
+.col-flex {
+  /* Mobile: Stack like all columns */
+  flex: 0 0 100%;
+  min-width: 0; /* Prevent content overflow */
+  box-sizing: border-box;
+}
+
+/* Desktop: Grow to fill available space */
+@media (width >= 48rem) {
+  .col-flex {
+    flex: 1 1 0%; /* flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+  }
+}
+
+/* Optional: Column Order Utilities */
+@media (width >= 48rem) {
+  .col-order-first {
+    order: -1;
+  }
+  .col-order-last {
+    order: 13;
+  }
+  .col-order-0 {
+    order: 0;
+  }
+  .col-order-1 {
+    order: 1;
+  }
+  .col-order-2 {
+    order: 2;
+  }
+  .col-order-3 {
+    order: 3;
+  }
+  .col-order-4 {
+    order: 4;
+  }
+  .col-order-5 {
+    order: 5;
+  }
+  .col-order-6 {
+    order: 6;
+  }
+  .col-order-7 {
+    order: 7;
+  }
+  .col-order-8 {
+    order: 8;
+  }
+  .col-order-9 {
+    order: 9;
+  }
+  .col-order-10 {
+    order: 10;
+  }
+  .col-order-11 {
+    order: 11;
+  }
+  .col-order-12 {
+    order: 12;
+  }
+}
+
+/* ============================================================================
+   Responsive Column Order Utilities (Generated)
+   ========================================================================== */
+
+@each $breakpoint, $min-width in $col-breakpoints {
+  @media (width >= #{$min-width}) {
+    .col-#{$breakpoint}-order-first {
+      order: -1;
+    }
+    .col-#{$breakpoint}-order-last {
+      order: 13;
+    }
+
+    @for $i from 0 through 12 {
+      .col-#{$breakpoint}-order-#{$i} {
+        order: $i;
+      }
+    }
+  }
+}
+
+/* ============================================================================
+   Row Variant Utilities (for Row React Component)
+   ========================================================================== */
+
+/* Row Gap Utilities - Override default gap */
+.col-row-gap-0 {
+  gap: 0;
+}
+.col-row-gap-xs {
+  gap: var(--spacing-xs);
+}
+.col-row-gap-sm {
+  gap: var(--spacing-sm);
+}
+.col-row-gap-md {
+  gap: var(--spacing-md);
+}
+.col-row-gap-lg {
+  gap: var(--spacing-lg);
+}
+.col-row-gap-xl {
+  gap: var(--spacing-xl);
+}
+
+/* Row Justify Content Utilities */
+.col-row-justify-start {
+  justify-content: flex-start;
+}
+.col-row-justify-center {
+  justify-content: center;
+}
+.col-row-justify-end {
+  justify-content: flex-end;
+}
+.col-row-justify-between {
+  justify-content: space-between;
+}
+.col-row-justify-around {
+  justify-content: space-around;
+}
+.col-row-justify-evenly {
+  justify-content: space-evenly;
+}
+
+/* Row Align Items Utilities */
+.col-row-align-start {
+  align-items: flex-start;
+}
+.col-row-align-center {
+  align-items: center;
+}
+.col-row-align-end {
+  align-items: flex-end;
+}
+.col-row-align-baseline {
+  align-items: baseline;
+}
+.col-row-align-stretch {
+  align-items: stretch;
+}
+
+/* Row Wrap Utilities */
+.col-row-nowrap {
+  flex-wrap: nowrap;
+}
+.col-row-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}

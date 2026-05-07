@@ -354,5 +354,88 @@ else
   yellow "migrate_classnames.py or fixtures not found — skipping"
 fi
 
+# Step 11 — foundation.css structural checks
+section "11. foundation.css structural checks"
+FOUNDATION_CSS="$REPO_ROOT/plugins/acss-kit/assets/foundation/foundation.css"
+SOURCE_MD="$REPO_ROOT/plugins/acss-kit/assets/foundation/SOURCE.md"
+
+if [ ! -f "$FOUNDATION_CSS" ]; then
+  red "foundation.css not found at $FOUNDATION_CSS"
+  exit 1
+fi
+
+# 11a — parse with tinycss2
+PARSE_LOG="$TMP_ROOT/foundation-parse.log"
+if python3 - "$FOUNDATION_CSS" >"$PARSE_LOG" 2>&1 <<'PYEOF'
+import sys, tinycss2
+css = open(sys.argv[1], encoding="utf-8").read()
+rules, _ = tinycss2.parse_stylesheet_bytes(css.encode())
+errors = [r for r in rules if r.type == "error"]
+if errors:
+    for e in errors:
+        print(f"  parse error: {e}")
+    sys.exit(1)
+print("OK")
+PYEOF
+then
+  green "foundation.css parses OK"
+else
+  red "foundation.css parse failed:"
+  cat "$PARSE_LOG"
+  exit 1
+fi
+
+# 11b — no --color-* semantic roles inside @layer foundation
+# Scan the full file; 11c already confirms the layer wrapper is present.
+# Primitives use hue-based names; semantic roles do not.
+if python3 - "$FOUNDATION_CSS" <<'PYEOF'
+import sys, re
+text = open(sys.argv[1], encoding="utf-8").read()
+semantic_re = re.compile(
+    r'^\s*(--color-(?!neutral|blue|green|red|amber|cyan)[a-z][\w-]*):', re.MULTILINE
+)
+hits = semantic_re.findall(text)
+if hits:
+    print(f"ERROR: semantic --color-* roles found in foundation.css: {hits[:5]}")
+    sys.exit(1)
+print("OK")
+PYEOF
+then
+  green "No semantic --color-* roles inside @layer foundation (P1 enforced)"
+else
+  red "P1 violation: --color-* semantic roles found inside @layer foundation"
+  exit 1
+fi
+
+# 11c — @layer foundation wrapper present
+if grep -q '@layer foundation {' "$FOUNDATION_CSS"; then
+  green "@layer foundation wrapper present (P4 enforced)"
+else
+  red "foundation.css missing @layer foundation wrapper (P4 violated)"
+  exit 1
+fi
+
+# 11d — P3 reduced-motion block present (checks for unique P3 token zeroing,
+#        not just prefers-reduced-motion which also exists in the vendored reset)
+if grep -q '\-\-tran-all: none' "$FOUNDATION_CSS"; then
+  green "P3 reduced-motion token block present (P3 enforced)"
+else
+  red "foundation.css missing P3 --tran-all: none block (P3 violated)"
+  exit 1
+fi
+
+# 11e — SOURCE.md lists all four patches
+if [ ! -f "$SOURCE_MD" ]; then
+  red "SOURCE.md not found at $SOURCE_MD"
+  exit 1
+fi
+for patch in "P1" "P2" "P3" "P4"; do
+  if ! grep -q "$patch" "$SOURCE_MD"; then
+    red "SOURCE.md missing patch $patch"
+    exit 1
+  fi
+done
+green "SOURCE.md lists patches P1–P4"
+
 section "ALL STEPS GREEN"
 green "Phase 1 harness passed."

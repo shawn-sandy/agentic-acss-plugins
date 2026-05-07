@@ -1,0 +1,48 @@
+/**
+ * Color Semantic Tokens - Purpose Layer (Tier 2)
+ *
+ * Vendored from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+ *
+ * NOTE (P1): This file is vendored but NOT forwarded by tokens/_index.scss.
+ * The acss-kit theme files (light.css / dark.css / brand-*.css) own every
+ * --color-* semantic role. Forwarding this file would silently override the
+ * OKLCH-generated theme values that the /theme-create and /theme-brand
+ * workflows produce. Keep this file for reference / local inspection only.
+ *
+ * Intent-based color mappings for common use cases.
+ * All semantic tokens reference primitive tokens (Tier 1).
+ *
+ * Pattern: --color-{purpose}-{variant}
+ *
+ * This layer provides meaning to colors and enables easy theming.
+ * To theme the application, override these semantic tokens.
+ */
+
+:root {
+  /* ========================================
+     Brand Colors
+     Purpose: Primary and secondary brand identity
+     ======================================== */
+
+  /* Primary brand color - Main CTAs, primary buttons, primary links */
+  --color-primary: var(--color-blue-600);           /* #2563eb */
+  --color-primary-hover: var(--color-blue-700);     /* #1d4ed8 */
+  --color-primary-active: var(--color-blue-800);    /* #1e40af */
+  --color-primary-light: var(--color-blue-100);     /* #dbeafe */
+
+  /* Secondary brand color - Secondary actions, alternative emphasis */
+  --color-secondary: var(--color-neutral-700);      /* #404040 */
+  --color-secondary-hover: var(--color-neutral-800);/* #262626 */
+  --color-secondary-light: var(--color-neutral-100);/* #f5f5f5 */
+
+  /* ========================================
+     State Colors - Success
+     Purpose: Positive feedback, valid inputs, confirmations
+     ======================================== */
+
+  --color-success: var(--color-green-600);          /* #16a34a */
+  --color-success-bg: var(--color-green-100);       /* #dcfce7 */
+  --color-success-border: var(--color-green-600);   /* #16a34a */
+  --color-success-text: var(--color-green-800);     /* #166534 */
+  --color-success-hover: var(--color-green-700);    /* #15803d */
+}

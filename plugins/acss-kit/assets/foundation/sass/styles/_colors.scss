@@ -1,0 +1,28 @@
+/**
+ * DEPRECATED: This file is deprecated in favor of the new token system.
+ *
+ * Use tokens from assets/foundation/sass/tokens/ instead:
+ * - Primitives: assets/foundation/sass/tokens/_color-primitives.scss
+ * - Semantic: assets/foundation/sass/tokens/_color-semantic.scss
+ *
+ * Use utility classes from assets/foundation/sass/styles/ for quick styling:
+ * - .text-primary, .text-success, .text-error, etc.
+ * - .bg-primary, .bg-success, .bg-error, etc.
+ * - .border-primary, .border-success, .border-error, etc.
+ *
+ * Deprecated upstream — retained here for backward compatibility only.
+ */
+
+:root {
+  --transparent: transparent;
+}
+
+.transparent {
+  background-color: var(--transparent);
+  &-border {
+    border-color: var(--transparent);
+  }
+  &-color {
+    color: var(--transparent);
+  }
+}

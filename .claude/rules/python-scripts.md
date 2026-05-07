@@ -18,7 +18,8 @@ Current scripts in `plugins/acss-kit/scripts/`:
 - `generate_color_scale.py` — generates a 10-step OKLCH color scale (steps 50–900) from a seed hex color. Accepts `<hex-color> [--name=<name>] [--format=css|json|both]`. JSON output includes `seed_oklch` and per-step hex/oklch/css_var. CSS output follows the `var(--x, <fallback>)` convention. Reuses `_oklch.py` for all color math. Generator/validator contract.
 - `css_to_tokens.py` — converts CSS custom properties to palette JSON
 - `tokens_to_css.py` — converts palette JSON to CSS custom property files
-- `validate_theme.py` — checks theme CSS files for WCAG 2.2 AA contrast on semantic role pairs
+- `validate_theme.py` — checks theme CSS files for WCAG 2.2 AA contrast on semantic role pairs (12 pairs including focus-on-surface and focus-on-surface-raised)
+- `wrap_foundation_layer.py` — wraps a compiled raw CSS file in `@layer foundation { }` and appends the P3 reduced-motion block; second step of the `foundation.css` refresh pipeline. Generator/validator contract
 - `hash_file.py` — hashes a file or stdin content with sha256 after the kit-sync normalization rules (LF endings, strip trailing whitespace per line, single trailing newline). Used by `/kit-sync` to record manifest entries and by `/kit-update` to compare on-disk content. Generator/validator contract
 - `manifest_read.py` — reads `.acss-kit/manifest.json` from a project root and emits its contents as JSON. Detector contract
 - `manifest_write.py` — atomically merges a stdin JSON payload into `.acss-kit/manifest.json` (write-temp + rename). Preserves entries not mentioned in the payload; accepts `removePaths` for pruning. Generator/validator contract
@@ -49,7 +50,7 @@ For scripts that emit data or human-readable validation results.
 - Errors on stderr
 - Exit 0 on success, 1 on logical failure, 2 on usage / IO errors
 
-Generators / validators: `generate_palette.py`, `oklch_shift.py`, `generate_color_scale.py`, `tokens_to_css.py`, `css_to_tokens.py`, `validate_theme.py`, `hash_file.py`, `manifest_write.py`, `generate_utilities.py`, `migrate_classnames.py`.
+Generators / validators: `generate_palette.py`, `oklch_shift.py`, `generate_color_scale.py`, `tokens_to_css.py`, `css_to_tokens.py`, `validate_theme.py`, `wrap_foundation_layer.py`, `hash_file.py`, `manifest_write.py`, `generate_utilities.py`, `migrate_classnames.py`.
 
 `oklch_shift.py` follows this contract — it transforms an input hex into a shifted hex and emits structured JSON. It exits 0 whenever a usable hex was produced (even when chroma or lightness was clamped to stay in sRGB gamut — `clamped: true` and a populated `reasons` array surface the warning), reserves exit 1 for hard failures where no hex can be produced, and exits 2 on usage / IO errors.
 

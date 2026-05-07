@@ -1,0 +1,53 @@
+/**
+ * fpkit foundation barrel (project-authored)
+ *
+ * Vendored from @fpkit/acss@6.5.0 (SHA 9063512fa822963d8151c972bed9f5b0e531df0f)
+ *
+ * Mirrors the upstream packages/fpkit/src/index.scss import order with these
+ * intentional divergences — see SOURCE.md for the full patch log:
+ *
+ *   P1  tokens/_color-semantic NOT forwarded — theme files own --color-* roles
+ *   P2  _globals.scss h1–h6 patched with color: var(--color-text, #212529)
+ *
+ * Excluded upstream sections (not part of this barrel):
+ *   - sass/utilities   — covered by the acss-utilities plugin
+ *   - components/**    — generated per-component by /kit-add
+ *
+ * To regenerate foundation.css from these sources:
+ *   npx sass --style=expanded --no-source-map \
+ *     plugins/acss-kit/assets/foundation/sass/_index.scss:_foundation_raw.css
+ *   python3 plugins/acss-kit/scripts/wrap_foundation_layer.py _foundation_raw.css plugins/acss-kit/assets/foundation/foundation.css
+ *   (or see SOURCE.md for the full refresh workflow)
+ */
+
+// ============================================
+// TOKENS — Foundation Layer (Tier 1 only)
+// P1: _color-semantic is excluded from tokens/_index.scss
+// ============================================
+@use "tokens";
+
+// ============================================
+// Base Styles
+// ============================================
+@use "reset";
+@use "layout";
+@use "type";
+@use "properties";
+@use "globals";
+@use "elements";
+
+// ============================================
+// Layout primitives
+// ============================================
+@use "grid";
+@use "columns";
+
+// ============================================
+// Loading animation
+// ============================================
+@use "loading-animation";
+
+// ============================================
+// Styles (shadows + deprecated colors)
+// ============================================
+@use "styles";

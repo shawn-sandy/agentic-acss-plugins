@@ -8,8 +8,21 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ### Added
 
+- **`assets/foundation/foundation.css`** — compiled CSS barrel providing the missing fpkit base layer: CSS reset, base typography for `<h1>`–`<h6>` / `<p>` / `<ul>` / `<blockquote>`, root layout tokens (`--spacing-*`, `--shadow-*`, `--fs-*`, `--spc-*`), shadow scale, grid helpers, and the 12-column system. Vendored from `@fpkit/acss@6.5.0` (SHA `9063512fa822963d8151c972bed9f5b0e531df0f`) with four documented patches (P1–P4).
+- **`assets/foundation/sass/`** — full SCSS source tree alongside the compiled barrel so consumer projects with a Sass pipeline can fork or override individual partials.
+- **`assets/foundation/SOURCE.md`** — upstream pin, patch enumeration (P1–P4 with rationale), manual refresh workflow (`gh api` + `npx sass` + `wrap_foundation_layer.py`), and verification checklist.
+- **`scripts/wrap_foundation_layer.py`** — pipeline helper that wraps a compiled raw CSS file in `@layer foundation { }` and appends the P3 reduced-motion block. Second step of the `foundation.css` refresh pipeline.
+- **`/kit-add` foundation install matrix** — three-case logic in Step A4: first-run copies both `ui.tsx` and `foundation.css` + `sass/` tree; existing install (ui.tsx present, foundation.css absent) prompts before copying; already-installed skips silently. Prevents silent visual regressions on existing projects.
+- **Two new `validate_theme.py` focus-on-surface contrast pairs** — `--color-focus-ring` × `--color-surface` (3:1) and `--color-focus-ring` × `--color-surface-raised` (3:1), enforcing WCAG 1.4.11 for focus indicators on card/panel/popover surfaces introduced by the foundation layer.
 - **`/color-scale` command** — generate a 10-step OKLCH color scale (steps 50–900) from any seed color. Accepts a hex value (`#4f46e5`), a CSS named color (`cornflowerblue`), or a theme role name (`background`, `primary`, `surface`). When given a role name the skill reads the hex fallback directly from the project's `light.css` (or `dark.css`). Output includes a ready-to-paste `:root { … }` CSS block with `var(--color-<name>-50, <hex>)` properties and a Markdown table summarising each step's hex and OKLCH values. Chroma and hue from the seed color are preserved across all steps; lightness spans 0.970 (step 50, near-white) to 0.135 (step 900, near-black) with automatic sRGB gamut clamping so every step is a valid, renderable color. Use `--format=css` to get CSS-only stdout for piping or redirection; the slash command writes to a file only when the user explicitly requests a path.
 - **`scripts/generate_color_scale.py`** — generator/validator script that produces the 10-step scale. Accepts `<hex-color> [--name=<name>] [--format=css|json|both]` (default format: `both`). Validates `--name` as a kebab-case identifier and rejects unknown flags (exit 2). JSON output includes `seed_oklch` for transparency; `--format=both` emits the JSON section followed by a blank line and the CSS block. CSS output follows the `var(--x, <fallback>)` convention. Reuses `_oklch.py` for all OKLCH ↔ sRGB math. Exit 0/1/2 per generator contract.
+
+### Changed
+
+- **`/kit-add` first-run output** now copies `foundation.css` and the `foundation/sass/` tree alongside `ui.tsx`. Existing projects (where `ui.tsx` is present but `foundation.css` is absent) receive a prompt explaining the visual change and the manual revert path — no silent modification.
+- **CSS `@layer` ordering is now the canonical cascade contract.** `foundation.css` declares `@layer foundation, components, utilities, theme` at the top. Consumer projects must load theme files and utility files after `foundation.css` so the cascade order is honoured. Theme files win over all other layers; utilities beat foundation and components.
+- **`kit-sync` Step S6** updated to track `foundation.css` and each file under `foundation/sass/` in `.acss-kit/manifest.json` with `kind: "foundation"`. Mirrors the `/kit-add` three-case matrix — the backward-compat prompt fires when `ui.tsx` is present but `foundation.css` is absent.
+- **`foundation.md` reference doc** extended with a `## CSS Layer` section covering the upstream pin, P1–P4 patch table, `@layer` ordering, the `/kit-add` install matrix, the manual revert path, and a foundation verification table.
 
 ## [0.10.0] - 2026-05-04
 

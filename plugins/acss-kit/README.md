@@ -107,7 +107,7 @@ Generate one or more components into your project.
 
 **What happens:**
 
-1. **Init check** — verifies sass is in devDependencies; copies `ui.tsx` (the foundation component) to your target directory if not already present.
+1. **Init check** — verifies sass is in devDependencies; copies `ui.tsx` to your target directory if not already present. On first run (existing install without `foundation.css`), prompts to copy `foundation.css` + SCSS source tree — the CSS reset, base typography, and `@layer` cascade ordering that make components render correctly out of the box.
 2. **Target directory** — runs `scripts/detect_target.py`. If `.acss-target.json` is missing, asks where to generate files (default: `src/components/fpkit/`).
 3. **Stack detection** — runs `scripts/detect_stack.py` to classify framework (vite/next/remix/astro/cra), CSS pipeline, and entrypoint file; persists the result into `.acss-target.json` under a `stack` key.
 4. **Dependency resolution** — reads the component's Generation Contract, walks the dependency tree recursively.
