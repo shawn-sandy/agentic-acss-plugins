@@ -37,18 +37,13 @@ _DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _DIR)
 from _oklch import hex_to_oklch, oklch_to_hex  # noqa: E402
 
-# 10 perceptually-distributed lightness steps: near-white (50) → near-black (900).
+# 5 perceptually-distributed lightness steps: near-white (100) → near-black (900).
 # Chroma and hue are preserved from the seed; oklch_to_hex clamps to sRGB gamut.
 _STEPS = [
-    (50,  0.970),
     (100, 0.935),
-    (200, 0.875),
     (300, 0.785),
-    (400, 0.670),
     (500, 0.550),
-    (600, 0.435),
     (700, 0.335),
-    (800, 0.235),
     (900, 0.135),
 ]
 
