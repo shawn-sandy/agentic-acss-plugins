@@ -193,7 +193,7 @@
   /* Set core body defaults */
   body {
     min-height: 100vh;
-    text-rendering: optimizeSpeed;
+    text-rendering: optimizespeed;
     line-height: 1.5;
   }
 
@@ -301,7 +301,7 @@
   }
 
   svg {
-    max-width: inline-size;
+    max-inline-size: 100%;
     /* Optional - make the SVG's fill be the same as the inherited color */
     /* Prevent the SVG from altering cursor interaction */
     pointer-events: none;
@@ -504,8 +504,7 @@
     --li-direction: row;
     --li-gap: 1rem;
     --li-wrap: wrap;
-    --li-px: 0;
-    --li-pi: 0;
+    --li-ps: 0;
   }
 
   sup {
@@ -518,6 +517,7 @@
     --blockquote-border-width: 0.3125rem;
     --blockquote-border-style: solid;
     --blockquote-border-color: var(--color-border);
+
     padding: var(--blockquote-padding);
     border-left: var(--blockquote-border-width) var(--blockquote-border-style) var(--blockquote-border-color);
   }
@@ -544,6 +544,7 @@
     --hr-border-color: var(--color-border-subtle);
     --hr-margin-block: 1.5rem;
     --hr-border-style: solid;
+
     border: none;
     border-bottom: var(--hr-border-width) var(--hr-border-style) var(--hr-border-color);
     margin-block: var(--hr-margin-block);
@@ -599,7 +600,7 @@
     gap: var(--gap);
   }
   :where([data-flex]) > *:has(div, aside, article) {
-    flex-basis: calc(var(--col-w, 100%) - var(--card-gap));
+    flex-basis: calc(var(--col-w, 100%) - var(--card-gap, 0px));
     min-width: var(--col-min-w, 18.75rem);
   }
 

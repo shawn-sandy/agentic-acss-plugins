@@ -64,13 +64,13 @@ def main() -> int:
             "Usage: wrap_foundation_layer.py <raw_css_in> <foundation_css_out>",
             file=sys.stderr,
         )
-        return 1
+        return 2
     src = Path(sys.argv[1])
     dst = Path(sys.argv[2])
     if not src.exists():
         print(f"error: {src} not found", file=sys.stderr)
-        return 1
-    dst.write_text(wrap(src.read_text()))
+        return 2
+    dst.write_text(wrap(src.read_text(encoding="utf-8")), encoding="utf-8")
     print(f"Written {dst} ({dst.stat().st_size} bytes)")
     return 0
 

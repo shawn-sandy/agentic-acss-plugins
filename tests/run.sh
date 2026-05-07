@@ -311,7 +311,7 @@ fi
 
 # 11a — parse with tinycss2
 PARSE_LOG="$TMP_ROOT/foundation-parse.log"
-python3 - "$FOUNDATION_CSS" >"$PARSE_LOG" 2>&1 <<'PYEOF'
+if python3 - "$FOUNDATION_CSS" >"$PARSE_LOG" 2>&1 <<'PYEOF'
 import sys, tinycss2
 css = open(sys.argv[1]).read()
 rules, _ = tinycss2.parse_stylesheet_bytes(css.encode())
@@ -322,38 +322,35 @@ if errors:
     sys.exit(1)
 print("OK")
 PYEOF
-if [ $? -ne 0 ]; then
+then
+  green "foundation.css parses OK"
+else
   red "foundation.css parse failed:"
   cat "$PARSE_LOG"
   exit 1
 fi
-green "foundation.css parses OK"
 
 # 11b — no --color-* semantic roles inside @layer foundation
-python3 - "$FOUNDATION_CSS" <<'PYEOF'
+# Scan the full file; 11c already confirms the layer wrapper is present.
+# Primitives use hue-based names; semantic roles do not.
+if python3 - "$FOUNDATION_CSS" <<'PYEOF'
 import sys, re
 text = open(sys.argv[1]).read()
-m = re.search(r'@layer foundation\s*\{(.+?)\n\}', text, re.DOTALL)
-if not m:
-    print("ERROR: @layer foundation block not found")
-    sys.exit(1)
-layer_body = m.group(1)
-# Primitives use hue-based names (--color-neutral-*, --color-blue-*, etc.)
-# Semantic roles do not — catch any --color-* that isn't a primitive scale
 semantic_re = re.compile(
     r'^\s*(--color-(?!neutral|blue|green|red|amber|cyan)[a-z][\w-]*):', re.MULTILINE
 )
-hits = semantic_re.findall(layer_body)
+hits = semantic_re.findall(text)
 if hits:
     print(f"ERROR: semantic --color-* roles found inside @layer foundation: {hits[:5]}")
     sys.exit(1)
 print("OK")
 PYEOF
-if [ $? -ne 0 ]; then
+then
+  green "No semantic --color-* roles inside @layer foundation (P1 enforced)"
+else
   red "P1 violation: --color-* semantic roles found inside @layer foundation"
   exit 1
 fi
-green "No semantic --color-* roles inside @layer foundation (P1 enforced)"
 
 # 11c — @layer foundation wrapper present
 if grep -q '@layer foundation {' "$FOUNDATION_CSS"; then

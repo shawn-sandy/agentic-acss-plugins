@@ -106,7 +106,7 @@ gh api "repos/shawn-sandy/acss/contents/packages/fpkit/src/sass/_globals.scss?re
   > plugins/acss-kit/assets/foundation/sass/_globals.scss
 ```
 
-Files to refresh (17 total):
+Files to refresh (15 total):
 
 ```
 sass/_reset.scss

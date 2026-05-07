@@ -49,7 +49,7 @@ For scripts that emit data or human-readable validation results.
 - Errors on stderr
 - Exit 0 on success, 1 on logical failure, 2 on usage / IO errors
 
-Generators / validators: `generate_palette.py`, `oklch_shift.py`, `tokens_to_css.py`, `css_to_tokens.py`, `validate_theme.py`, `hash_file.py`, `manifest_write.py`, `generate_utilities.py`, `migrate_classnames.py`.
+Generators / validators: `generate_palette.py`, `oklch_shift.py`, `tokens_to_css.py`, `css_to_tokens.py`, `validate_theme.py`, `wrap_foundation_layer.py`, `hash_file.py`, `manifest_write.py`, `generate_utilities.py`, `migrate_classnames.py`.
 
 `oklch_shift.py` follows this contract — it transforms an input hex into a shifted hex and emits structured JSON. It exits 0 whenever a usable hex was produced (even when chroma or lightness was clamped to stay in sRGB gamut — `clamped: true` and a populated `reasons` array surface the warning), reserves exit 1 for hard failures where no hex can be produced, and exits 2 on usage / IO errors.
 

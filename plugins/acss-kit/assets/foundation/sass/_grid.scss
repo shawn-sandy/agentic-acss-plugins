@@ -29,7 +29,7 @@
   justify-content: center;
   gap: var(--gap);
   > *:has(div, aside, article) {
-    flex-basis: calc(var(--col-w, 100%) - var(--card-gap));
+    flex-basis: calc(var(--col-w, 100%) - var(--card-gap, 0px));
     min-width: var(--col-min-w, 18.75rem); // 300px converted to rem
   }
 }

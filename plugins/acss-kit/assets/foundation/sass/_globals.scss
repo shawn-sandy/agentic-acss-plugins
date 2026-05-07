@@ -114,8 +114,7 @@ ol {
     --li-direction: row;
     --li-gap: 1rem;
     --li-wrap: wrap;
-    --li-px: 0;
-    --li-pi: 0;
+    --li-ps: 0;
   }
 }
 
@@ -129,6 +128,7 @@ blockquote {
   --blockquote-border-width: 0.3125rem;
   --blockquote-border-style: solid;
   --blockquote-border-color: var(--color-border);
+
   padding: var(--blockquote-padding);
   border-left: var(--blockquote-border-width) var(--blockquote-border-style) var(--blockquote-border-color);
 }
@@ -158,6 +158,7 @@ hr {
   --hr-border-color: var(--color-border-subtle);
   --hr-margin-block: 1.5rem;
   --hr-border-style: solid;
+
   border: none;
   border-bottom: var(--hr-border-width) var(--hr-border-style) var(--hr-border-color);
   margin-block: var(--hr-margin-block);

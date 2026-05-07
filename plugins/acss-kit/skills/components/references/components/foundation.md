@@ -237,7 +237,7 @@ tokens, grid helpers, and shadow scale that were missing from fresh
 
 Compiled from `@fpkit/acss@6.5.0`
 (SHA `9063512fa822963d8151c972bed9f5b0e531df0f`) with four project patches.
-Full refresh workflow: [`assets/foundation/SOURCE.md`](../../../../../assets/foundation/SOURCE.md).
+Full refresh workflow: [`assets/foundation/SOURCE.md`](../../../../assets/foundation/SOURCE.md).
 
 ### Project patches (P1–P4)
 

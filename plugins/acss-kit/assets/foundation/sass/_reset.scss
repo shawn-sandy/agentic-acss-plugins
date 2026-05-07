@@ -57,7 +57,7 @@ dd {
 /* Set core body defaults */
 body {
   min-height: 100vh;
-  text-rendering: optimizeSpeed;
+  text-rendering: optimizespeed;
   line-height: 1.5;
 }
 
@@ -167,7 +167,7 @@ table {
 }
 
 svg {
-  max-width: inline-size;
+  max-inline-size: 100%;
 
   /* Optional - make the SVG's fill be the same as the inherited color */
   // fill: currentColor;
