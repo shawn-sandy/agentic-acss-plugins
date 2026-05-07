@@ -390,7 +390,7 @@ fi
 # Primitives use hue-based names; semantic roles do not.
 if python3 - "$FOUNDATION_CSS" <<'PYEOF'
 import sys, re
-text = open(sys.argv[1]).read()
+text = open(sys.argv[1], encoding="utf-8").read()
 semantic_re = re.compile(
     r'^\s*(--color-(?!neutral|blue|green|red|amber|cyan)[a-z][\w-]*):', re.MULTILINE
 )

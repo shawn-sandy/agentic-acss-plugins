@@ -127,7 +127,7 @@ blockquote {
   --blockquote-padding: 1rem;
   --blockquote-border-width: 0.3125rem;
   --blockquote-border-style: solid;
-  --blockquote-border-color: var(--color-border);
+  --blockquote-border-color: var(--color-border, #dee2e6);
 
   padding: var(--blockquote-padding);
   border-left: var(--blockquote-border-width) var(--blockquote-border-style) var(--blockquote-border-color);
@@ -155,7 +155,7 @@ h6 {
 
 hr {
   --hr-border-width: 0.0625rem;
-  --hr-border-color: var(--color-border-subtle);
+  --hr-border-color: var(--color-border-subtle, #e9ecef);
   --hr-margin-block: 1.5rem;
   --hr-border-style: solid;
 
