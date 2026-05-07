@@ -73,7 +73,7 @@ Then bootstrap and add your first component + theme:
 
 ### Configuration
 
-Both plugins read `.acss-target.json` at your project root — created by `/setup` and updated by detection scripts. It records the directories where commands write generated files (`componentsDir`, `stylesDir`, `utilitiesDir`) and the detected `stack` (framework, bundler, CSS pipeline, entrypoint file). Generated artifacts plus this file should be **committed**, not gitignored. If you delete or move it, re-run `/setup` — pass `--target=<dir>` again if your original custom path differed from the default `src/components/fpkit/`. Full schema: [`plugins/acss-kit/skills/setup/SKILL.md`](./plugins/acss-kit/skills/setup/SKILL.md).
+Both plugins read `.acss-target.json` at your project root — created by `/setup` and updated by detection scripts. Top-level keys: `componentsDir` (where `/kit-add` writes generated TSX/SCSS, default `src/components/fpkit`), `utilitiesDir` (where `/utility-add` writes `utilities.css` and `token-bridge.css`, default `src/styles`), and `stack` (detected framework, bundler, CSS pipeline, plus `entrypointFile` and `cssEntryFile` so `verify_integration.py` knows where theme imports live). Generated artifacts plus this file should be **committed**, not gitignored. If you delete or move it, re-run `/setup` — pass `--target=<dir>` again if your original custom path differed from the default. Full schema with field semantics: [`plugins/acss-kit/docs/architecture.md`](./plugins/acss-kit/docs/architecture.md).
 
 ## Command reference
 
