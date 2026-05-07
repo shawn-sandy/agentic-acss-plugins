@@ -13,7 +13,7 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 0.7.0 | Accessible React components and OKLCH CSS themes. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`); 9 slash commands covering setup, component generation, natural-language creator mode, theme creation, brand presets, image/Figma extraction, and natural-language style tuning. |
+| [`acss-kit`](./plugins/acss-kit) | 0.7.0 | Accessible React components and OKLCH CSS themes. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`); 14 slash commands covering setup, component generation (React + static HTML), bulk install/update, natural-language creator mode, theme creation, brand presets, image/Figma extraction, color scales, natural-language style tuning, and a bundled prompt book. |
 | [`acss-utilities`](./plugins/acss-utilities) | 0.4.0 | Tailwind-style atomic CSS utility classes (`.bg-primary`, `.mt-4`, `.sm-hide`) generated from a token source-of-truth. Hyphen-prefix responsive variants — no CSS escaping. Pairs with `acss-kit` via a token-bridge so utility colors resolve against the same OKLCH roles. |
 
 The two plugins are **decoupled** — install one, both, or use `acss-utilities` standalone with a hand-written theme.
@@ -73,17 +73,44 @@ Then bootstrap and add your first component + theme:
 
 ### acss-kit
 
+**Setup**
+
 | Command | Purpose |
 |---|---|
 | [`/setup`](./plugins/acss-kit/commands/setup.md) | Bootstrap a project — package-manager detection, sass install hint, `.acss-target.json`, `ui.tsx` copy, optional starter theme. |
-| [`/kit-list [component]`](./plugins/acss-kit/commands/kit-list.md) | List available component references or inspect one in detail. |
+
+**Component generation**
+
+| Command | Purpose |
+|---|---|
+| [`/kit-list [component]`](./plugins/acss-kit/commands/kit-list.md) | List available component references or inspect one in detail (read-only). |
 | [`/kit-add <component> ...`](./plugins/acss-kit/commands/kit-add.md) | Generate accessible React components using local imports only. No `@fpkit/acss` package. |
-| [`/kit-create <description>`](./plugins/acss-kit/commands/kit-create.md) | Explicit command path into creator mode — generate a paste-ready TSX snippet (or standalone component file) from a natural-language description (`"primary pill button that says 'Add to cart'"`). The underlying `component-creator` skill also auto-triggers on the same phrasing without the slash command. |
+| [`/kit-add-html <component> ...`](./plugins/acss-kit/commands/kit-add-html.md) | Generate static HTML + SCSS + vanilla JS versions of components for non-React projects (server-rendered apps, static sites, email templates). |
+| [`/kit-create <description>`](./plugins/acss-kit/commands/kit-create.md) | Creator mode — generate a paste-ready TSX snippet (or standalone component file) from a natural-language description (`"primary pill button that says 'Add to cart'"`). The underlying `component-creator` skill also auto-triggers on the same phrasing. |
+| [`/kit-sync`](./plugins/acss-kit/commands/kit-sync.md) | Bulk-install every shipped component, the `ui.tsx` foundation, and a starter theme in one command. Records each file in `.acss-kit/manifest.json` for safe re-syncs. |
+| [`/kit-update [<component> ...]`](./plugins/acss-kit/commands/kit-update.md) | Safely re-copy unmodified generated files after a plugin upgrade. Drift detection via normalized sha256 — files you've edited are skipped by default. |
+
+**Themes**
+
+| Command | Purpose |
+|---|---|
 | [`/theme-create <hex> [--mode=light\|dark\|both]`](./plugins/acss-kit/commands/theme-create.md) | Generate semantic CSS theme files from a seed color and validate required WCAG contrast pairs. |
 | [`/theme-brand <name> [--from=<hex>]`](./plugins/acss-kit/commands/theme-brand.md) | Scaffold a `brand-<name>.css` preset that layers over light/dark. |
 | [`/theme-update <file> <--color-role=#hex> ...`](./plugins/acss-kit/commands/theme-update.md) | Edit role values in an existing theme file and re-validate contrast. |
 | [`/theme-extract <image\|figma-url>`](./plugins/acss-kit/commands/theme-extract.md) | Pull a primary brand color from a design input and run the theme generation flow. |
+| [`/color-scale <color> [--name=<name>] [--format=css\|json\|both]`](./plugins/acss-kit/commands/color-scale.md) | Generate a 10-step OKLCH color scale (steps 50–900) from any hex, CSS named color, or theme role. |
+
+**Tuning**
+
+| Command | Purpose |
+|---|---|
 | [`/style-tune <description>`](./plugins/acss-kit/commands/style-tune.md) | Natural-language tuning of theme roles or component tokens (`"warmer button"`, `"deeper accent for primary"`). |
+
+**Help**
+
+| Command | Purpose |
+|---|---|
+| [`/prompt-book [section-number]`](./plugins/acss-kit/commands/prompt-book.md) | Print a copy-paste catalogue of natural-language prompts for every shipped slash command across both plugins. |
 
 **Skills:**
 
@@ -115,8 +142,8 @@ agentic-acss-plugins/
 ├── plugins/
 │   ├── acss-kit/
 │   │   ├── .claude-plugin/plugin.json     # version source of truth
-│   │   ├── commands/*.md                  # 9 slash commands
-│   │   ├── skills/{components,styles,component-form,component-creator,setup,style-tune}/SKILL.md
+│   │   ├── commands/*.md                  # 14 slash commands
+│   │   ├── skills/{components,components-html,styles,setup,kit-sync,prompt-book,component-form,component-creator,style-tune}/SKILL.md
 │   │   ├── scripts/                       # Python 3 stdlib (palette, validate, detect_target, …)
 │   │   ├── assets/                        # ui.tsx foundation, brand template, theme schema
 │   │   └── docs/                          # architecture, recipes, troubleshooting, tutorial
