@@ -71,8 +71,12 @@ def main() -> int:
     if not src.exists():
         print(f"error: {src} not found", file=sys.stderr)
         return 2
-    dst.write_text(wrap(src.read_text(encoding="utf-8")), encoding="utf-8")
-    print(f"Written {dst} ({dst.stat().st_size} bytes)")
+    try:
+        dst.write_text(wrap(src.read_text(encoding="utf-8")), encoding="utf-8")
+        print(f"Written {dst} ({dst.stat().st_size} bytes)")
+    except (OSError, UnicodeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     return 0
 
 

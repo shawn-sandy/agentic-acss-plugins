@@ -313,7 +313,7 @@ fi
 PARSE_LOG="$TMP_ROOT/foundation-parse.log"
 if python3 - "$FOUNDATION_CSS" >"$PARSE_LOG" 2>&1 <<'PYEOF'
 import sys, tinycss2
-css = open(sys.argv[1]).read()
+css = open(sys.argv[1], encoding="utf-8").read()
 rules, _ = tinycss2.parse_stylesheet_bytes(css.encode())
 errors = [r for r in rules if r.type == "error"]
 if errors:
@@ -341,7 +341,7 @@ semantic_re = re.compile(
 )
 hits = semantic_re.findall(text)
 if hits:
-    print(f"ERROR: semantic --color-* roles found inside @layer foundation: {hits[:5]}")
+    print(f"ERROR: semantic --color-* roles found in foundation.css: {hits[:5]}")
     sys.exit(1)
 print("OK")
 PYEOF
