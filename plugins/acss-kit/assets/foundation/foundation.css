@@ -582,6 +582,7 @@
     --grid-padding: 10px;
     --grid-justify-content: center;
     --grid-align-content: center;
+
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(var(--grid-column-min-width), 1fr));
     gap: var(--grid-gap);
