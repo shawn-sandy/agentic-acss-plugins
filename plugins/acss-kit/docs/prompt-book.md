@@ -26,12 +26,12 @@ Several commands sound similar (`/kit-add`, `/kit-create`, `/theme-create`, `/st
 | If you want to… | Use |
 |---|---|
 | Generate a known component (Button, Dialog, …) | `/kit-add <name>` — explicit, fastest. |
-| Describe a component in prose | `/kit-create "<description>"` (or just describe in chat — `component-creator` auto-triggers on the same phrasing). |
+| Describe a component in prose | `/kit-create <description>` (or just describe in chat — `component-creator` auto-triggers on the same phrasing). |
 | Generate a form from prose | Describe the form (`component-form` auto-triggers — e.g. *"create a signup form with email, password, role select"*). |
 | Generate a new theme from a hex | `/theme-create <hex>` (add `--mode=light` or `--mode=dark` for a single mode; default emits both). |
 | Edit an existing theme's role values | `/theme-update <file> --color-<role>=<hex>`. |
-| Tune the visual feel of a component or theme | `/style-tune "<adjective>"` (e.g. *"warmer button"*, *"more elevated dialog"*). |
-| Adjust utility-class tokens (spacing, breakpoints, families) | `/utility-tune "<description>"`. |
+| Tune the visual feel of a component or theme | `/style-tune <description>` (e.g. *warmer button*, *more elevated dialog*, *tone down the primary*). |
+| Adjust utility-class tokens (spacing, breakpoints, families) | `/utility-tune <description>`. |
 
 The rest of this book groups prompts by these intents.
 
