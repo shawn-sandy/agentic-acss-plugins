@@ -48,6 +48,10 @@ If you have any of the old plugins installed:
 
 Existing `.acss-target.json` files at project roots remain compatible — `/kit-add` reads the same shape.
 
+### Upgrading from 0.10.x → 0.11.x
+
+`acss-kit@0.11.0` added a vendored `foundation.css` (CSS reset, base typography, `@layer` cascade ordering). On the next `/kit-add` run in an existing project — where `ui.tsx` is present but `foundation.css` is absent — the skill prompts before copying it in alongside the SCSS source tree, so projects that intentionally avoid the foundation layer can opt out. Greenfield projects (`/setup` followed by `/kit-add`) get it automatically. See [`assets/foundation/SOURCE.md`](assets/foundation/SOURCE.md) for the upstream pin and the four documented patches (P1–P4).
+
 ## Prerequisites
 
 - React + TypeScript project
