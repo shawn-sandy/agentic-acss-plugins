@@ -30,6 +30,10 @@ If you also want `acss-kit`:
 /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
 ```
 
+## Upgrading from 0.1.x
+
+The 0.2.0 release switched responsive variants from the escaped-colon form (`.sm\:hide`) to a plain hyphen (`.sm-hide`). If you installed `acss-utilities@0.1.x` and have classnames using the old form, search-and-replace in JSX `className` strings and CSS `@apply` directives — `sm:` → `sm-`, `md:` → `md-`, `lg:` → `lg-`, `xl:` → `xl-`, `print:` → `print-`. The bundled `scripts/migrate_classnames.py` provides an automated dry-run; see [Responsive variants](#responsive-variants) below for the full migration note.
+
 ## Quick start
 
 ```shell

@@ -83,6 +83,8 @@ Pass `--no-theme` to skip theme generation, or `--target=<dir>` to override the 
 
 `/setup` is idempotent: re-running it checks each artifact and skips anything already present.
 
+If you delete `.acss-target.json`, re-run `/setup` to regenerate it. If your project originally used a custom `--target=<dir>`, pass it again — the regenerated file otherwise defaults to `src/components/fpkit/`.
+
 ## Component commands
 
 ### `/kit-list [component]`
