@@ -134,3 +134,33 @@ If you are surprised by which component depends on which, run `/kit-list <compon
 **Cause:** Import paths in generated files are resolved at generation time from the component's `file` field in its Generation Contract. Renaming files after generation requires updating imports manually.
 
 **Fix:** Update all `import` statements that reference the old filename. There is no automated re-import for post-generation renames.
+
+---
+
+## Pilot skill failure modes
+
+The three pilot skills (`component-creator`, `component-form`, `style-tune`) auto-trigger on natural-language prompts. Their parsers cover common cases but can decline on edge inputs. The fallback in every case is to drop down to the explicit slash command and edit by hand.
+
+### `component-creator`: "no reference doc found for `<component>`"
+
+**Symptom:** A prompt like *"create a small badge that says 5"* returns a polite refusal. `component-creator` only resolves components that have a dedicated `references/components/<name>.md` doc.
+
+**Cause:** Six components — Badge, Tag, Heading, Text, Details, Progress — are still inline entries in `references/components/catalog.md`. The creator can't parse Props Interface against an inline entry.
+
+**Fix:** Drop down to `/kit-add <name>` to vendor the component, then hand-edit the JSX where you want it. Promotion of inline entries to dedicated reference docs is tracked under "Authoring New Components" in `skills/components/SKILL.md`.
+
+### `component-form`: "I don't know how to render the `<type>` field"
+
+**Symptom:** A prompt like *"create a contact form with a phone field and a date-of-birth picker"* triggers the skill but halts with an unknown-field-type warning.
+
+**Cause:** `component-form` derives field elements from a fixed grammar (text / email / password / select / checkbox / radio / textarea). Anything outside that set is rejected rather than silently emitted as plain `<input>`.
+
+**Fix:** Either restate the prompt using a recognised field type (e.g. *"phone as a tel input"*, *"date-of-birth as a text input with placeholder"*), or run `/kit-add field input` to vendor the primitives and author the form by hand.
+
+### `style-tune`: "I don't recognise that adjective" / "component out of v1 scope"
+
+**Symptom:** A prompt like *"make the badges feel more luxurious"* halts. Reasons fall into two buckets: an unknown modifier, or a component outside the v1 coverage table.
+
+**Cause:** `style-tune` v1 covers six components (Button, Card, Alert, Dialog, Input, Nav) across six token families (color, radius, spacing, elevation, size, height) — see [`skills/style-tune/references/intent-vocabulary.md`](../skills/style-tune/references/intent-vocabulary.md). Components like Badge, Tag, Field, Checkbox, Icon, Link, List, Popover, Table fall through to a v2 hint, and modifiers outside the published vocabulary refuse rather than guess.
+
+**Fix:** For an unsupported component, edit the component's CSS variables directly (each component reference doc lists them under `## CSS Variables`). For an unsupported modifier, restate using a v1 phrase from the vocabulary table — *"warmer"*, *"softer"*, *"more spacious"*, *"more elevated"*, *"tone down"*, *"sharper"*, *"quieter"*, *"bolder"*, *"smaller"*, *"bigger"*, *"narrower"*, *"wider"*, *"shorter"*, *"taller"*.
