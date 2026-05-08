@@ -1,6 +1,6 @@
 # acss-utilities — Commands
 
-Four slash commands ship with the plugin. Each delegates to a section of [`skills/utilities/SKILL.md`](../skills/utilities/SKILL.md); this page is the user-facing reference.
+Four slash commands ship with the plugin. Each delegates to a section of [`skills/utilities/SKILL.md`](../skills/utilities/SKILL.md), which is the executable source of truth for what Claude actually does at each step. This page is the user-facing reference — read SKILL.md when you need the full operational detail or are debugging an unexpected outcome.
 
 | Command | Side effects | Argument hint |
 |---|---|---|
