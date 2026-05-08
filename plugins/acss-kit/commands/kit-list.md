@@ -30,7 +30,7 @@ When this command is invoked, follow the **`/kit-list` workflow** documented in 
 
 ### Quick reference
 
-1. **No arguments → categorized listing** — read the catalog and the `## HTML Output Status` table, group components by category, append `[HTML]` to any component whose HTML row is marked **Verified**.
-2. **With a component name → per-component detail** — read the component's reference doc and print Generation Contract, Dependencies, HTML output, Props, CSS Variables, and a Usage Example.
+1. **No arguments** — Categorized listing of all components, with `[HTML]` markers on Verified entries.
+2. **With component name** — Per-component detail (Generation Contract, Dependencies, HTML output, Props, CSS Variables, Usage Example).
 
 See `SKILL.md` for the full output format, status-resolution rules, and unknown-name handling.
