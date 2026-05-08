@@ -21,7 +21,7 @@ Extract a list of CSS utility classes from an HTML element or class string into 
 <div class="testimonial flex-grid py-8 items-center" data-flex-grid>
 ```
 
-```
+```text
 testimonial flex-grid py-8 items-center
 ```
 
