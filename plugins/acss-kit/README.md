@@ -89,7 +89,7 @@ If you delete `.acss-target.json`, re-run `/setup` to regenerate it. If your pro
 
 ### `/kit-list [component]`
 
-List available components or inspect one without writing any files. Read-only — useful for discovering names, props, CSS variables, and dependencies before running `/kit-add`. The full reference (signature, examples, output shape) is in [`docs/commands.md`](docs/commands.md).
+List available components or inspect one without writing any files. Read-only — useful for discovering names, props, CSS variables, and dependencies before running `/kit-add`. As of `0.11.1`, the listing appends `[HTML]` to components whose static-HTML output is **Verified** (Button, Card, Alert, Dialog), and `/kit-list <name>` prints a dedicated `HTML output:` line so you can see at a glance whether `/kit-add-html` will succeed. The full reference (signature, examples, output shape) is in [`docs/commands.md`](docs/commands.md).
 
 ```
 /kit-list

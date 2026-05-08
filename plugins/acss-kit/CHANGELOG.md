@@ -4,6 +4,13 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-05-08
+
+### Changed
+
+- **`/kit-list` now surfaces HTML-output status.** The no-arg listing appends `[HTML]` to each component whose row in the components reference catalog's `## HTML Output Status` table is marked **Verified** (Button, Card, Alert, Dialog), and the per-component view (`/kit-list <name>`) prints a dedicated `HTML output:` line. Helps users discover which components `/kit-add-html` can generate before invoking it. No script or generation behavior changed.
+- **`commands/kit-list.md` slimmed to a thin entry point** that delegates to the new "`/kit-list` workflow" section in `skills/components/SKILL.md`, matching the delegation convention already followed by every other command file in the plugin.
+
 ## [0.11.0] - 2026-05-07
 
 ### Added
