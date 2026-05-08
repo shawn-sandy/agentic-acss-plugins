@@ -194,39 +194,46 @@ An opt-in, static-HTML smoke check that exercises the *compiled CSS and `data-*`
 
 - `tests/sandbox/` exists — run `tests/setup.sh` if not ([Demo fixture](../../../tests/README.md#demo-fixture-testssetupsh))
 - The target component has been generated via `/kit-add <name>` into the sandbox
-- Python 3 on `PATH` (no extra deps — uses `python3 -m http.server`)
+- Node 20+ and `npm --prefix tests ci` (for `tests/serve.sh` live reload), OR Python 3 if using the fallback static server
 
 **Steps:**
 
-1. From `tests/sandbox/`, compile the component's SCSS to a plain CSS string:
+1. Write `tests/sandbox/<name>-preview.html` using the template below. Render one `<div class="row">` per variant axis the component supports (`data-color`, `data-style`, `data-<name>`, `aria-disabled`). Omit any axis the component does not use. Link to the compiled CSS using the path shown in the template.
+
+2. Start the live-reload server from the repo root:
 
    ```sh
-   npx sass --no-source-map src/components/fpkit/<name>/<name>.scss > /tmp/<name>.css
+   tests/serve.sh
    ```
 
-   This step is optional but useful if the preview renders nothing — you can inspect the compiled output directly to confirm selectors compiled as expected.
+   This watches SCSS and HTML files, recompiles CSS on save, and auto-reloads the browser. Prints the serving URL (`http://localhost:7743/` or next available port if 7743 is busy).
 
-2. Write `tests/sandbox/<name>-preview.html` using the template below. Paste the compiled CSS into the `<style>` block and render one `<div class="row">` per variant axis the component supports (`data-color`, `data-style`, `data-<name>`, `aria-disabled`). Omit any axis the component does not use.
-
-3. Start a local HTTP server from `tests/sandbox/`:
-
-   ```sh
-   python3 -m http.server 7743 &
-   ```
-
-   Background it so the shell stays usable. Stop it later with `kill %1` or by capturing the PID (`python3 -m http.server 7743 & echo $!`).
-
-4. Open the preview — manually in any browser, or in a Claude Code session via the `claude-in-chrome` MCP (`navigate` then `computer screenshot`):
+3. Open the preview — manually in any browser, or in a Claude Code session via the `claude-in-chrome` MCP (`navigate` then `computer screenshot`):
 
    ```
    http://localhost:7743/<name>-preview.html
    ```
 
-5. Stop the server when done:
+   If the page renders unstyled on first open, save any `.scss` file in `src/components/fpkit/<name>/` to trigger compilation, then refresh the browser.
+
+4. Stop the server when done:
 
    ```sh
-   kill %1
+   # Press Ctrl+C in the terminal running tests/serve.sh
    ```
+
+**Fallback (no Node / no hot reload):**
+
+If you prefer to skip `tests/serve.sh`, use the Python built-in server instead:
+
+```sh
+cd tests/sandbox
+python3 -m http.server 7743 &
+# Open http://localhost:7743/<name>-preview.html
+kill %1
+```
+
+This serves your HTML and CSS statically with no auto-reload. Any change requires a manual browser refresh.
 
 **HTML template:**
 
@@ -237,6 +244,8 @@ An opt-in, static-HTML smoke check that exercises the *compiled CSS and `data-*`
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><Name> Preview — acss-kit</title>
+  <!-- Link to the component's compiled CSS. esbuild watches this path and reloads on change. -->
+  <link rel="stylesheet" href="src/components/fpkit/<name>/<name>.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -249,8 +258,6 @@ An opt-in, static-HTML smoke check that exercises the *compiled CSS and `data-*`
     h1 { font-size: 1.25rem; margin-bottom: 2rem; color: #444; font-weight: 500; }
     h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin: 2rem 0 0.75rem; }
     .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
-
-    /* paste compiled <name>.css output here */
   </style>
 </head>
 <body>
@@ -280,10 +287,15 @@ An opt-in, static-HTML smoke check that exercises the *compiled CSS and `data-*`
   <div class="row">
     <!-- aria-disabled="true" on default and one or two key variants -->
   </div>
+
+  <!-- Live-reload via esbuild's SSE endpoint (fired by tests/serve.sh). -->
+  <script>
+    new EventSource('/esbuild').addEventListener('change', () => location.reload());
+  </script>
 </body>
 </html>
 ```
 
 This preview only covers what CSS can render. Behavior (focus management, keyboard activation, React state) is verified by `tests/e2e.sh`'s axe-core run, not here.
 
-`*-preview.html` files are scratch artifacts; either delete them after use or add a `tests/sandbox/*-preview.html` entry to your gitignore (the sandbox itself is gitignored under `.claude/worktrees/`, so committed preview files only matter if you run `tests/setup.sh` outside a worktree).
+`*-preview.html` files are scratch artifacts; delete them after use. The sandbox itself is gitignored under `.claude/worktrees/`, so preview files typically live only in that session.
