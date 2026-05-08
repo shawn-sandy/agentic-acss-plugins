@@ -10,13 +10,14 @@ List available components or show detailed information about a specific componen
 
 ## Usage
 
-```
+```text
 /kit-list
 /kit-list <component>
 ```
 
 **Examples:**
-```
+
+```text
 /kit-list
 /kit-list badge
 /kit-list dialog
@@ -29,7 +30,7 @@ List available components or show detailed information about a specific componen
 
 Read `references/components/catalog.md` — both the per-component listing and the `## HTML Output Status` table — and display every available component organized by category. Append `[HTML]` to any component whose row in the HTML Output Status table is marked **Verified**; these are the components `/kit-add-html` can generate today. Components without the marker exist as React only and `/kit-add-html` will warn.
 
-```
+```text
 Available Components (acss-kit)
 
 Simple (no dependencies):
@@ -67,7 +68,7 @@ Read the component's reference doc (or its entry in `catalog.md`) and display:
 
 **Example output for `/kit-list badge`:**
 
-```
+```text
 Component: Badge
 File: badge.tsx + badge.scss
 Dependencies: none (simple component)
