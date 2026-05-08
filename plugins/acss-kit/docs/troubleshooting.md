@@ -151,11 +151,11 @@ The three pilot skills (`component-creator`, `component-form`, `style-tune`) aut
 
 ### `component-form`: "I don't know how to render the `<type>` field"
 
-**Symptom:** A prompt like *"create a contact form with a phone field and a date-of-birth picker"* triggers the skill but halts with an unknown-field-type warning.
+**Symptom:** A prompt like *"create a profile form with an avatar file upload and a colour picker for the accent"* triggers the skill but halts with an unsupported-field-type warning.
 
-**Cause:** `component-form` derives field elements from a fixed grammar (text / email / password / select / checkbox / radio / textarea). Anything outside that set is rejected rather than silently emitted as plain `<input>`.
+**Cause:** `component-form` v1 supports a fixed grammar of 11 field types — `text`, `email`, `password`, `tel`, `url`, `number`, `date`, `textarea`, `select`, `checkbox`, `radio` (see `## Field types` in the form SKILL). Anything outside that set (today: `type="file"`, `type="color"`, `type="range"`) is surfaced as a gap rather than silently emitted as a plain `<input>`.
 
-**Fix:** Either restate the prompt using a recognised field type (e.g. *"phone as a tel input"*, *"date-of-birth as a text input with placeholder"*), or run `/kit-add field input` to vendor the primitives and author the form by hand.
+**Fix:** Either restate the prompt using a recognised field type (most everyday fields fit — phone numbers as `tel`, dates of birth as `date`, quantities as `number`), or for the unsupported types drop the native element directly into the generated form (`<input type="file" />` / `<input type="color" />` / `<input type="range" />`) — they don't need an `Input`-component wrapper. For full hand-authored control, run `/kit-add field input` to vendor the primitives.
 
 ### `style-tune`: "I don't recognise that adjective" / "component out of v1 scope"
 
