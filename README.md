@@ -161,7 +161,7 @@ agentic-acss-plugins/
 │       └── docs/                          # developer guide
 ├── tests/                              # tests/run.sh structural validation, tests/e2e.sh deeper check
 ├── docs/                               # cross-plugin documentation
-├── .claude/                            # project-level rules, hooks, skills (maintainer tooling)
+├── .claude/                            # maintainer-only — project rules, hooks, skills, and review agents for plugin development; not surfaced to plugin users
 ├── CLAUDE.md                           # repo guidance for Claude Code
 ├── AGENTS.md                           # agent definitions
 └── CONTRIBUTING.md                     # contributor workflow

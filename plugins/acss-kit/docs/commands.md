@@ -1,5 +1,7 @@
 # acss-kit — Command Reference
 
+This page is the user-facing reference. For the executable workflow each command runs (the steps Claude actually performs, with full operational detail), see the matching section of [`../skills/components/SKILL.md`](../skills/components/SKILL.md), [`../skills/styles/SKILL.md`](../skills/styles/SKILL.md), or the corresponding pilot SKILL — those files are the source of truth; this page is curated for readers.
+
 ## /setup
 
 One-time first-run bootstrap. Run once after installing the plugin so subsequent `/kit-add` and `/theme-create` calls are pure generation. Per-step idempotent — re-running is safe and skips anything already present.

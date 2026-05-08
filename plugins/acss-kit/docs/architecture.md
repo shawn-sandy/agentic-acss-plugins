@@ -132,3 +132,32 @@ Docs-only additions (new `docs/*.md` files) do not require a version bump, as th
 This file is copied verbatim into user projects. Changes to it are rare and high-impact: every project that has already run `/kit-add` keeps the old copy (skip-existing rule). Treat changes to `ui.tsx` like a breaking change — note them prominently in the CHANGELOG and consider bumping the minor version.
 
 If you modify the polymorphic type chain (the `PolymorphicRef<C>` → `UIProps<C>` ladder), verify that the generated component `.tsx` files in the reference docs still type-check against the new types. The reference docs contain inline TSX examples that must be kept consistent with `ui.tsx`.
+
+## Design notes (deferred work)
+
+These are not implementation tickets — they capture decisions that surfaced during the v0.11 adoption review. None of these change behavior today; they are recorded so a future maintainer can pick up the work with full context instead of re-deriving the rationale.
+
+### Shared phrase-parser library for `component-creator` and `component-form`
+
+The two creator-mode pilots both parse natural-language prompts: `component-creator` resolves prose against a component's `## Props Interface`, and `component-form` derives a field list from a form description. Today each pilot carries its own parser plus colour/size synonym tables. The duplication is small per-pilot but grows linearly as either skill expands its vocabulary, and a fix to the synonym table for one skill silently leaves the other behind.
+
+When both pilots reach their graduation criteria (see each SKILL.md `description:` front-matter), factor the shared logic into a single helper consumed by both:
+
+- Token tokeniser (split prose into intent / subject / modifier triples).
+- Synonym resolver (warm → friendly tone family, soft → reduced-weight family, etc.).
+- Prop-union matcher (resolve "primary" / "outline" / "small" against a TypeScript union literal).
+- Halt builder (generate the `AskUserQuestion`-shaped prompt for ambiguous inputs).
+
+The helper should live alongside the pilots (e.g. `skills/_shared/phrase-parser.md`), not in `assets/`, so it stays markdown-as-source. Do not ship until both pilots are graduating — premature extraction would solidify a contract before either pilot's vocabulary has stabilised.
+
+### Unifying `components` and `components-html` skills
+
+`/kit-add` and `/kit-add-html` share most of their pipeline: target detection, dependency resolution, manifest tracking, integration verification, and SCSS emission are byte-identical. They diverge only at the final emit step (TSX vs HTML markup + vanilla JS). Today the two SKILLs duplicate the shared pipeline.
+
+When the HTML-output catalog reaches parity with the React catalog (currently 4 of ~16 components — see `references/components/catalog.md` `## HTML Output Status`), unify into a single `components` skill with an `--output={react|html}` selector at the entry point:
+
+- Steps A–E (init, target detection, dependency resolution, preview, generation order) move to a shared section.
+- Step F (emit) gains two emitter implementations behind a single dispatch.
+- `kit-add.md` and `kit-add-html.md` both become thin command files setting the output flag and delegating.
+
+Defer until catalog parity is reached. Doing it earlier means the unified skill has to handle a "this component does not have an HTML template yet" branch in every code path, which complicates the very thing the merge is meant to simplify.
