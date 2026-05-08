@@ -208,9 +208,9 @@ An opt-in, static-HTML smoke check that exercises the *compiled CSS and `data-*`
 
    This watches SCSS and HTML files, recompiles CSS on save, and auto-reloads the browser. Prints the serving URL (`http://localhost:7743/` or next available port if 7743 is busy).
 
-3. Open the preview — manually in any browser, or in a Claude Code session via the `claude-in-chrome` MCP (`navigate` then `computer screenshot`):
+3. Open the preview — manually in any browser, or in a Claude Code session via the `claude-in-chrome` MCP (`navigate` then `computer screenshot`). Use the URL printed by `tests/serve.sh` (defaults to port `7743`, auto-increments if busy):
 
-   ```
+   ```text
    http://localhost:7743/<name>-preview.html
    ```
 
@@ -288,9 +288,17 @@ This serves your HTML and CSS statically with no auto-reload. Any change require
     <!-- aria-disabled="true" on default and one or two key variants -->
   </div>
 
-  <!-- Live-reload via esbuild's SSE endpoint (fired by tests/serve.sh). -->
+  <!-- Live-reload via esbuild's SSE endpoint (fired by tests/serve.sh).
+       No-ops gracefully under python3 http.server (no /esbuild endpoint). -->
   <script>
-    new EventSource('/esbuild').addEventListener('change', () => location.reload());
+    (function () {
+      if (typeof EventSource === 'undefined') return;
+      var opened = false;
+      var es = new EventSource('/esbuild');
+      es.addEventListener('open', function () { opened = true; });
+      es.addEventListener('change', function () { location.reload(); });
+      es.addEventListener('error', function () { if (!opened) es.close(); });
+    }());
   </script>
 </body>
 </html>
