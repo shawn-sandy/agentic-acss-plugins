@@ -151,6 +151,69 @@ Stay in plan mode only when it is absolutely necessary — i.e. the user explici
 
 ---
 
+## `/utility-cls [name]`
+
+**Purpose:** Extract a list of CSS utility classes from an HTML snippet or a plain class string into a single, semantically named CSS class definition, and emit the refactored HTML.
+
+### Input forms
+
+| Form | Example |
+|---|---|
+| HTML element | `<div class="testimonial flex-grid py-8 items-center" data-flex-grid>` |
+| Plain class list | `testimonial flex-grid py-8 items-center` |
+| Quoted string | `"flex py-4 items-center justify-between"` |
+
+### Name rules
+
+- Max **20 characters**, **kebab-case** only (`[a-z][a-z0-9-]*`).
+- If `name` is supplied: convert spaces/underscores to `-`, lowercase, truncate to 20 chars. Warn the user if anything was changed.
+- If `name` is omitted: auto-generate via the algorithm below. When the result is ambiguous (all-utility list, or generated name is a single token under 4 chars), ask via `AskUserQuestion` with the generated name pre-filled as the suggestion rather than silently picking.
+
+### Auto-name algorithm
+
+1. Tokenise the class string on whitespace. Deduplicate (preserve order).
+2. Partition tokens into **semantic** and **utility**:
+   - **Utility prefixes** (strip and classify as utility): `py-`, `px-`, `pt-`, `pb-`, `pl-`, `pr-`, `mt-`, `mb-`, `ml-`, `mr-`, `mx-`, `my-`, `m-`, `p-`, `gap-`, `text-`, `bg-`, `border-`, `rounded-`, `w-`, `h-`, `min-`, `max-`, `flex-`, `grid-`, `col-`, `row-`, `items-`, `justify-`, `self-`, `place-`, `order-`, `z-`, `opacity-`, `shadow-`, `ring-`, `sr-`, `not-sr-`.
+   - Tokens that are a single well-known keyword with no hyphen (e.g. `flex`, `hidden`, `block`, `inline`) count as **utility**.
+   - Everything else is **semantic**.
+3. Build the candidate name:
+   - **Primary**: first semantic token. If none, first utility token stripped of any trailing `-N` numeric suffix.
+   - **Secondary**: first remaining token (semantic preferred over utility) that adds distinct meaning. Skip if combining with primary exceeds 20 chars.
+   - Join with `-`, lowercase. Collapse any double `-`. Strip leading/trailing `-`.
+4. Truncate to 20 chars (hard limit). If result is empty or ≤ 1 char, use `custom-class` and warn.
+
+### Workflow
+
+1. **Parse input.** Accept a pasted HTML snippet or a bare class string (with or without surrounding quotes). Use a regex to extract the `class="…"` value when HTML is present. Tokenise and deduplicate.
+2. **Determine the class name.** Apply the Name rules above. When auto-generating and the class list is all-utility or the generated name is ambiguous, use `AskUserQuestion` with the suggestion pre-filled.
+3. **Emit the CSS class block.** Check whether `.scss` files exist in `src/styles/` of the user's project:
+   - **Plain CSS** (default):
+     ```css
+     /* extracted: testimonial flex-grid py-8 items-center */
+     .testimonial-grid {
+
+     }
+     ```
+   - **SCSS** (when `.scss` detected):
+     ```scss
+     // extracted: testimonial flex-grid py-8 items-center
+     .testimonial-grid {
+       @apply testimonial flex-grid py-8 items-center;
+     }
+     ```
+4. **Emit the refactored HTML.** Replace the full `class="…"` value with the new single class name. Preserve all other attributes unchanged (including `data-*`, `id`, `aria-*`).
+5. **Print a summary:**
+   - Original class count → 1
+   - Name chosen and whether it was provided, auto-generated, or coerced
+   - Any truncation or kebab-case coercion warnings
+   - Reminder: "Add this selector to your stylesheet and fill in the declarations."
+
+### References to load
+
+None required — this flow is self-contained.
+
+---
+
 ## Quality gates (post-flow)
 
 Every flow ends with a contract check. The plugin's hooks and `tests/run.sh` enforce these automatically; the skill should run them locally too:
