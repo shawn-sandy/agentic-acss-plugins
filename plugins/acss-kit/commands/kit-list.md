@@ -27,7 +27,7 @@ List available components or show detailed information about a specific componen
 
 ### `/kit-list` (no arguments)
 
-Read `references/components/catalog.md` and display all available components organized by category:
+Read `references/components/catalog.md` — both the per-component listing and the `## HTML Output Status` table — and display every available component organized by category. Append `[HTML]` to any component whose row in the HTML Output Status table is marked **Verified**; these are the components `/kit-add-html` can generate today. Components without the marker exist as React only and `/kit-add-html` will warn.
 
 ```
 Available Components (acss-kit)
@@ -39,19 +39,19 @@ Simple (no dependencies):
   text        — Inline/block text with variants
 
 Interactive (useDisabledState pattern):
-  button      — Primary interactive element (all variants)
+  button      — Primary interactive element (all variants)              [HTML]
   link        — Accessible anchor with hover/visited states
 
 Layout:
-  card        — Compound component (Card.Title, Card.Content, Card.Footer)
+  card        — Compound component (Card.Title, Card.Content, Card.Footer)  [HTML]
   nav         — Navigation landmark with compound Nav.List, Nav.Item
 
 Complex (multiple dependencies):
-  alert       — Severity-aware notification (needs icon)
-  dialog      — Modal dialog with focus trap (needs button, icon)
+  alert       — Severity-aware notification (needs icon)                 [HTML]
+  dialog      — Modal dialog with focus trap (needs button, icon)        [HTML]
   form        — Form controls (input, textarea, select, checkbox, toggle)
 
-Run /kit-add <component> to generate any component.
+Run /kit-add <component> to generate React components, or /kit-add-html <component> for static HTML versions of the [HTML]-marked entries.
 ```
 
 ### `/kit-list <component>` (specific component)
@@ -60,9 +60,10 @@ Read the component's reference doc (or its entry in `catalog.md`) and display:
 
 1. **Generation Contract** — What files will be created, what imports are used
 2. **Dependencies** — What other components will be co-generated
-3. **Props** — TypeScript interface with descriptions
-4. **CSS Variables** — Customizable properties with defaults
-5. **Usage Example** — Import + JSX snippet
+3. **HTML output** — Read the `## HTML Output Status` table in `catalog.md`. Print `Verified` if the component has it (i.e. `/kit-add-html` can generate it), otherwise `Not yet — React only`.
+4. **Props** — TypeScript interface with descriptions
+5. **CSS Variables** — Customizable properties with defaults
+6. **Usage Example** — Import + JSX snippet
 
 **Example output for `/kit-list badge`:**
 
@@ -70,6 +71,7 @@ Read the component's reference doc (or its entry in `catalog.md`) and display:
 Component: Badge
 File: badge.tsx + badge.scss
 Dependencies: none (simple component)
+HTML output: Not yet — React only (/kit-add-html will warn)
 
 Props:
   children?   ReactNode   — Content (typically numbers or short text)
