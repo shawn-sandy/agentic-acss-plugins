@@ -213,7 +213,7 @@ To use it:
 1. Run the smoke flow above to generate components (e.g. `/kit-add button card`).
 2. Write a preview HTML file (see [Preview a generated component in a browser](../plugins/acss-kit/docs/recipes.md#preview-a-generated-component-in-a-browser)).
 3. Run `tests/serve.sh` from the repo root.
-4. Open `http://localhost:7743/<name>-preview.html` in a browser.
+4. Open the URL printed by `tests/serve.sh` (e.g. `http://localhost:7743/<name>-preview.html`) in a browser.
 5. Edit `src/components/fpkit/<name>/<name>.scss`. On save, the browser reloads with the new styles.
 
 Fallback: if Node is not available, use `python3 -m http.server 7743` from `tests/sandbox/` for a static server without hot-reload (see the recipe for details).
