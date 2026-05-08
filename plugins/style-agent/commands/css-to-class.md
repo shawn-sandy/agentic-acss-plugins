@@ -8,8 +8,4 @@ Convert a multi-class HTML element or class string into a single, semantically n
 
 Follow `${CLAUDE_PLUGIN_ROOT}/skills/css-to-class/SKILL.md`.
 
-**Arguments:**
-
-- `name` — optional desired class name. Must be kebab-case; auto-coerced and truncated to 20 chars if needed.
-
-Extraction, naming (including `AskUserQuestion` for ambiguous cases), CSS file discovery, declaration resolution, HTML refactoring, and summary output are all defined in the skill file above.
+All behavior — argument handling, naming rules, CSS discovery, declaration resolution, HTML refactoring, and summary output — is defined in the skill file above.

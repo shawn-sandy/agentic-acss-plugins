@@ -62,7 +62,7 @@ Convert a multi-class HTML element or plain class string into a single, semantic
 
 4. **Resolve declarations.** For each class token, apply CSS identifier escaping rules to build its selector form before grepping:
    - Escape any character that is not a valid unquoted CSS identifier character: `:` → `\:`, `&` → `\&`, `.` → `\.`, `%` → `\%`, etc.
-   - If the token starts with a digit, escape the leading digit using its CSS hex form: `2` → `\32 `, `3` → `\33 `, `4` → `\34 `, and so on (e.g., `2xl:flex` → `\32 xl\:flex`).
+   - If the token starts with a digit, apply CSS hex escaping for that leading digit (the hex sequence requires a trailing space as its terminator). For example, `2xl:flex` becomes `\32 xl\:flex` in its selector form, where `\32` is the hex escape for `2` and the space terminates the escape sequence.
    This correctly handles Tailwind variant tokens (`hover:bg-red-500` → `.hover\:bg-red-500`) and breakpoint-prefixed tokens (`2xl:*` → `.\32 xl\:*`). Then grep the discovered files for a selector containing `.<escaped-token>` followed by any of: whitespace, `{`, `,`, or `:`. Extract the property/value declarations from the matching block.
    - A token is **resolved** if at least one CSS file contains a matching selector with declarations.
    - A token is **unresolved** if no match is found — it is a custom or semantic class defined elsewhere (or not yet written).
