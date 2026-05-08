@@ -112,6 +112,8 @@ The default check is `tests/run.sh` from the repo root — automated structural 
 
 For end-to-end smoke testing of slash commands (rendering output, exercising `/kit-add` and `/theme-create`), `tests/setup.sh` writes a minimal verification fixture at `tests/sandbox/` (gitignored) — `package.json` + `tsconfig.json` + ambient SCSS module declaration, no Vite, no app shell. For render-sensitive changes, `tests/e2e.sh` runs the deeper opt-in check (extracts components, runs `tsc --noEmit`, compiles SCSS, runs jsdom + axe-core a11y on rendered HTML, ~30s after `npm --prefix tests ci`). See [`tests/README.md`](./tests/README.md) for the full workflow.
 
+For **live CSS preview** during component iteration, `tests/serve.sh` watches SCSS and HTML in the sandbox and hot-reloads the browser on save (see [`tests/README.md` — Live preview](./tests/README.md#live-preview-testsservesh)).
+
 Full validation: manual SKILL.md review → local install → smoke-test slash commands → run Python scripts against a sample project.
 
 To test a local plugin install without publishing: `claude --plugin-dir ./plugins/acss-kit` from the repo root.

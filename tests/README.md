@@ -128,7 +128,9 @@ Use this path for rapid iteration on SKILL.md prose or command front-matter. Swi
 
 ## Demo fixture: `tests/setup.sh`
 
-A minimal verification fixture for end-to-end slash-command verification. No Vite, no Storybook, no app shell — just a `package.json`, a `tsconfig.json`, and an ambient SCSS module declaration. There is no `npm run dev` in this fixture; previewing rendered components in a real browser was explicitly removed because the goal is to test the skill output, not to render a React app.
+A minimal verification fixture for end-to-end slash-command verification. No Vite, no Storybook, no React dev server — just a `package.json`, a `tsconfig.json`, and an ambient SCSS module declaration. The fixture has no `npm run dev` because the goal is to test the skill output, not to render a React app.
+
+**Optional live preview:** After generating components via `/kit-add`, you can preview their CSS variants in a browser using `tests/serve.sh` for hot-reload on SCSS edits. See [Live preview: `tests/serve.sh`](#live-preview-testsservesh) below.
 
 ### Prerequisites
 
@@ -196,7 +198,25 @@ Create a signup form with email and password.
 
 The `component-form` skill should auto-trigger, vendor any missing form dependencies through `/kit-add`, and write a form under `src/forms/`.
 
-- **Optional:** to visually verify a generated component's CSS variants in a browser, see [Preview a generated component in a browser](../plugins/acss-kit/docs/recipes.md#preview-a-generated-component-in-a-browser). This is a static-HTML preview, not a revival of the removed dev server.
+### Live preview: `tests/serve.sh`
+
+After running `/kit-add` to generate components, you can view them in a browser with hot-reload on SCSS edits:
+
+```sh
+tests/serve.sh
+```
+
+This watches SCSS and HTML files in the sandbox, recompiles CSS on save, and injects a live-reload via esbuild's SSE. Prints the serving URL (defaults to `http://localhost:7743/`, auto-increments to `7744`, etc. if the port is busy).
+
+To use it:
+
+1. Run the smoke flow above to generate components (e.g. `/kit-add button card`).
+2. Write a preview HTML file (see [Preview a generated component in a browser](../plugins/acss-kit/docs/recipes.md#preview-a-generated-component-in-a-browser)).
+3. Run `tests/serve.sh` from the repo root.
+4. Open `http://localhost:7743/<name>-preview.html` in a browser.
+5. Edit `src/components/fpkit/<name>/<name>.scss`. On save, the browser reloads with the new styles.
+
+Fallback: if Node is not available, use `python3 -m http.server 7743` from `tests/sandbox/` for a static server without hot-reload (see the recipe for details).
 
 ### Reset
 
