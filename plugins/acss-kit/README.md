@@ -271,7 +271,7 @@ Print a copy-paste catalogue of natural-language prompts for every shipped slash
 /prompt-book 5
 ```
 
-With no argument it prints the full book. With a section number it prints only that entry. The book is bundled with the plugin at [`docs/prompt-book.md`](docs/prompt-book.md).
+With no argument it prints the full book. With a section number it prints only that entry. The book is bundled with the plugin at [`docs/prompt-book.md`](docs/prompt-book.md), which also opens with a [**When to use what**](docs/prompt-book.md#when-to-use-what) cheat sheet for picking between `/kit-add`, `/kit-create`, `/theme-create`, `/style-tune`, and friends.
 
 ## Available components
 
