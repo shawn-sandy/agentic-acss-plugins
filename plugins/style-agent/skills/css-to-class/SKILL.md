@@ -23,7 +23,14 @@ Convert a multi-class HTML element or plain class string into a single, semantic
 ## Name rules
 
 - Max **20 characters**, **kebab-case** only (`[a-z][a-z0-9-]*`).
-- If `name` is supplied: convert spaces/underscores to `-`, lowercase, truncate to 20 chars. Warn the user if anything was changed.
+- If `name` is supplied, apply this sanitisation pipeline in order:
+  1. Lowercase.
+  2. Replace spaces and underscores with `-`.
+  3. Strip any character not in `[a-z0-9-]`.
+  4. Strip leading hyphens and leading digits until the name starts with `[a-z]`.
+  5. Strip trailing hyphens. Collapse consecutive hyphens to one.
+  6. Truncate to 20 chars.
+  If the result is empty after step 6, ask via `AskUserQuestion` for a valid name instead of emitting an invalid identifier. Warn the user whenever any coercion occurred.
 - If `name` is omitted: auto-generate via the algorithm below. When the result is ambiguous (all-utility list, or generated name is a single token under 4 chars), ask via `AskUserQuestion` with the generated name pre-filled as the suggestion rather than silently picking.
 
 ### Auto-name algorithm
@@ -53,12 +60,16 @@ Convert a multi-class HTML element or plain class string into a single, semantic
    ```
    Collect the resulting file list. If no `.css` files are found, note this and all tokens will be unresolved.
 
-4. **Resolve declarations.** For each class token, first apply CSS identifier escaping rules to build its selector form — escape any character that is not a valid unquoted CSS identifier character (e.g., `:` → `\:`, `&` → `\&`, `.` → `\.`, `%` → `\%`). This handles Tailwind-style variant tokens like `hover:bg-red-500`, which appear in generated CSS as `.hover\:bg-red-500`. Then grep the discovered files for a selector containing `.<escaped-token>` followed by any of: whitespace, `{`, `,`, or `:`. Extract the property/value declarations from the matching block.
+4. **Resolve declarations.** For each class token, apply CSS identifier escaping rules to build its selector form before grepping:
+   - Escape any character that is not a valid unquoted CSS identifier character: `:` → `\:`, `&` → `\&`, `.` → `\.`, `%` → `\%`, etc.
+   - If the token starts with a digit, escape the leading digit using its CSS hex form: `2` → `\32 `, `3` → `\33 `, `4` → `\34 `, and so on (e.g., `2xl:flex` → `\32 xl\:flex`).
+   This correctly handles Tailwind variant tokens (`hover:bg-red-500` → `.hover\:bg-red-500`) and breakpoint-prefixed tokens (`2xl:*` → `.\32 xl\:*`). Then grep the discovered files for a selector containing `.<escaped-token>` followed by any of: whitespace, `{`, `,`, or `:`. Extract the property/value declarations from the matching block.
    - A token is **resolved** if at least one CSS file contains a matching selector with declarations.
    - A token is **unresolved** if no match is found — it is a custom or semantic class defined elsewhere (or not yet written).
 
 5. **Emit the CSS class block.** Output a single class with:
    - Resolved declarations inlined in source order (one property per line).
+   - Resolved declarations that appear inside an at-rule (`@media`, `@supports`, `@layer`) in the source file must be emitted with their at-rule wrapper preserved as a nested block — do not strip the context, or the declarations will stop working at the intended breakpoint or feature query. Group multiple tokens that share the same at-rule condition into one nested block.
    - Each unresolved token as a `/* <token>: add declarations manually */` placeholder comment, preserving its relative position.
 
    Example for `<div class="testimonial flex-grid py-8 items-center">`:
