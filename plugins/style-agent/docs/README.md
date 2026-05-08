@@ -7,6 +7,7 @@
 ## Install
 
 ```text
+/plugin marketplace add shawn-sandy/agentic-acss-plugins
 /plugin install style-agent@shawn-sandy-agentic-acss-plugins
 ```
 

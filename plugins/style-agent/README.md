@@ -1,6 +1,6 @@
 # style-agent
 
-Write, extract, and organise CSS utilities and classes for any web project. Framework-agnostic — works with plain CSS, SCSS, Tailwind, or any utility-first workflow.
+Write, extract, and organise CSS utilities and classes for any web project. Framework-agnostic — works with plain CSS, compiled SCSS output, Tailwind, or any utility-first workflow. Declaration lookup reads `.css` files in your project, so SCSS source files are supported via their compiled output.
 
 ## Install
 

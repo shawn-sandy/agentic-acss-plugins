@@ -53,7 +53,7 @@ Convert a multi-class HTML element or plain class string into a single, semantic
    ```
    Collect the resulting file list. If no `.css` files are found, note this and all tokens will be unresolved.
 
-4. **Resolve declarations.** For each class token, grep the discovered files for an exact selector match (`.<token>` followed by whitespace or `{`). Extract the property/value declarations from the matching block.
+4. **Resolve declarations.** For each class token, grep the discovered files for a selector that contains `.<token>` followed by any of: whitespace, `{`, `,`, or `:` (to handle comma-grouped selectors like `.btn,.btn-primary` and pseudo-classes like `.btn:hover`). Extract the property/value declarations from the matching block.
    - A token is **resolved** if at least one CSS file contains a matching selector with declarations.
    - A token is **unresolved** if no match is found — it is a custom or semantic class defined elsewhere (or not yet written).
 
