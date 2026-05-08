@@ -515,7 +515,7 @@ HTML output: Not yet — React only (/kit-add-html will warn)
 Props:
   children?   ReactNode   — Content (typically numbers or short text)
   variant?    'rounded'   — Visual variant
-  ...UI props             — All HTML <sup> props
+  ...UI props             — All standard <sup>-element HTML props
 
 CSS Variables:
   --badge-bg              Background color (default: #e9ecef)

@@ -167,13 +167,15 @@ List available components or inspect a specific one.
 
 **Without an argument**
 
-Reads [`references/components/catalog.md`](../skills/components/references/components/catalog.md) and prints all components grouped by category (Simple / Interactive / Layout / Complex) with a one-line description of each.
+Reads [`references/components/catalog.md`](../skills/components/references/components/catalog.md) — both the per-component listing and the `## HTML Output Status` table — and prints all components grouped by category (Simple / Interactive / Layout / Complex) with a one-line description of each. Components whose row in the HTML Output Status table is **Verified** (Button, Card, Alert, Dialog as of 0.11.1) get an `[HTML]` marker; those are the components `/kit-add-html` can generate today.
 
 **With a component name**
 
 Reads that component's reference doc (either from `catalog.md` or from a dedicated `references/components/{name}.md`) and prints:
 
 - Generation Contract (`export_name`, `file`, `scss`, `imports`, `dependencies`)
+- Dependencies that would be co-generated
+- HTML output (`Verified` if `/kit-add-html` can generate it, else `Not yet — React only`)
 - Props interface
 - CSS variables with their fallback values
 - A usage snippet
