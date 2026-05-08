@@ -4,6 +4,13 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.11.2] - 2026-05-08
+
+### Added
+
+- **Pilot skill failure modes documented** in `docs/troubleshooting.md`. Three new sections describe the conditions under which `component-creator`, `component-form`, and `style-tune` decline to handle a prompt, and the explicit-command fallbacks (drop down to `/kit-add` and edit by hand, or use a v1 phrase from the published vocabulary). Until now these decline paths existed silently; the doc surfaces them so users know the skills haven't broken.
+- **Graduation criteria appended to each pilot's `description:` front-matter** (`component-creator`, `component-form`, `style-tune`). Each pilot now declares the explicit observable condition under which it will be considered graduated to v1 (auto-trigger reliability across a full release cycle plus a coverage milestone specific to the pilot — inline-entry promotion for creator, field-type grammar for form, v2 component scope for style-tune). The change is descriptive only; no skill behavior is altered.
+
 ## [0.11.1] - 2026-05-08
 
 ### Changed

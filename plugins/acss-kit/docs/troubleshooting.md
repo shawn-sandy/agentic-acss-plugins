@@ -134,3 +134,33 @@ If you are surprised by which component depends on which, run `/kit-list <compon
 **Cause:** Import paths in generated files are resolved at generation time from the component's `file` field in its Generation Contract. Renaming files after generation requires updating imports manually.
 
 **Fix:** Update all `import` statements that reference the old filename. There is no automated re-import for post-generation renames.
+
+---
+
+## Pilot skill failure modes
+
+The three pilot skills (`component-creator`, `component-form`, `style-tune`) auto-trigger on natural-language prompts. Their parsers cover common cases but can decline on edge inputs. The fallback in every case is to drop down to the explicit slash command and edit by hand.
+
+### `component-creator`: "No `acss-kit` component matches …"
+
+**Symptom:** A prompt like *"create a small badge that says 5"* returns a halt message: *"No `acss-kit` component matches \"badge\". Run `/kit-list` to see the catalog…"*. `component-creator` only resolves components that have a dedicated `references/components/<name>.md` doc.
+
+**Cause:** Six components — Badge, Tag, Heading, Text/Paragraph, Details, Progress — are still inline entries in `references/components/catalog.md`. The creator can't parse Props Interface against an inline entry, so prompts naming them fall through to the no-mapping halt.
+
+**Fix:** Drop down to `/kit-add <name>` to vendor the component, then hand-edit the JSX where you want it. Promotion of inline entries to dedicated reference docs is tracked under "Authoring New Components" in `skills/components/SKILL.md`.
+
+### `component-form`: "I don't know how to render the `<type>` field"
+
+**Symptom:** A prompt like *"create a profile form with an avatar file upload and a colour picker for the accent"* triggers the skill but halts with an unsupported-field-type warning.
+
+**Cause:** `component-form` v1 supports a fixed grammar of 11 field types — `text`, `email`, `password`, `tel`, `url`, `number`, `date`, `textarea`, `select`, `checkbox`, `radio` (see `## Field types` in the form SKILL). Anything outside that set (today: `type="file"`, `type="color"`, `type="range"`) is surfaced as a gap rather than silently emitted as a plain `<input>`.
+
+**Fix:** Either restate the prompt using a recognised field type (most everyday fields fit — phone numbers as `tel`, dates of birth as `date`, quantities as `number`), or for the unsupported types drop the native element directly into the generated form (`<input type="file" />` / `<input type="color" />` / `<input type="range" />`) — they don't need an `Input`-component wrapper. For full hand-authored control, run `/kit-add field input` to vendor the primitives.
+
+### `style-tune`: "I don't recognise that adjective" / "component out of v1 scope"
+
+**Symptom:** A prompt like *"make the badges feel more luxurious"* halts. Reasons fall into two buckets: an unknown modifier, or a component outside the v1 coverage table.
+
+**Cause:** `style-tune` v1 covers six components (Button, Card, Alert, Dialog, Input, Nav) across six token families (color, radius, spacing, elevation, size, height) — see [`skills/style-tune/references/intent-vocabulary.md`](../skills/style-tune/references/intent-vocabulary.md). Components like Badge, Tag, Field, Checkbox, Icon, Link, List, Popover, Table, Img fall through to a v2 hint, and modifiers outside the published vocabulary refuse rather than guess.
+
+**Fix:** For an unsupported component, edit its CSS variables directly. Field, Checkbox, Icon, Link, List, Popover, Table, and Img each have a dedicated reference doc that lists their custom properties under `## CSS Variables`. Badge and Tag are inline-only entries in `references/components/catalog.md` — for those, vendor with `/kit-add badge` (or `/kit-add tag`) and edit the generated `.scss` directly. For an unsupported modifier, restate using a v1 phrase from the vocabulary table — *"warmer"*, *"softer"*, *"more spacious"*, *"more elevated"*, *"tone down"*, *"sharper"*, *"quieter"*, *"bolder"*, *"smaller"*, *"bigger"*, *"narrower"*, *"wider"*, *"shorter"*, *"taller"*.

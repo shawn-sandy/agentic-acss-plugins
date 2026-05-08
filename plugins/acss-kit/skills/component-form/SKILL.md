@@ -1,6 +1,6 @@
 ---
 name: component-form
-description: Use when the user asks to create a form, scaffold a form, build a signup/contact/login form, generate form components, add form validation, or design accessible form layouts. Triggers include "create a form", "add a form", "build a form component", "scaffold a form", "form with fields", "form scaffolding". Pilot per-component skill — promoted from `references/components/form.md` because forms are high-iteration and benefit from auto-discoverable triggering.
+description: Use when the user asks to create a form, scaffold a form, build a signup/contact/login form, generate form components, add form validation, or design accessible form layouts. Triggers include "create a form", "add a form", "build a form component", "scaffold a form", "form with fields", "form scaffolding". Pilot per-component skill — promoted from `references/components/form.md` because forms are high-iteration and benefit from auto-discoverable triggering. Graduates to v1 once auto-trigger reliability is observed across a full release cycle on real user prompts with the v1 field-type grammar (text, email, password, tel, url, number, date, textarea, select, checkbox, radio). Failure-mode fallbacks for unsupported field types (file, color, range) documented in `docs/troubleshooting.md`.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 metadata:
   version: "0.3.0"
