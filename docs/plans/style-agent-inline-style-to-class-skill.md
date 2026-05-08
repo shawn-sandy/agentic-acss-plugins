@@ -74,10 +74,10 @@ No changes to `.claude/settings.json` hooks (existing PostToolUse validators cov
    - `<style>` block → emit a note that the rule was moved; do not auto-rewrite the block (out of scope).
    - Add the new class to the existing `class` / `className` attribute (don't overwrite). Preserve all other attributes (`data-*`, `id`, `aria-*`, etc.) — same preservation rule as the sibling.
 
-8. **Define summary output (Workflow step 7).** Print: chosen name, target stylesheet path, declarations migrated count, unresolved-expression count, any coercion warnings (camelCase→kebab, numeric→px). Match the sibling's summary format.
+8. **Define summary output (Workflow step 7).** Print: chosen name, target stylesheet path, declarations migrated count, unresolved-expression count, any coercion warnings (camelCase→kebab; numeric values preserved with `/* verify unit */` comment rather than auto-appending a unit). Match the sibling's summary format.
 
 9. **Author `commands/inline-style-to-class.md`** — 4-line delegating body identical in shape to `commands/css-to-class.md`:
-   ```
+   ```yaml
    description: Convert an inline style attribute, JSX style object, or <style> block into a named CSS class and append it to the project stylesheet
    argument-hint: [name]
    allowed-tools: Read, Glob, Grep, Bash, Write, Edit, AskUserQuestion
@@ -107,7 +107,7 @@ No changes to `.claude/settings.json` hooks (existing PostToolUse validators cov
      - Class `.hero-bg { background: var(--surface-1); padding: 1rem; }` appended to `styles/globals.css`.
      - Refactored output: `<div class="hero-bg">Hi</div>`.
      - Summary lists 2 declarations migrated, 0 unresolved.
-   - Repeat with a JSX object: `<Button style={{ backgroundColor: theme.primary, padding: 8 }}>` — confirm `backgroundColor` → `background-color`, `8` → `8px` (with coercion warning), `theme.primary` → unresolved placeholder.
+   - Repeat with a JSX object: `<Button style={{ backgroundColor: theme.primary, padding: 8 }}>` — confirm `backgroundColor` → `background-color`, `8` preserved with `/* verify unit */` comment, `theme.primary` → unresolved placeholder.
    - Repeat with a `<style>` block containing two rules — confirm `AskUserQuestion` prompts for merge-vs-pick.
 5. **Multi-stylesheet ambiguity** — fixture with both `src/styles/main.scss` and `styles/globals.css`; confirm `AskUserQuestion` prompts to pick.
 6. **Sibling regression** — run `/css-to-class card-base` against a known fixture; confirm unchanged behavior.

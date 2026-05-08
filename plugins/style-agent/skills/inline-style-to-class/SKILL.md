@@ -31,7 +31,7 @@ Convert an inline `style` attribute, JSX `style` object, or `<style>` block into
   5. Strip trailing hyphens. Collapse consecutive hyphens to one.
   6. Truncate to 20 chars.
   If the result is empty after step 6, ask via `AskUserQuestion` for a valid name instead of emitting an invalid identifier. Warn the user whenever any coercion occurred.
-- If `name` is omitted: auto-generate via the algorithm below. When the result is ambiguous or a single token under 4 chars, ask via `AskUserQuestion` with the generated name pre-filled as the suggestion.
+- If `name` is omitted: auto-generate via the algorithm below. When the result is ambiguous or ≤ 3 chars, ask via `AskUserQuestion` with the generated name pre-filled as the suggestion.
 
 ### Auto-name algorithm
 
@@ -48,7 +48,7 @@ Convert an inline `style` attribute, JSX `style` object, or `<style>` block into
    - Any other property — skip the role hint.
 3. Join with `-`: `<tag-abbrev>-<role>`, e.g. `div-bg`, `btn-pad`. If no tag is available, use the role hint alone.
 4. Truncate to 20 chars. Collapse double `-`. Strip leading/trailing `-`.
-5. If the result is empty or ≤ 1 char, use `custom-class` and warn.
+5. If the result is empty, use `custom-class` and warn. If the result is 1–3 chars, ask via `AskUserQuestion` with the suggestion pre-filled.
 
 ---
 
@@ -80,7 +80,7 @@ Convert an inline `style` attribute, JSX `style` object, or `<style>` block into
 3. **Discover the target stylesheet.** Follow the Stylesheet discovery section. Confirm the chosen file with the user only when the choice is ambiguous.
 
 4. **Build the CSS class block.** Emit using the detected syntax flavor and indentation:
-   - Comment header: `/* from: <source summary — e.g. "style attr on <div>", "JSX style object", or "<style> block" */ `.
+   - Comment header: `/* from: <source summary — e.g. "style attr on <div>", "JSX style object", or "<style> block" */`.
    - One property per line.
    - Unresolved JSX expressions: `/* <property>: unresolved — was JS expression */`.
    - Numeric values (no unit): preserve value and append `/* verify unit */` inline comment.
