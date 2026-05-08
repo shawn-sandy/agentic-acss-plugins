@@ -2,7 +2,7 @@
 
 Generate, import, and customize a Button in under five minutes. By the end you will have a working, themeable Button component you own outright — no `@fpkit/acss` npm dependency, no boilerplate.
 
-If you want the mental model first, read [concepts.md](concepts.md). If you prefer diagrams, see [visual-guide.md](visual-guide.md). Otherwise, start here.
+If you want the mental model first, read [concepts.md](concepts.md). If you prefer diagrams, see [visual-guide.md](visual-guide.md). For a cheat sheet on which command to reach for (`/kit-add` vs `/kit-create` vs `/theme-create` vs `/style-tune`), see [**When to use what**](prompt-book.md#when-to-use-what) at the top of the prompt book. Otherwise, start here.
 
 ---
 
