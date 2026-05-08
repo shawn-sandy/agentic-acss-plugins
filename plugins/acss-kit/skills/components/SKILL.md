@@ -458,6 +458,88 @@ The verifier reads `stack.entrypointFile` from `.acss-target.json`, so Step A3.1
 
 ---
 
+## `/kit-list` workflow — read-only inspection
+
+This is a separate command flow from `/kit-add` (Steps A–G above). `/kit-list` never writes files. It reads `references/components/catalog.md` and individual reference docs and prints a formatted summary.
+
+### L1. No arguments — categorized listing
+
+Read `references/components/catalog.md` — both the per-component listing and the `## HTML Output Status` table — and display every available component organized by category. Append `[HTML]` to any component whose row in the HTML Output Status table is marked **Verified**; these are the components `/kit-add-html` can generate today. Components without the marker exist as React only and `/kit-add-html` will warn.
+
+Output format:
+
+```text
+Available Components (acss-kit)
+
+Simple (no dependencies):
+  badge       — Status indicator with count or text
+  tag         — Categorical label with optional removal
+  heading     — Semantic heading (h1-h6) with styles
+  text        — Inline/block text with variants
+
+Interactive (useDisabledState pattern):
+  button      — Primary interactive element (all variants)              [HTML]
+  link        — Accessible anchor with hover/visited states
+
+Layout:
+  card        — Compound component (Card.Title, Card.Content, Card.Footer)  [HTML]
+  nav         — Navigation landmark with compound Nav.List, Nav.Item
+
+Complex (multiple dependencies):
+  alert       — Severity-aware notification (needs icon)                 [HTML]
+  dialog      — Modal dialog with focus trap (needs button, icon)        [HTML]
+  form        — Form controls (input, textarea, select, checkbox, toggle)
+
+Run /kit-add <component> to generate React components, or /kit-add-html <component> for static HTML versions of the [HTML]-marked entries.
+```
+
+### L2. With a component name — per-component detail
+
+Read the component's reference doc (or its entry in `catalog.md`) and display:
+
+1. **Generation Contract** — files that would be created, imports used
+2. **Dependencies** — other components that would be co-generated
+3. **HTML output** — read the `## HTML Output Status` table in `catalog.md`; print `Verified` if the component appears as Verified there (i.e. `/kit-add-html` can generate it), otherwise `Not yet — React only`
+4. **Props** — TypeScript interface with descriptions
+5. **CSS Variables** — customizable properties with defaults
+6. **Usage Example** — import + JSX snippet
+
+Example output for `/kit-list badge`:
+
+```text
+Component: Badge
+File: badge.tsx + badge.scss
+Dependencies: none (simple component)
+HTML output: Not yet — React only (/kit-add-html will warn)
+
+Props:
+  children?   ReactNode   — Content (typically numbers or short text)
+  variant?    'rounded'   — Visual variant
+  ...UI props             — All HTML <sup> props
+
+CSS Variables:
+  --badge-bg              Background color (default: #e9ecef)
+  --badge-color           Text color (default: #212529)
+  --badge-fs              Font size (default: 0.75rem)
+  --badge-fw              Font weight (default: 600)
+  --badge-padding-inline  Horizontal padding (default: 0.375rem)
+  --badge-padding-block   Vertical padding (default: 0.125rem)
+  --badge-radius          Border radius (default: 0.25rem)
+
+Usage:
+  import Badge from './badge/badge'
+  import './badge/badge.scss'
+
+  <Badge aria-label="3 unread messages">3</Badge>
+  <Badge variant="rounded" aria-label="99+ notifications">99+</Badge>
+
+Run /kit-add badge to generate this component.
+```
+
+If the component name is unknown, print "Component '<name>' not found. Run `/kit-list` (no args) to see the full catalog." and stop.
+
+---
+
 ## Reference Documents
 
 Read these before generating components:
