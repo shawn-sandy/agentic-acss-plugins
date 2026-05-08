@@ -1,12 +1,12 @@
 ---
 name: css-to-class
-description: Extract a list of CSS utility classes from an HTML element or class string into a single named CSS class. Resolves each token to its actual declarations by reading the plugin's own assets — no external processor required. Use when a developer wants to replace multi-class utility soup with a single semantic selector.
-allowed-tools: Read, Glob, Grep, AskUserQuestion
+description: Extract a list of CSS utility classes from an HTML element or class string into a single named CSS class. Resolves each token to its actual declarations by grepping the project's own CSS files — no external processor, no framework assumption. Use when a developer wants to replace multi-class utility soup with a single semantic selector.
+allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
 ---
 
 # css-to-class
 
-Convert a multi-class HTML element or plain class string into a single, semantically named CSS class. Resolves each utility token to its actual property/value declarations by reading `${CLAUDE_PLUGIN_ROOT}/assets/utilities.css` and the per-family partials — no `@apply`, no external build tool.
+Convert a multi-class HTML element or plain class string into a single, semantically named CSS class. Resolves each utility token to its actual property/value declarations by grepping all `.css` files in the user's project — works with plain CSS, SCSS output, Tailwind, or any other utility-first workflow.
 
 ---
 
@@ -47,12 +47,17 @@ Convert a multi-class HTML element or plain class string into a single, semantic
 
 2. **Determine the class name.** Apply the Name rules above. When auto-generating and the class list is all-utility or the generated name is ambiguous, use `AskUserQuestion` with the suggestion pre-filled.
 
-3. **Resolve utility declarations.** For each class token:
-   a. Read `${CLAUDE_PLUGIN_ROOT}/assets/utilities.css`. Grep for a selector block matching `.<token>` exactly (e.g. `.py-8 {`). Extract the property/value declarations from that block.
-   b. If not found in the bundle, also check the per-family partials under `${CLAUDE_PLUGIN_ROOT}/assets/utilities/`.
-   c. Tokens not found in either location are **unresolved** — they are custom or semantic classes defined elsewhere in the user's project.
+3. **Discover CSS files.** Run:
+   ```bash
+   find . -name "*.css" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/build/*"
+   ```
+   Collect the resulting file list. If no `.css` files are found, note this and all tokens will be unresolved.
 
-4. **Emit the CSS class block.** Output a single class with:
+4. **Resolve declarations.** For each class token, grep the discovered files for an exact selector match (`.<token>` followed by whitespace or `{`). Extract the property/value declarations from the matching block.
+   - A token is **resolved** if at least one CSS file contains a matching selector with declarations.
+   - A token is **unresolved** if no match is found — it is a custom or semantic class defined elsewhere (or not yet written).
+
+5. **Emit the CSS class block.** Output a single class with:
    - Resolved declarations inlined in source order (one property per line).
    - Each unresolved token as a `/* <token>: add declarations manually */` placeholder comment, preserving its relative position.
 
@@ -67,16 +72,10 @@ Convert a multi-class HTML element or plain class string into a single, semantic
    }
    ```
 
-5. **Emit the refactored HTML.** Replace the full `class="…"` value with the new single class name. Preserve all other attributes unchanged (including `data-*`, `id`, `aria-*`).
+6. **Emit the refactored HTML.** Replace the full `class="…"` value with the new single class name. Preserve all other attributes unchanged (including `data-*`, `id`, `aria-*`).
 
-6. **Print a summary:**
+7. **Print a summary:**
    - Original class count → 1, name chosen, whether it was provided or auto-generated
-   - Resolved: N declarations inlined from plugin assets
+   - Resolved: N declarations inlined from project CSS files
    - Unresolved: list any tokens that need manual declarations
    - Any name truncation or kebab-case coercion warnings
-
----
-
-## References to load
-
-- `references/utility-catalogue.md` — consult when a token lookup in the CSS files is ambiguous.

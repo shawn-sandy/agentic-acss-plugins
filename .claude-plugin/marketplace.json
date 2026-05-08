@@ -27,6 +27,21 @@
       ]
     },
     {
+      "name": "style-agent",
+      "source": "./plugins/style-agent",
+      "description": "Write, extract, and organise CSS utilities and classes for any web project. Framework-agnostic — works with plain CSS, SCSS, Tailwind, or any utility-first workflow. Run /css-to-class to extract a list of utility classes from an HTML element or class string into a single named CSS class, with declarations resolved from your project's own CSS files.",
+      "category": "development",
+      "tags": [
+        "css",
+        "utilities",
+        "class-extraction",
+        "framework-agnostic",
+        "scss",
+        "tailwind",
+        "web"
+      ]
+    },
+    {
       "name": "acss-utilities",
       "source": "./plugins/acss-utilities",
       "description": "Tailwind-style atomic CSS utility classes for fpkit/acss projects (.bg-primary, .mt-4, .sm-hide). Hyphen-prefix responsive variants — no CSS escaping needed. Spacing utilities emit CSS logical properties so margin/padding follows the writing mode (LTR/RTL, vertical scripts). Pairs with acss-kit via a token-bridge. Run /utility-add to drop the bundle into your project, /utility-list to browse families and classes, /utility-bridge to regenerate the token bridge against your active acss-kit theme, and /utility-tune to adjust spacing baseline, breakpoints, or family enables via natural language.",
