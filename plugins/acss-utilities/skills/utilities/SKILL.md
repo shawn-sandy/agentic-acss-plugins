@@ -186,31 +186,34 @@ Stay in plan mode only when it is absolutely necessary — i.e. the user explici
 
 1. **Parse input.** Accept a pasted HTML snippet or a bare class string (with or without surrounding quotes). Use a regex to extract the `class="…"` value when HTML is present. Tokenise and deduplicate.
 2. **Determine the class name.** Apply the Name rules above. When auto-generating and the class list is all-utility or the generated name is ambiguous, use `AskUserQuestion` with the suggestion pre-filled.
-3. **Emit the CSS class block.** Check whether `.scss` files exist in `src/styles/` of the user's project:
-   - **Plain CSS** (default):
-     ```css
-     /* extracted: testimonial flex-grid py-8 items-center */
-     .testimonial-grid {
+3. **Resolve utility declarations.** For each class token:
+   a. Read `${CLAUDE_PLUGIN_ROOT}/assets/utilities.css`. Grep for a selector block that matches `.<token>` exactly (e.g. `.py-8 {`). Extract the property/value declarations from that block.
+   b. If not found in the bundle, also check the per-family partials under `${CLAUDE_PLUGIN_ROOT}/assets/utilities/`.
+   c. Tokens not found in either location are **unresolved** — they are custom or semantic classes defined elsewhere in the user's project.
+4. **Emit the CSS class block.** Output a single class with:
+   - Resolved declarations inlined in source order (one property per line).
+   - Each unresolved token rendered as a `/* <token>: add declarations manually */` placeholder comment, preserving its relative position.
 
-     }
-     ```
-   - **SCSS** (when `.scss` detected):
-     ```scss
-     // extracted: testimonial flex-grid py-8 items-center
-     .testimonial-grid {
-       @apply testimonial flex-grid py-8 items-center;
-     }
-     ```
-4. **Emit the refactored HTML.** Replace the full `class="…"` value with the new single class name. Preserve all other attributes unchanged (including `data-*`, `id`, `aria-*`).
-5. **Print a summary:**
-   - Original class count → 1
-   - Name chosen and whether it was provided, auto-generated, or coerced
-   - Any truncation or kebab-case coercion warnings
-   - Reminder: "Add this selector to your stylesheet and fill in the declarations."
+   Example for `<div class="testimonial flex-grid py-8 items-center">`:
+   ```css
+   /* extracted: testimonial flex-grid py-8 items-center */
+   .testimonial-grid {
+     /* testimonial: add declarations manually */
+     /* flex-grid: add declarations manually */
+     padding-block: 2rem;
+     align-items: center;
+   }
+   ```
+5. **Emit the refactored HTML.** Replace the full `class="…"` value with the new single class name. Preserve all other attributes unchanged (including `data-*`, `id`, `aria-*`).
+6. **Print a summary:**
+   - Original class count → 1, name chosen, whether it was provided or auto-generated
+   - Resolved: N declarations inlined from plugin assets
+   - Unresolved: list any tokens that need manual declarations
+   - Any name truncation or kebab-case coercion warnings
 
 ### References to load
 
-None required — this flow is self-contained.
+- `references/utility-catalogue.md` — consult when a token lookup in the CSS files is ambiguous.
 
 ---
 
