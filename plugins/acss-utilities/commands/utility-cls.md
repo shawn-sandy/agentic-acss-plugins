@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, AskUserQuestion
 
 Convert a multi-class HTML element or class string into a single, semantically named CSS class definition and emit the refactored HTML.
 
-Follow the `/utility-cls` section of `${CLAUDE_PLUGIN_ROOT}/skills/utilities/SKILL.md`.
+Follow `${CLAUDE_PLUGIN_ROOT}/skills/css-to-class/SKILL.md`.
 
 **Arguments:**
 
