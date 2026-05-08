@@ -143,7 +143,7 @@ The two creator-mode pilots both parse natural-language prompts: `component-crea
 
 When both pilots reach their graduation criteria (see each SKILL.md `description:` front-matter), factor the shared logic into a single helper consumed by both:
 
-- Token tokeniser (split prose into intent / subject / modifier triples).
+- Phrase tokeniser (split prose into intent / subject / modifier triples).
 - Synonym resolver (warm → friendly tone family, soft → reduced-weight family, etc.).
 - Prop-union matcher (resolve "primary" / "outline" / "small" against a TypeScript union literal).
 - Halt builder (generate the `AskUserQuestion`-shaped prompt for ambiguous inputs).
