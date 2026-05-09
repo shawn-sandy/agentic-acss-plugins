@@ -4,6 +4,11 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-08
+
+### Added
+- `/inline-style-to-class` — convert an inline style attribute, JSX style object, or `<style>` block into a single named CSS class and append it to the project stylesheet.
+
 ## [0.1.0] - 2026-05-08
 
 ### Added
