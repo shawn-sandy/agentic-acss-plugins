@@ -31,9 +31,8 @@ reviews:
 
     - path: "plugins/*/commands/*.md"
       instructions: |
-        - Front-matter must include `name:` and `description:` fields.
-        - The command body should delegate to the corresponding SKILL.md rather than duplicating logic.
-        - Command filename and `name:` front-matter value must match.
+        - Front-matter must include a `description:` field. Optional fields are `argument-hint:` and `allowed-tools:`. There is no `name:` field in command front-matter.
+        - The command body should delegate to the corresponding SKILL.md rather than duplicating logic inline.
 
     - path: "plugins/*/.claude-plugin/plugin.json"
       instructions: |
