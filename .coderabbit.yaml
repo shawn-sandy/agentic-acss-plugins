@@ -90,8 +90,3 @@ reviews:
     base_branches:
       - "main"
 
-finishing_touches:
-  docstrings:
-    enabled: false
-  unit_tests:
-    enabled: false
