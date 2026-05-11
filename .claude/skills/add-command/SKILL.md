@@ -1,6 +1,6 @@
 ---
 name: add-command
-description: Scaffold a new slash command for a plugin — creates the command .md with front-matter and adds a stub section to SKILL.md.
+description: Use when the user asks to add or scaffold a new slash command for a plugin — creates the command .md with front-matter and a SKILL.md stub.
 disable-model-invocation: false
 ---
 
