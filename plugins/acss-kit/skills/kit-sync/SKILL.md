@@ -1,6 +1,6 @@
 ---
 name: kit-sync
-description: Use when the user wants to bulk-install every acss-kit component and theme into a project at once, or to safely re-copy unmodified components after a plugin update. Backs /kit-sync (bulk install) and /kit-update (drift-safe re-copy). Maintains .acss-kit/manifest.json as the source of truth for what was generated, and uses sha256 drift detection to skip user-modified files.
+description: Use when the user asks to bulk-install all acss-kit components and themes (/kit-sync) or re-copy unmodified components after a plugin update (/kit-update).
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 metadata:
   version: "0.1.0"

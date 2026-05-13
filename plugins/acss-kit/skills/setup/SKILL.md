@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Use when the user runs /setup or asks to "set up", "bootstrap", "initialize", or "prepare" a project for acss-kit components and themes. One-time first-run init — detects package manager, prints the sass install command, writes .acss-target.json, copies ui.tsx, optionally seeds a starter theme. Cross-domain skill (touches both components and styles concerns) — deliberately not nested under either domain skill.
+description: Use when the user runs /setup or asks to set up or bootstrap a project for acss-kit — installs sass, writes config, and optionally seeds a starter theme.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 metadata:
   version: "0.5.0"

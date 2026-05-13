@@ -1,6 +1,6 @@
 ---
 name: prompt-book
-description: Display the bundled prompt book — a copy-paste catalogue of natural-language prompts mapped to every shipped slash command across acss-kit and acss-utilities. Use when the user runs /prompt-book or asks to see example prompts, prompt templates, or what they can ask Claude Code to do with these plugins.
+description: Display the bundled prompt book — copy-paste prompts mapped to every slash command in acss-kit and acss-utilities. Use when the user runs /prompt-book.
 ---
 
 # Prompt Book

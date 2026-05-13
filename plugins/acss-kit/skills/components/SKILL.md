@@ -1,6 +1,6 @@
 ---
 name: components
-description: Use when generating fpkit-style React components into a developer's project. Markdown-as-source templates with embedded TSX/SCSS and accessibility patterns. No @fpkit/acss package required — only React + sass.
+description: Use when the user asks to generate fpkit-style accessible React components (TSX + SCSS) — no @fpkit/acss package required, only React + sass.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 metadata:
   version: "0.3.0"
