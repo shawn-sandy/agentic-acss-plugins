@@ -1,6 +1,6 @@
 ---
 name: component-author
-description: Scaffold a new component reference doc for the acss-kit plugin in the canonical embedded-markdown shape. Use when the maintainer asks to add a new component to acss-kit, create a new reference doc under references/components, or scaffold a component spec like Tabs, Toast, Tooltip.
+description: Use when the maintainer asks to add a component to acss-kit — scaffolds a reference doc under references/components in the canonical embedded-markdown shape.
 disable-model-invocation: false
 ---
 

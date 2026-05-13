@@ -1,6 +1,6 @@
 ---
 name: validate-plugin
-description: Check a plugin's structure for completeness and correctness before publishing. Catches common issues like missing files, repo-relative fpkit links, or malformed JSON.
+description: Use when the user asks to validate or check a plugin's structure before publishing. Catches missing files, repo-relative fpkit links, or malformed JSON.
 disable-model-invocation: false
 ---
 

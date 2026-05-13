@@ -1,6 +1,6 @@
 ---
 name: style-author
-description: Scaffold a new bundled brand preset, palette role, or theme-schema field for the acss-kit plugin. Use when the maintainer asks to add a brand preset to the plugin, extend the role catalogue with a new color role, scaffold a bundled brand template, or tweak the OKLCH palette algorithm.
+description: Use when the maintainer asks to scaffold a brand preset, palette role, or theme-schema field for acss-kit — or tweak the OKLCH palette algorithm.
 disable-model-invocation: false
 ---
 

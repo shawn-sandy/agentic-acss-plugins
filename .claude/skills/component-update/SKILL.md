@@ -1,6 +1,6 @@
 ---
 name: component-update
-description: Re-verify and refresh an existing component reference doc against its captured fpkit ref. Use when the maintainer asks to update a component, refresh a button reference doc, bump the fpkit verification on a component, or check whether a component has drifted from upstream.
+description: Use when the maintainer asks to update or refresh a component reference doc — re-verifies against the fpkit ref and checks for upstream drift.
 disable-model-invocation: false
 ---
 

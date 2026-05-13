@@ -1,6 +1,6 @@
 ---
 name: plugin-health
-description: One-shot audit dashboard for the acss-kit plugin — runs structural validation, scans component references for canonical-shape compliance, cross-checks the catalog table, and validates bundled theme assets. Use when the maintainer asks for a plugin health check, what's missing before release, an acss-kit audit, or a status overview.
+description: Use when the maintainer asks for a plugin health check or pre-release acss-kit audit — validates structure, component shapes, catalog parity, and theme assets.
 disable-model-invocation: false
 ---
 
