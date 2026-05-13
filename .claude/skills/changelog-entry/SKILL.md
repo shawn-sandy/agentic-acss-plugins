@@ -1,6 +1,9 @@
 ---
 name: changelog-entry
-description: Generate a Keep-a-Changelog entry for acss-kit from git log since last tag. Groups commits by type and appends under CHANGELOG.md's Unreleased section.
+description:
+  Generate a Keep-a-Changelog entry for acss-kit from git log since last tag.
+  Groups commits by type and appends under plugins/acss-kit/CHANGELOG.md's
+  Unreleased section.
 disable-model-invocation: true
 ---
 
@@ -13,6 +16,7 @@ git log $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-paren
 Then read `plugins/acss-kit/CHANGELOG.md` to see the existing format.
 
 Group the commits by conventional commit type:
+
 - `feat` → **Added**
 - `fix` → **Fixed**
 - `docs` → **Changed**
@@ -34,4 +38,6 @@ Format as a Keep-a-Changelog block using today's date:
 - …
 ```
 
-Show the proposed entry to the user. Wait for explicit approval before writing. Insert it above the previous latest version entry in `plugins/acss-kit/CHANGELOG.md`.
+Show the proposed entry to the user. Wait for explicit approval before writing.
+Insert it above the previous latest version entry in
+`plugins/acss-kit/CHANGELOG.md`.
