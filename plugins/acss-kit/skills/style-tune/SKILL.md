@@ -22,7 +22,7 @@ from the intent vocabulary, and atomically validates before writing.
 
 ## When not to use
 
-Bare adjectives without a named component or role do not trigger — "warmer" or "softer" alone won't route here. Phrases must name a target: "warmer button", "softer card", "deeper accent".
+Bare adjectives without a named component or role (e.g. "warmer" alone) trigger disambiguation via AskUserQuestion (Step A3) rather than routing directly. For best results, name a target: "warmer button", "softer card", "deeper accent".
 
 ## Pilot status
 
