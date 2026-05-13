@@ -1,6 +1,6 @@
 ---
-name: component-author
-description: Use when the maintainer asks to add a component to acss-kit — scaffolds a reference doc under references/components in the canonical embedded-markdown shape.
+name: acss-kit-component-author
+description: "[Maintainer] Use when the maintainer asks to add a component to acss-kit — scaffolds a reference doc under references/components in the canonical embedded-markdown shape."
 disable-model-invocation: false
 ---
 

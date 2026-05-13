@@ -78,7 +78,7 @@ Before committing any plugin change:
 
 ## Maintainer tooling
 
-**Project-level skills** (`.claude/skills/`): `add-command`, `changelog-entry`, `component-author`, `component-update`, `plugin-health`, `release-check`, `release-plugin`, `style-author`, `style-update`, `test-component`, `validate-plugin`, `verify-plugins`. Use these for plugin maintenance tasks instead of manual steps.
+**Project-level skills** (`.claude/skills/`): `add-command`, `acss-kit-changelog-entry`, `acss-kit-component-author`, `acss-kit-component-update`, `plugin-health`, `release-check`, `release-plugin`, `acss-kit-style-author`, `acss-kit-style-update`, `acss-kit-test-component`, `validate-plugin`, `verify-plugins`. Use these for plugin maintenance tasks instead of manual steps. Skills prefixed `acss-kit-` are maintainer-only and tagged `[Maintainer]` in their descriptions to suppress auto-triggering in user sessions.
 
 **Rules** (`.claude/rules/`): `scss-conventions.md` (active, fires on SCSS/CSS edits), `python-scripts.md` (active, fires on `plugins/*/scripts/**`), `command-authoring.md` (active, fires on `plugins/*/commands/*.md`), `fpkit-references.md` (active, fires on reference docs). See `.claude/rules/README.md` for the full status table.
 

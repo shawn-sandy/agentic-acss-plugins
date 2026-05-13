@@ -1,6 +1,6 @@
 ---
-name: style-author
-description: Use when the maintainer asks to scaffold a brand preset, palette role, or theme-schema field for acss-kit — or tweak the OKLCH palette algorithm.
+name: acss-kit-style-author
+description: "[Maintainer] Use when the maintainer asks to scaffold a brand preset, palette role, or theme-schema field for acss-kit — or tweak the OKLCH palette algorithm."
 disable-model-invocation: false
 ---
 

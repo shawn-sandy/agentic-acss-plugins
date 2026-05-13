@@ -1,11 +1,6 @@
 ---
-name: test-component
-description:
-  Render a quick visual preview of an acss-kit component in the default browser.
-  Use when the user says "test component", "test the button", "show me the
-  alert", "preview <component>", or any phrasing that asks to see what a
-  component looks like. Produces a self-contained HTML file with all variants
-  from the component's Usage Examples.
+name: acss-kit-test-component
+description: "[Maintainer] Render a quick visual preview of an acss-kit component in the default browser. Produces a self-contained HTML file with all variants from the component's Usage Examples."
 disable-model-invocation: false
 allowed-tools:
   - bash

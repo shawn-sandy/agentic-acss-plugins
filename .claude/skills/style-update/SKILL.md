@@ -1,9 +1,6 @@
 ---
-name: style-update
-description:
-  Use when the maintainer asks to update or re-validate theme assets after
-  editing the role-catalogue, palette-algorithm, theme-schema, a brand preset,
-  or the styles SKILL.
+name: acss-kit-style-update
+description: "[Maintainer] Use when the maintainer asks to update or re-validate theme assets after editing the role-catalogue, palette-algorithm, theme-schema, a brand preset, or the styles SKILL."
 disable-model-invocation: false
 ---
 

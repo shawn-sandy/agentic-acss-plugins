@@ -13,10 +13,11 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 0.7.0 | Accessible React components and OKLCH CSS themes. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`); 14 slash commands covering setup, component generation (React + static HTML), bulk install/update, natural-language creator mode, theme creation, brand presets, image/Figma extraction, color scales, natural-language style tuning, and a bundled prompt book. |
-| [`acss-utilities`](./plugins/acss-utilities) | 0.4.0 | Tailwind-style atomic CSS utility classes (`.bg-primary`, `.mt-4`, `.sm-hide`) generated from a token source-of-truth. Hyphen-prefix responsive variants — no CSS escaping. Pairs with `acss-kit` via a token-bridge so utility colors resolve against the same OKLCH roles. |
+| [`acss-kit`](./plugins/acss-kit) | 0.11.2 | Accessible React components and OKLCH CSS themes. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`); 14 slash commands covering setup, component generation (React + static HTML), bulk install/update, natural-language creator mode, theme creation, brand presets, image/Figma extraction, color scales, natural-language style tuning, and a bundled prompt book. |
+| [`acss-utilities`](./plugins/acss-utilities) | 0.5.0 | Tailwind-style atomic CSS utility classes (`.bg-primary`, `.mt-4`, `.sm-hide`) generated from a token source-of-truth. Hyphen-prefix responsive variants — no CSS escaping. Pairs with `acss-kit` via a token-bridge so utility colors resolve against the same OKLCH roles. |
+| [`style-agent`](./plugins/style-agent) | 0.2.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. |
 
-The two plugins are **decoupled** — install one, both, or use `acss-utilities` standalone with a hand-written theme.
+The three plugins are **decoupled** — install any combination independently.
 
 ## Why agent-driven instead of an npm package?
 

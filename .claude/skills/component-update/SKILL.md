@@ -1,6 +1,6 @@
 ---
-name: component-update
-description: Use when the maintainer asks to update or refresh a component reference doc — re-verifies against the fpkit ref and checks for upstream drift.
+name: acss-kit-component-update
+description: "[Maintainer] Use when the maintainer asks to update or refresh a component reference doc — re-verifies against the fpkit ref and checks for upstream drift."
 disable-model-invocation: false
 ---
 
