@@ -1,6 +1,6 @@
 ---
 name: utilities
-description: Generate, list, tune, and bridge Tailwind-style atomic CSS utility classes for fpkit/acss projects. Uses kebab-case class names with hyphen-prefixed responsive variants (`sm-hide`, `md-p-6`, `lg-flex-row`). Pairs with acss-kit via a token-bridge that aliases acss-kit's OKLCH role names to fpkit-style names in both light and dark modes. Use when the developer wants to add utility classes to their project, list which utilities are available, adjust the spacing baseline or breakpoints, or regenerate the bridge after a theme change.
+description: Use when the developer wants Tailwind-style atomic CSS utility classes for fpkit/acss — add, list, tune spacing/breakpoints, or regenerate the token-bridge.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 metadata:
   version: "0.2.0"

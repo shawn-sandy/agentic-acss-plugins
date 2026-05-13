@@ -1,6 +1,6 @@
 ---
 name: css-to-class
-description: Extract a list of CSS utility classes from an HTML element or class string into a single named CSS class. Resolves each token to its actual declarations by grepping the project's own CSS files — no external processor, no framework assumption. Use when a developer wants to replace multi-class utility soup with a single semantic selector.
+description: Use when the developer wants to extract CSS utility classes from an HTML element into a single named class — collapsing utility soup into one semantic selector.
 allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
 ---
 

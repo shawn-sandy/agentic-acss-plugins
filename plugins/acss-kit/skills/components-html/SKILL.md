@@ -1,6 +1,6 @@
 ---
 name: components-html
-description: Use when generating static HTML snippets (plus optional vanilla-JS helpers) for fpkit-style components in non-React projects. Reads the same component reference docs as the React generator but emits .html + .scss + .js instead of .tsx.
+description: Use when the user asks for static HTML component snippets (plus optional vanilla JS) for fpkit-style acss-kit components in non-React projects.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 metadata:
   version: "0.1.0"

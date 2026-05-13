@@ -1,6 +1,6 @@
 ---
 name: styles
-description: Generate and update CSS themes for fpkit/acss projects. Creates full light/dark palettes from seed colors using OKLCH, scaffolds brand presets, edits theme roles in place with WCAG re-validation, and extracts tokens from images or Figma designs. Use when the developer wants to create a theme, customize brand colors, or update specific role values in an existing theme.
+description: Generate and update CSS themes for fpkit/acss projects — OKLCH light/dark palettes, brand presets, theme role edits, and token extraction from images or Figma.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 metadata:
   version: "0.3.0"

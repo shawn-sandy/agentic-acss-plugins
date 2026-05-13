@@ -1,6 +1,6 @@
 ---
 name: inline-style-to-class
-description: Convert an inline style attribute, JSX style object, or <style> block into a single named CSS class and append it to the project stylesheet. Detects the target stylesheet from project file conventions — no external processor, no framework assumption. Use when migrating inline styles to reusable, maintainable CSS classes.
+description: Use when the developer wants to convert an inline style attribute, JSX style object, or <style> block into a named CSS class appended to the project stylesheet.
 allowed-tools: Read, Glob, Grep, Bash, Write, Edit, AskUserQuestion
 ---
 
