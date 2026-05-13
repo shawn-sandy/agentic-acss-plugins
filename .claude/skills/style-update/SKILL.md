@@ -1,6 +1,6 @@
 ---
 name: style-update
-description: Re-validate and roll forward existing theme assets after a maintainer edits role-catalogue, palette-algorithm, theme-schema, or a bundled brand preset. Use when the maintainer asks to update a theme reference, refine the palette algorithm, refresh the role catalogue, or re-validate themes after a role change.
+description: Use when the maintainer asks to update or re-validate theme assets after editing the role-catalogue, palette-algorithm, theme-schema, or a brand preset.
 disable-model-invocation: false
 ---
 
