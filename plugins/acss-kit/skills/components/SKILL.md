@@ -1217,3 +1217,48 @@ Next steps:
   - Add per-field validation (structure is scaffolded; logic is application-specific)
   - Style overrides via CSS variables — see field.scss / input.scss
 ```
+
+---
+
+## Style-Tune Mode — Component Token Adjustment
+
+Invoked by `/style-tune` when the subject resolves to a component. See `style-tune/SKILL.md` Step A for intent parsing and dispatch.
+
+### STc-B. Locate the component SCSS
+
+Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py <project_root>`. Require `source: "generated"`.
+
+Probe `<componentsDir>/<component>/<component>.scss`. If missing, halt: "Component `<name>` isn't vendored yet. Run `/kit-add <name>` first — this is a styling task, not a scaffolding task."
+
+Supported components: `button`, `card`, `alert`, `dialog`, `input`, `nav`. For others, halt: "Component `<name>` doesn't have a token mapping yet."
+
+### STc-C. Compute component token deltas
+
+For each `(component, family, delta)` from `style-tune/SKILL.md` Step A:
+
+1. `Grep` the component SCSS for the targeted token name(s) and read the current value(s).
+2. **Scalar values** (rem, unitless, hex): apply the canonical delta from intent-vocabulary. Respect clamp ranges (radius `[0.125rem, 1rem]`; padding multipliers, etc.).
+3. **Var-only references** (`--alert-bg: var(--color-surface, …)`): do NOT edit this declaration. Route the edit to the underlying theme role via `styles/SKILL.md` Style-Tune Mode, and note in Step F that tuning the component token requires changing the theme role.
+4. **Shadow tokens:** use the explicit preset values from intent-vocabulary (no procedural arithmetic on multi-stop shadows).
+5. **Compound presets** (rows flagged `preset: true` in vocabulary): expand into the listed multi-family deltas and apply each independently.
+6. Preserve `var(--x, fallback)` wrappers — only the declaration's RHS may change.
+
+### STc-D. Apply component edits
+
+Build the entire updated SCSS file in memory; `Edit` atomically. When one modifier touches multiple tokens, batch into one `Edit` pass per file.
+
+Safety rules:
+- Never strip a `var()` wrapper — only the RHS may change.
+- Never rename a token.
+- Never inline a hex literal where a `var(--color-*, …)` reference exists.
+- Never edit lines outside the targeted `--{c}-*` declarations.
+
+### STc-E. Validate and revert
+
+**Structural check after each Edit:**
+1. Re-`Grep` for `var(` occurrences — count must be unchanged before and after.
+2. Re-`Grep` for each edited token name — must appear exactly once on a declaration LHS.
+
+On failure, restore from the in-memory pre-edit copy and halt.
+
+**Idempotency:** if the computed value equals the current value within tolerance (hex equality, or rem within 0.0001), skip the write and report "already at target" in Step F. Note that cumulative drift is still possible across iteration passes — `× 0.75` then `× 1.25` lands at `× 0.9375`, not the original. Document this when a chroma or scale modifier is applied.

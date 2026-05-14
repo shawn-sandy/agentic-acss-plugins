@@ -249,6 +249,50 @@ Default `--name`:
 
 ---
 
+## Style-Tune Mode — Theme-Layer Adjustment
+
+Invoked by `/style-tune` when the subject resolves to a theme role. See `style-tune/SKILL.md` Step A for intent parsing and dispatch.
+
+### ST-B. Locate theme files
+
+Locate `src/styles/theme/light.css` and `src/styles/theme/dark.css`.
+
+- Both exist → edit both with the same OKLCH delta (auto-mirror — same perceptual shift, mode-appropriate hex per file).
+- Only one exists → edit that one.
+- `brand-*.css` files are NOT edited unless the user names the brand explicitly. When brand files are present and unnamed, surface a hint in Step F: "Brand `<name>` is present and unchanged. To tune it, say 'tune the <name> brand'."
+- No theme files found → halt: "No theme files at `src/styles/theme/`. Run `/theme-create #seedhex` first."
+
+### ST-C. Compute theme deltas
+
+For each `(role, delta)` resolved in `style-tune/SKILL.md` Step A:
+
+1. Read the current hex from each in-scope file via `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/css_to_tokens.py <theme-file>`.
+2. Compute the new hex via `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/oklch_shift.py <currentHex> --hue=±deg --chroma=×float --lightness=±float`.
+   - Exit 0 (always when a hex is produced): use the returned `hex`. If `clamped: true`, surface `reasons` in Step F as informational warnings and still apply.
+   - Exit 2: usage / IO error — surface stderr and skip that role.
+3. **Paired-role rule:** when shifting `--color-primary`, always shift `--color-primary-hover` by the same delta. Treat both as a single atomic batch entry.
+4. **Dark-mirror rule:** when both files are in scope, run the same delta against each file's starting hex — the two files yield mode-appropriate hex values.
+5. Build the full plan as `(file, role, oldHex, newHex)` tuples. Do not invoke `/theme-update` yet — pre-validate first.
+
+### ST-D0. Pre-validate the theme batch
+
+1. Create a tmp directory via `mktemp -d`.
+2. Copy each in-scope theme file into the tmp dir and apply the proposed edits (preserve comments and whitespace).
+3. Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/validate_theme.py <staged-file>` on each staged copy.
+4. If **any** contrast pair fails on **any** file, halt the entire batch — write nothing. Print the failures and hint: "Re-run with a smaller delta, or pick an explicit hex via `/theme-update`."
+
+### ST-D1. Apply theme edits
+
+With the batch pre-validated, invoke `/theme-update <file> --color-<role>=#<hex> [...]` once per theme file. `/theme-update` runs `validate_theme.py` internally; given D0, this should always pass.
+
+### ST-E. Post-apply checks
+
+If `/theme-update`'s post-write validation fires unexpectedly (rounding mismatch between `oklch_shift.py` and `validate_theme.py`), surface the discrepancy as a bug and suggest `git revert`.
+
+After applying any colour shift, inspect the post-edit OKLCH of the tuned role. If `chroma < 0.05` OR `|hue − palette-derived hue| > 30°`, append a drift hint to Step F: "Note: `--color-<role>` has drifted from its palette-derived value. Consecutive tunes accumulate hex round-trip noise — run `/theme-create #seedhex` to reset."
+
+---
+
 ## Integration verification (all flows)
 
 After any flow writes theme CSS to disk and `validate_theme.py` succeeds, run `${CLAUDE_PLUGIN_ROOT}/scripts/verify_integration.py <project_root>` to confirm the entrypoint actually imports the generated theme. The verifier reads `stack.entrypointFile` from `.acss-target.json` (populated by `detect_stack.py` during `/kit-add` first-run, or after `/setup`).
