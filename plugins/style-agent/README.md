@@ -97,7 +97,7 @@ flex items-center gap-4 bg-primary focus-visible:ring
 <button class="flex items-center gap-4 bg-primary focus-visible:ring">Label</button>
 ```
 
-For interactive elements (button, link, input), focus-visible classes are included automatically. Run `/css-to-class [name]` on the output to consolidate into a single named CSS class.
+For interactive elements (button, link, input), focus styling is handled automatically — `focus-visible:ring` for Tailwind/fallback projects, `focus-ring` for Bootstrap, and a summary note for acss-kit (which handles focus via component CSS). Run `/css-to-class [name]` on the output to consolidate into a single named CSS class.
 
 ## Developer guide
 

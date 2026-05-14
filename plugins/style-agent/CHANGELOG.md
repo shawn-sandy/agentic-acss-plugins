@@ -7,7 +7,7 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 ## [0.3.0] - 2026-05-14
 
 ### Added
-- `/create-utilities` — generate a utility class string from a plain-language visual description. Detects acss-kit, Tailwind, Bootstrap, or falls back to Tailwind-compatible naming. Includes automatic focus-visible defaults for interactive elements and contrast warnings in the summary.
+- `/create-utilities` — generate a utility class string from a plain-language visual description. Detects acss-kit, Tailwind, Bootstrap, or falls back to Tailwind-compatible naming. Applies framework-specific focus defaults for interactive elements (`focus-visible:ring` for Tailwind/fallback, `focus-ring` for Bootstrap, summary note for acss-kit) and contrast warnings in the summary.
 
 ## [0.2.0] - 2026-05-08
 

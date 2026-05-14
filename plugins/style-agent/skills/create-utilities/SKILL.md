@@ -26,7 +26,7 @@ Grep project files to identify which utility library is active:
 
 - **acss-kit** — `utilities.css` present in the project containing selectors like `.bg-primary`, `.flex`, `.m-4`
 - **Tailwind** — `tailwind.config.*` file exists, or `@tailwind base` appears in any `.css`/`.scss` file
-- **Bootstrap** — `bootstrap.css` present, or `bs-` prefixed classes appear in source files
+- **Bootstrap** — `bootstrap*.css` present in the project, or Bootstrap-specific utility patterns (`d-flex`, `btn`, `container`) appear in HTML/template source files
 - **Generic fallback** — no framework detected; use Tailwind-compatible naming (`flex`, `p-4`, `rounded`, etc.) — the de-facto standard most developers recognise
 
 When multiple frameworks are detected, use `AskUserQuestion` to confirm which vocabulary to use — never silently pick one.
@@ -42,7 +42,7 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
 
 2. **Detect framework.** Run the framework detection above:
    ```bash
-   find . \( -name "utilities.css" -o -name "tailwind.config.*" -o -name "bootstrap.css" \) \
+   find . \( -name "utilities.css" -o -name "tailwind.config.*" -o -name "bootstrap*.css" \) \
      -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/build/*"
    ```
    Also grep for `@tailwind base` in `.css`/`.scss` files. If multiple frameworks are found, use `AskUserQuestion` to confirm which vocabulary to use — do not auto-fallback. Only fall back to Tailwind-compatible naming when no framework is detected, or when the user explicitly confirms no framework after clarification.
@@ -57,11 +57,16 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
 
    When a description maps to multiple plausible scale values (e.g., "large padding" → `p-6`, `p-8`, or `p-10`?), use `AskUserQuestion` to confirm the intended value before emitting.
 
-4. **Apply accessibility defaults.** If the description implies an interactive element (button, link, input, select, or similar), automatically include the appropriate focus-visible or focus-ring class even if not explicitly mentioned. Append it to the state position in the class list and add a brief `# a11y` comment in the summary to explain the addition.
+4. **Apply accessibility defaults.** If the description implies an interactive element (button, link, input, select, or similar), handle focus styling based on the detected framework:
+   - **Tailwind / fallback**: append `focus-visible:ring` to the class list.
+   - **acss-kit**: do not add an extra class — acss-kit components handle `:focus-visible` via their own component CSS. Note this in the summary instead.
+   - **Bootstrap**: append `focus-ring` (Bootstrap 5.3+) or note that Bootstrap provides native focus styling.
+
+   Always add a brief `# a11y` note in the summary explaining what was added (or why no class was added).
 
 5. **Emit output.** Print two fenced code blocks:
 
-   **Class string:**
+   **Class string** (Tailwind example):
    ```text
    flex items-center p-4 bg-primary rounded shadow focus-visible:ring
    ```
@@ -70,6 +75,8 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
    ```html
    <button class="flex items-center p-4 bg-primary rounded shadow focus-visible:ring">Label</button>
    ```
+
+   The focus class (`focus-visible:ring`, `focus-ring`, or none) varies by framework — see step 4.
 
 6. **Print summary.** One concise block listing:
    - Framework detected (or fallback used)
