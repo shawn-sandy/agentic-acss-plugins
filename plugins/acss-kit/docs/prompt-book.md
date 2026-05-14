@@ -1,6 +1,6 @@
 # Prompt Book
 
-A catalogue of copy-paste prompts for using the `acss-kit` and `acss-utilities` plugins inside Claude Code.
+A catalogue of copy-paste prompts for using `acss-kit` inside Claude Code. As of v1.0.0, utility-class commands (`/utility-*`) are part of acss-kit — no separate `acss-utilities` install required.
 
 Each entry has:
 
@@ -10,12 +10,13 @@ Each entry has:
 
 Prompts are written as natural language for Claude Code to interpret; most resolve to a shipped slash command. Either form works — type the command directly, or describe what you want.
 
-> **Prerequisites.** Install the plugins first:
+> **Prerequisites.** Install acss-kit:
 > ```text
 > /plugin marketplace add shawn-sandy/agentic-acss-plugins
 > /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
-> /plugin install acss-utilities@shawn-sandy-agentic-acss-plugins
 > ```
+>
+> Upgrading from v0.x with acss-utilities installed? See [`docs/migration-v1.md`](migration-v1.md).
 
 ---
 
@@ -202,8 +203,8 @@ role feel [warmer].
 **Prompt:**
 
 ```text
-Drop the acss-utilities bundle into my project. Use the default target
-and include only the [color-bg, color-text, spacing, display, flex]
+Drop the utility bundle into my project using acss-kit. Use the default
+target and include only the [color-bg, color-text, spacing, display, flex]
 families.
 ```
 
@@ -308,4 +309,4 @@ families.
 - **Prefer plain English when you don't know the command.** Claude Code routes to the right skill — you don't have to memorise every slash command.
 - **Run `/setup` once per project.** Most other prompts assume the foundation `ui.tsx` is already in place.
 - **Validate after theme edits.** Every theme command runs `validate_theme.py` for AA contrast — trust the failures.
-- **Read the per-plugin README.** `plugins/acss-kit/README.md` and `plugins/acss-utilities/README.md` cover edge cases and arguments not shown here.
+- **Read the plugin README.** `plugins/acss-kit/README.md` covers edge cases and arguments not shown here. Upgrading from v0.x? See [`docs/migration-v1.md`](migration-v1.md).
