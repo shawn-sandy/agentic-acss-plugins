@@ -1,0 +1,37 @@
+{
+  "_comment": "Vocabulary mapping: acss-kit role names → fpkit-style utility token names. Read by generate_bridge.py to build token-bridge.css without hand-written hex fallbacks.",
+  "roles": {
+    "danger":         "error",
+    "surface-raised": "surface-secondary"
+  },
+  "derived": {
+    "error-bg": {
+      "from": "danger",
+      "mix": "color-mix(in oklch, var(--color-danger, {light}) 12%, var(--color-background, {bg}))",
+      "mix-dark": "color-mix(in oklch, var(--color-danger, {dark}) 18%, var(--color-background, {bg-dark}))"
+    },
+    "success-bg": {
+      "from": "success",
+      "mix": "color-mix(in oklch, var(--color-success, {light}) 12%, var(--color-background, {bg}))",
+      "mix-dark": "color-mix(in oklch, var(--color-success, {dark}) 18%, var(--color-background, {bg-dark}))"
+    },
+    "warning-bg": {
+      "from": "warning",
+      "mix": "color-mix(in oklch, var(--color-warning, {light}) 12%, var(--color-background, {bg}))",
+      "mix-dark": "color-mix(in oklch, var(--color-warning, {dark}) 18%, var(--color-background, {bg-dark}))"
+    },
+    "info-bg": {
+      "from": "info",
+      "mix": "color-mix(in oklch, var(--color-info, {light}) 12%, var(--color-background, {bg}))",
+      "mix-dark": "color-mix(in oklch, var(--color-info, {dark}) 18%, var(--color-background, {bg-dark}))"
+    },
+    "primary-light": {
+      "from": "primary",
+      "mix": "color-mix(in oklch, var(--color-primary, {light}) 80%, white)",
+      "mix-dark": "color-mix(in oklch, var(--color-primary, {dark}) 70%, black)"
+    }
+  },
+  "fallback": {
+    "secondary": "primary"
+  }
+}
