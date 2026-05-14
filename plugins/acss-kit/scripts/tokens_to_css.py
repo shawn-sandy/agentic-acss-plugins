@@ -5,6 +5,7 @@ Convert a theme.tokens.json file into CSS theme files.
 Usage:
     python tokens_to_css.py <tokens.json> [--out-dir=<dir>]
     python tokens_to_css.py --stdin [--out-dir=<dir>]   (reads JSON from stdin)
+    python tokens_to_css.py --self-test
 
 Output: writes light.css and/or dark.css (and brand-<name>.css for each brand)
         to --out-dir (default: current directory). Prints file paths written.
@@ -20,8 +21,12 @@ CSS variable convention (CLAUDE.md §CSS variable naming):
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(__file__))
+from _tokens import DARK_SELECTOR, LIGHT_SELECTOR, format_palette  # noqa: E402
 
 
 LIGHT_HEADER = """\
@@ -45,42 +50,16 @@ BRAND_HEADER = """\
  */
 """
 
-ROLE_GROUPS = [
-    ("Backgrounds", ["--color-background", "--color-surface", "--color-surface-raised", "--color-surface-subtle"]),
-    ("Text", ["--color-text", "--color-text-muted", "--color-text-inverse", "--color-text-subtle"]),
-    ("Borders", ["--color-border", "--color-border-strong"]),
-    ("Brand + semantic", ["--color-primary", "--color-primary-hover", "--color-success", "--color-warning", "--color-danger", "--color-info"]),
-    ("Focus", ["--color-focus-ring"]),
-    ("Accent", ["--color-brand-accent"]),
-]
-
-
-def _format_palette(palette: dict[str, str], selector: str, indent: str = "  ") -> str:
-    lines = [f"{selector} {{"]
-    for group_name, roles in ROLE_GROUPS:
-        group_lines = []
-        for role in roles:
-            if role in palette:
-                val = palette[role]
-                # Every var() reference includes a hardcoded hex fallback per CLAUDE.md
-                group_lines.append(f"{indent}{role}: var({role}, {val});")
-        if group_lines:
-            lines.append(f"\n{indent}/* {group_name} */")
-            lines.extend(group_lines)
-    lines.append("}\n")
-    return "\n".join(lines)
-
 
 def _write_light(palette: dict[str, str], out_dir: Path) -> Path:
-    content = LIGHT_HEADER + "\n" + _format_palette(palette, ":root")
-    # Strip double-blank lines
+    content = LIGHT_HEADER + "\n" + format_palette(palette, LIGHT_SELECTOR)
     path = out_dir / "light.css"
     path.write_text(content, encoding="utf-8")
     return path
 
 
 def _write_dark(palette: dict[str, str], out_dir: Path) -> Path:
-    content = DARK_HEADER + "\n" + _format_palette(palette, '[data-theme="dark"]')
+    content = DARK_HEADER + "\n" + format_palette(palette, DARK_SELECTOR)
     path = out_dir / "dark.css"
     path.write_text(content, encoding="utf-8")
     return path
@@ -92,16 +71,107 @@ def _write_brand(name: str, overrides: dict, out_dir: Path) -> Path:
     dark_overrides = overrides.get("dark", {})
     content = header + "\n"
     if light_overrides:
-        content += _format_palette(light_overrides, ":root") + "\n"
+        content += format_palette(light_overrides, LIGHT_SELECTOR) + "\n"
     if dark_overrides:
-        content += _format_palette(dark_overrides, '[data-theme="dark"]') + "\n"
+        content += format_palette(dark_overrides, DARK_SELECTOR) + "\n"
     path = out_dir / f"brand-{name}.css"
     path.write_text(content, encoding="utf-8")
     return path
 
 
+def process(tokens: dict, out_dir: Path) -> list[str]:
+    """Write CSS files from a tokens dict. Returns list of written paths."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written: list[str] = []
+    modes = tokens.get("modes", {})
+    if "light" in modes:
+        written.append(str(_write_light(modes["light"], out_dir)))
+    if "dark" in modes:
+        written.append(str(_write_dark(modes["dark"], out_dir)))
+    for brand_name, overrides in tokens.get("brands", {}).items():
+        written.append(str(_write_brand(brand_name, overrides, out_dir)))
+    return written
+
+
+def self_test() -> int:
+    import tempfile
+
+    passed = 0
+    failed = 0
+
+    def run(name: str, tokens: dict, expected_files: list[str],
+            checks: list[str]) -> None:
+        nonlocal passed, failed
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_dir = Path(tmpdir)
+            written = process(tokens, out_dir)
+            written_names = {Path(p).name for p in written}
+            ok = set(expected_files) <= written_names
+            combined = "".join(
+                (out_dir / f).read_text(encoding="utf-8")
+                for f in expected_files
+                if (out_dir / f).exists()
+            )
+            ok = ok and all(chk in combined for chk in checks)
+            if ok:
+                print(f"PASS: {name}")
+                passed += 1
+            else:
+                missing_files = set(expected_files) - written_names
+                missing_checks = [c for c in checks if c not in combined]
+                print(f"FAIL: {name} — missing_files={missing_files} missing_checks={missing_checks}")
+                failed += 1
+
+    run(
+        "light mode only",
+        {"modes": {"light": {"--color-primary": "#4f46e5", "--color-background": "#ffffff"}}},
+        ["light.css"],
+        [":root {", "--color-primary: var(--color-primary, #4f46e5);",
+         "--color-background: var(--color-background, #ffffff);"],
+    )
+    run(
+        "dark mode written to correct selector",
+        {"modes": {"dark": {"--color-primary": "#7dd3fc"}}},
+        ["dark.css"],
+        ['[data-theme="dark"] {', "--color-primary: var(--color-primary, #7dd3fc);"],
+    )
+    run(
+        "both modes",
+        {"modes": {
+            "light": {"--color-primary": "#2563eb"},
+            "dark":  {"--color-primary": "#93c5fd"},
+        }},
+        ["light.css", "dark.css"],
+        [":root {", '[data-theme="dark"] {'],
+    )
+    run(
+        "brand file written",
+        {"brands": {"forest": {"light": {"--color-primary": "#2f7a4d"}, "dark": {"--color-primary": "#4ade80"}}}},
+        ["brand-forest.css"],
+        ["brand-forest.css", ":root {", '[data-theme="dark"] {',
+         "--color-primary: var(--color-primary, #2f7a4d);"],
+    )
+    run(
+        "unknown role not emitted",
+        {"modes": {"light": {"--color-unknown-custom": "#ff0000", "--color-primary": "#2563eb"}}},
+        ["light.css"],
+        ["--color-primary"],
+    )
+
+    total = passed + failed
+    if failed:
+        print(f"\n{failed}/{total} self-test(s) FAILED")
+        return 1
+    print(f"\nAll {total} self-tests PASSED")
+    return 0
+
+
 def main() -> int:
     args = sys.argv[1:]
+
+    if "--self-test" in args:
+        return self_test()
+
     out_dir = Path(".")
     use_stdin = False
     input_path: Path | None = None
@@ -122,26 +192,12 @@ def main() -> int:
         if use_stdin:
             tokens = json.load(sys.stdin)
         else:
-            tokens = json.loads(input_path.read_text(encoding="utf-8"))
+            tokens = json.loads(input_path.read_text(encoding="utf-8"))  # type: ignore[union-attr]
     except Exception as e:
         print(f"error reading tokens: {e}", file=sys.stderr)
         return 2
 
-    out_dir.mkdir(parents=True, exist_ok=True)
-    written: list[str] = []
-
-    modes = tokens.get("modes", {})
-    if "light" in modes:
-        p = _write_light(modes["light"], out_dir)
-        written.append(str(p))
-    if "dark" in modes:
-        p = _write_dark(modes["dark"], out_dir)
-        written.append(str(p))
-
-    for brand_name, overrides in tokens.get("brands", {}).items():
-        p = _write_brand(brand_name, overrides, out_dir)
-        written.append(str(p))
-
+    written = process(tokens, out_dir)
     if not written:
         print("tokens_to_css: nothing to write (no modes or brands in tokens)", file=sys.stderr)
         return 1

@@ -110,7 +110,7 @@ def main() -> int:
             json.dumps(
                 {
                     "ok": False,
-                    "reasons": ["usage: validate_components.py <extracted-dir>"],
+                    "reasons": ["usage: validate_extracted_scss.py <extracted-dir>"],
                 },
             ),
         )

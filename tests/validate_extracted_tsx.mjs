@@ -184,10 +184,10 @@ function main() {
 
 function report(failures) {
   if (failures.length === 0) {
-    console.log('validate_components.mjs: extraction OK')
+    console.log('validate_extracted_tsx.mjs: extraction OK')
     process.exit(0)
   }
-  console.error('validate_components.mjs: extraction FAIL')
+  console.error('validate_extracted_tsx.mjs: extraction FAIL')
   for (const f of failures) console.error('  -', f)
   process.exit(1)
 }

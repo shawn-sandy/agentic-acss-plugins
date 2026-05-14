@@ -5,6 +5,7 @@ Convert theme CSS files into a theme.tokens.json file.
 Usage:
     python css_to_tokens.py <light.css> [dark.css] [brand-*.css ...]
     python css_to_tokens.py --dir=<dir>   (scans for light.css, dark.css, brand-*.css)
+    python css_to_tokens.py --self-test
 
 Output: JSON to stdout conforming to assets/theme.schema.json.
 
@@ -13,79 +14,19 @@ Exit codes: 0 = success, 2 = usage/IO error.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(__file__))
+from _tokens import (  # noqa: E402
+    BRAND_ROLES,
+    extract_selector_blocks,
+    parse_palette_from_block,
+)
 
 PALETTE_FILE_RE = re.compile(r"^(light|dark|brand-[\w-]+)\.css$")
-VAR_DECL_RE = re.compile(r"^\s*(--[a-z0-9-]+)\s*:\s*([^;]+);", re.IGNORECASE | re.MULTILINE)
-VAR_REF_RE = re.compile(r"var\(\s*(--[a-z0-9-]+)\s*(?:,\s*([^)]+))?\)")
-HEX_RE = re.compile(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})")
-
-# Roles relevant to theme tokens (ignore component-level tokens)
-COLOR_ROLE_RE = re.compile(r"^--color-")
-
-# Brand files only override these roles
-BRAND_ROLES = {
-    "--color-primary", "--color-primary-hover",
-    "--color-focus-ring", "--color-brand-accent",
-}
-
-
-def _parse_vars(text: str) -> dict[str, str]:
-    return {m.group(1): m.group(2).strip() for m in VAR_DECL_RE.finditer(text)}
-
-
-def _resolve_hex(name: str, vars_: dict[str, str], depth: int = 3) -> str | None:
-    if depth < 0 or name not in vars_:
-        return None
-    raw = vars_[name]
-    m = HEX_RE.search(raw)
-    if m:
-        h = m.group(1)
-        if len(h) == 3:
-            h = "".join(c * 2 for c in h)
-        return "#" + h
-    m = VAR_REF_RE.search(raw)
-    if m:
-        resolved = _resolve_hex(m.group(1), vars_, depth - 1)
-        if resolved:
-            return resolved
-        if m.group(2):
-            fm = HEX_RE.search(m.group(2))
-            if fm:
-                h = fm.group(1)
-                if len(h) == 3:
-                    h = "".join(c * 2 for c in h)
-                return "#" + h
-    return None
-
-
-def _extract_selector_blocks(text: str) -> dict[str, str]:
-    """Split CSS into blocks by selector. Returns {selector: block_text}."""
-    # Match :root { ... } and [data-theme="dark"] { ... }
-    pattern = re.compile(
-        r'(:root|\[data-theme=["\']dark["\']\])\s*\{([^}]*)\}',
-        re.DOTALL | re.IGNORECASE,
-    )
-    blocks: dict[str, str] = {}
-    for m in pattern.finditer(text):
-        sel = m.group(1).strip()
-        key = "dark" if "dark" in sel.lower() else "light"
-        blocks[key] = blocks.get(key, "") + m.group(2)
-    return blocks
-
-
-def _parse_palette_from_block(block: str) -> dict[str, str]:
-    vars_ = _parse_vars(block)
-    palette: dict[str, str] = {}
-    for name, _ in vars_.items():
-        if COLOR_ROLE_RE.match(name):
-            resolved = _resolve_hex(name, vars_)
-            if resolved:
-                palette[name] = resolved
-    return palette
 
 
 def _process_file(path: Path) -> tuple[str, dict]:
@@ -94,29 +35,133 @@ def _process_file(path: Path) -> tuple[str, dict]:
     stem = path.stem  # e.g. 'light', 'dark', 'brand-forest'
 
     if stem in ("light", "dark"):
-        blocks = _extract_selector_blocks(text)
+        blocks = extract_selector_blocks(text)
         if stem in blocks:
-            return stem, _parse_palette_from_block(blocks[stem])
-        # Fallback: parse all vars if selector not found
-        return stem, _parse_palette_from_block(text)
+            return stem, parse_palette_from_block(blocks[stem])
+        return stem, parse_palette_from_block(text)
 
     if stem.startswith("brand-"):
         name = stem[len("brand-"):]
-        blocks = _extract_selector_blocks(text)
+        blocks = extract_selector_blocks(text)
         overrides: dict = {}
         for mode_key, block in blocks.items():
-            palette = _parse_palette_from_block(block)
+            palette = parse_palette_from_block(block)
             filtered = {k: v for k, v in palette.items() if k in BRAND_ROLES}
             if filtered:
                 overrides[mode_key] = filtered
         return f"brand-{name}", overrides
 
-    # Unknown — parse everything as a flat dict
-    return stem, _parse_palette_from_block(text)
+    return stem, parse_palette_from_block(text)
+
+
+def self_test() -> int:
+    import tempfile
+
+    passed = 0
+    failed = 0
+
+    def run(name: str, files: dict[str, str], checks: list[str],
+            absent: list[str] | None = None) -> None:
+        nonlocal passed, failed
+        with tempfile.TemporaryDirectory() as tmpdir:
+            dir_ = Path(tmpdir)
+            for fname, content in files.items():
+                (dir_ / fname).write_text(content, encoding="utf-8")
+            old_argv = sys.argv
+            sys.argv = ["css_to_tokens.py", f"--dir={tmpdir}"]
+            from io import StringIO
+            old_stdout = sys.stdout
+            sys.stdout = buf = StringIO()
+            try:
+                code = main()
+            finally:
+                sys.argv = old_argv
+                sys.stdout = old_stdout
+            output = buf.getvalue()
+            ok = code == 0
+            ok = ok and all(chk in output for chk in checks)
+            if absent:
+                ok = ok and all(a not in output for a in absent)
+            if ok:
+                print(f"PASS: {name}")
+                passed += 1
+            else:
+                missing = [c for c in checks if c not in output]
+                unexpected = [a for a in (absent or []) if a in output]
+                print(f"FAIL: {name} — code={code} missing={missing} unexpected={unexpected}")
+                if output:
+                    print("  output:", output[:300])
+                failed += 1
+
+    # Round-trip: write light.css that tokens_to_css.py would produce, read back
+    light_css = """\
+:root {
+
+  /* Backgrounds */
+  --color-background: var(--color-background, #ffffff);
+  --color-surface: var(--color-surface, #f8fafc);
+
+  /* Brand + semantic */
+  --color-primary: var(--color-primary, #4f46e5);
+  --color-danger: var(--color-danger, #dc2626);
+}
+"""
+    dark_css = """\
+[data-theme="dark"] {
+
+  /* Backgrounds */
+  --color-background: var(--color-background, #0f172a);
+
+  /* Brand + semantic */
+  --color-primary: var(--color-primary, #7dd3fc);
+}
+"""
+    run(
+        "light.css — primary and background extracted",
+        {"light.css": light_css},
+        ['"--color-primary": "#4f46e5"', '"--color-background": "#ffffff"'],
+    )
+    run(
+        "dark.css — dark mode primary extracted",
+        {"dark.css": dark_css},
+        ['"--color-primary": "#7dd3fc"', '"dark"'],
+    )
+    run(
+        "both light and dark",
+        {"light.css": light_css, "dark.css": dark_css},
+        ['"light"', '"dark"', '"--color-primary"'],
+    )
+    run(
+        "brand file — only BRAND_ROLES included",
+        {"brand-forest.css": """\
+:root {
+  --color-primary: var(--color-primary, #2f7a4d);
+  --color-danger: var(--color-danger, #dc2626);
+}
+"""},
+        ['"forest"', '"--color-primary"'],
+        absent=['"--color-danger"'],
+    )
+    run(
+        "round-trip — light hex survives css→json",
+        {"light.css": light_css},
+        ['"#4f46e5"'],
+    )
+
+    total = passed + failed
+    if failed:
+        print(f"\n{failed}/{total} self-test(s) FAILED")
+        return 1
+    print(f"\nAll {total} self-tests PASSED")
+    return 0
 
 
 def main() -> int:
     args = sys.argv[1:]
+
+    if "--self-test" in args:
+        return self_test()
+
     scan_dir: Path | None = None
     file_paths: list[Path] = []
 

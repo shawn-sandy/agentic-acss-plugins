@@ -70,7 +70,7 @@ Every `var()` reference inside a utility class **must include a fallback**. The 
 .bg-primary { background-color: var(--color-primary); }
 ```
 
-The fallback's purpose: utility classes should produce a sensible result even when the host project's theme CSS hasn't loaded yet, or when running outside acss-kit. The validator's same-shape check is shared with `acss-kit`'s `validate_components.py` (the SCSS contract harness).
+The fallback's purpose: utility classes should produce a sensible result even when the host project's theme CSS hasn't loaded yet, or when running outside acss-kit. The validator's same-shape check is shared with `acss-kit`'s `validate_extracted_scss.py` (the SCSS contract harness).
 
 ## Source-of-truth
 
