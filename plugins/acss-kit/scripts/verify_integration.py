@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Verify the user's React entrypoint actually imports the assets that
-/kit-add, /theme-create, and /utility-add wrote into the project.
+Verify that acss-kit artifacts are properly wired into the user's project.
+
+Usage:
+    python verify_integration.py [--target=react|html] [project_root]
+    python verify_integration.py --self-test
+
+--target defaults to "react".
+
+--- React target ---
 
 Detector contract: read-only, JSON to stdout, exit 0 when every wired-up
 artifact is imported, exit 1 with populated `reasons` array otherwise.
@@ -11,11 +18,7 @@ stack.entrypointFile. Then, for each artifact that exists on disk, checks
 whether it is imported (by basename) in the entrypoint. Bridge ordering
 relative to utilities.css is line-number compared.
 
-Usage:
-    python verify_integration.py [project_root]
-    python verify_integration.py --self-test
-
-Output (JSON to stdout):
+Output (--target=react):
 
     All wired up:
     {
@@ -33,14 +36,38 @@ Output (JSON to stdout):
     Missing wires:
     {
       "ok": false,
-      "projectRoot": "/abs/path",
-      "entrypointFile": "src/main.tsx",
-      "checks": [...],
+      ...
       "reasons": [
-        "token-bridge.css written to src/styles/ but not imported in src/main.tsx — add: import './styles/token-bridge.css';",
+        "token-bridge.css written to src/styles/ but not imported in src/main.tsx",
         "utilities.css imported but appears before token-bridge.css — bridge must load first."
       ]
     }
+
+--- HTML target ---
+
+Reads .acss-html-target.json for componentsHtmlDir. For each generated file
+under that directory:
+
+    - *.scss / *.css  → expect a <link rel="stylesheet"> or @import
+    - *.js            → expect a <script src="..."> reference
+    - *.html          → content fragments, not checked (listed as kind=snippet)
+
+Output (--target=html):
+
+    All wired up:
+    {
+      "ok": true,
+      "projectRoot": "/abs/path",
+      "componentsHtmlDir": "components/html",
+      "checks": [
+        {"artifact": "button.scss", "kind": "style",   "imported": true},
+        {"artifact": "dialog.js",   "kind": "script",  "imported": true},
+        {"artifact": "button.html", "kind": "snippet", "imported": null}
+      ],
+      "reasons": []
+    }
+
+Exit code 0 = ok, 1 = issues found.
 """
 from __future__ import annotations
 
@@ -50,71 +77,29 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-DEFAULT_COMPONENTS_DIR = "src/components/fpkit"
-DEFAULT_UTILITIES_DIR = "src/styles"
-
-
-def find_project_root(start: Path) -> Optional[Path]:
-    cur = start.resolve()
-    while True:
-        pkg = cur / "package.json"
-        if pkg.is_file():
-            try:
-                data = json.loads(pkg.read_text(encoding="utf-8"))
-                deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
-                if "react" in deps:
-                    return cur
-            except Exception:
-                pass
-        if cur.parent == cur:
-            return None
-        cur = cur.parent
-
-
-def read_target(root: Path) -> dict:
-    target = root / ".acss-target.json"
-    if target.is_file():
-        try:
-            return json.loads(target.read_text(encoding="utf-8"))
-        except Exception:
-            return {}
-    return {}
-
-
-_IMPORT_PREFIXES: tuple[str, ...] = (
-    "import",
-    "require(",
-    "@import",
-    "@use",
-    "@forward",
+sys.path.insert(0, os.path.dirname(__file__))
+from _target import (
+    DEFAULT_COMPONENTS_DIR,
+    DEFAULT_HTML_DIR,
+    DEFAULT_UTILITIES_DIR,
+    find_import_line,
+    find_project_root,
+    iter_page_files,
+    read_html_dir,
+    read_json_config,
 )
 
 
-def find_import_line(text: str, basename: str) -> Optional[int]:
-    """Return 1-based line number of the first import line referencing basename.
+# ---------------------------------------------------------------------------
+# React target helpers
+# ---------------------------------------------------------------------------
 
-    Recognises JS/TS (`import`, `require(`) and Sass (`@import`, `@use`,
-    `@forward`) statements so the same scanner works against both the TSX
-    entrypoint and an SCSS/CSS entry file.
-    """
-    for idx, line in enumerate(text.splitlines(), start=1):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        if not any(stripped.startswith(prefix) for prefix in _IMPORT_PREFIXES):
-            continue
-        if basename in stripped:
-            return idx
-    return None
+def _read_react_target(root: Path) -> dict:
+    return read_json_config(root / ".acss-target.json")
 
 
-def find_any_use(root: Path, components_dir: str) -> bool:
-    """Return True if any *.tsx/*.ts/*.jsx/*.js under src/ imports from componentsDir.
-
-    Matches a normalized path fragment (e.g. "components/fpkit/" or the dir relative
-    to src/) inside import/require statements only. Avoids the false positives of
-    matching the bare last segment anywhere in the file body.
-    """
+def _find_any_use(root: Path, components_dir: str) -> bool:
+    """Return True if any *.tsx/*.ts/*.jsx/*.js under src/ imports from componentsDir."""
     src = root / "src"
     if not src.is_dir():
         return False
@@ -145,8 +130,8 @@ def find_any_use(root: Path, components_dir: str) -> bool:
     return False
 
 
-def verify(root: Path) -> dict:
-    target = read_target(root)
+def verify_react(root: Path) -> dict:
+    target = _read_react_target(root)
     components_dir = target.get("componentsDir") or DEFAULT_COMPONENTS_DIR
     utilities_dir = target.get("utilitiesDir") or DEFAULT_UTILITIES_DIR
     stack = target.get("stack") or {}
@@ -195,9 +180,6 @@ def verify(root: Path) -> dict:
             )
 
     def find_in_any(basename: str) -> Optional[tuple[str, int]]:
-        """Return (file_label, line_number) of the first import line referencing
-        basename, preferring the TSX entrypoint over the CSS/SCSS entry. None
-        if neither file imports it."""
         line = find_import_line(entry_text, basename)
         if line is not None:
             return (entrypoint_rel, line)
@@ -218,9 +200,6 @@ def verify(root: Path) -> dict:
         return rel
 
     def import_fixup_hint(artifact_path: Path) -> str:
-        """Build a 'where to add it' hint that names each candidate importer
-        with the right syntax for that file (JS/TS `import` vs Sass `@import`)
-        and a relative path computed from that importer's own directory."""
         hints = [
             f"{entrypoint_rel}: import '{relpath_from(entrypoint_rel, artifact_path)}';"
         ]
@@ -259,9 +238,6 @@ def verify(root: Path) -> dict:
                 f"{in_files} — add {import_fixup_hint(utilities_path)}"
             )
 
-    # The bridge-before-utilities ordering check only makes sense when both
-    # imports live in the same file. Cross-file ordering is determined by how
-    # the TSX entrypoint sequences its imports, which is out of scope here.
     if (
         bridge_hit is not None
         and utilities_hit is not None
@@ -295,7 +271,7 @@ def verify(root: Path) -> dict:
 
     ui_path = root / components_dir / "ui.tsx"
     if ui_path.is_file():
-        used = find_any_use(root, components_dir)
+        used = _find_any_use(root, components_dir)
         checks.append({"artifact": f"{components_dir}/ui.tsx", "imported": used})
         if not used:
             reasons.append(
@@ -313,27 +289,139 @@ def verify(root: Path) -> dict:
     }
 
 
-def main() -> int:
-    args = sys.argv[1:]
-    if args and args[0] == "--self-test":
-        return self_test()
+# ---------------------------------------------------------------------------
+# HTML target helpers
+# ---------------------------------------------------------------------------
 
-    start = Path(args[0]).resolve() if args else Path.cwd()
-    root = find_project_root(start)
-    if root is None:
-        print(json.dumps({
+_REFERENCE_TOKENS = (
+    "<link",
+    "<script",
+    "@import",
+    "@use",
+    "@forward",
+    "import",
+    "require(",
+    "url(",
+)
+
+
+def _is_referenced(basename: str, pages: list[Path]) -> bool:
+    needle = basename
+    window = 256
+    for page in pages:
+        try:
+            text = page.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        lower = text.lower()
+        start = 0
+        while True:
+            idx = text.find(needle, start)
+            if idx == -1:
+                break
+            window_start = max(0, idx - window)
+            preceding = lower[window_start:idx]
+            if any(token in preceding for token in _REFERENCE_TOKENS):
+                return True
+            start = idx + len(needle)
+    return False
+
+
+def _classify(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix in (".scss", ".css", ".sass"):
+        return "style"
+    if suffix in (".js", ".mjs"):
+        return "script"
+    if suffix in (".html", ".htm"):
+        return "snippet"
+    return "other"
+
+
+def verify_html(root: Path) -> dict:
+    components_html_dir, configured = read_html_dir(root)
+
+    configured_path = Path(components_html_dir)
+    if configured_path.is_absolute() or ".." in configured_path.parts:
+        return {
             "ok": False,
-            "projectRoot": None,
-            "entrypointFile": None,
+            "projectRoot": str(root),
+            "componentsHtmlDir": components_html_dir,
             "checks": [],
-            "reasons": ["No project root containing react was found."],
-        }, indent=2))
-        return 1
+            "reasons": [
+                "componentsHtmlDir must be a project-relative path "
+                "(no leading '/' and no '..' segments).",
+            ],
+        }
 
-    result = verify(root)
-    print(json.dumps(result, indent=2))
-    return 0 if result["ok"] else 1
+    artifacts_dir = root / configured_path
+    if not artifacts_dir.is_dir():
+        return {
+            "ok": False,
+            "projectRoot": str(root),
+            "componentsHtmlDir": components_html_dir,
+            "checks": [],
+            "reasons": [
+                f"componentsHtmlDir {components_html_dir} does not exist — "
+                "run /kit-add --target=html first."
+            ],
+        }
 
+    pages = [p for p in iter_page_files(root)
+             if not p.is_relative_to(artifacts_dir)]
+
+    checks: list[dict] = []
+    reasons: list[str] = []
+
+    for artifact in sorted(artifacts_dir.rglob("*")):
+        if not artifact.is_file():
+            continue
+        if artifact.name == "_stateful.js":
+            continue
+        kind = _classify(artifact)
+        if kind == "snippet":
+            checks.append({"artifact": artifact.name, "kind": kind, "imported": None})
+            continue
+        if kind == "other":
+            continue
+
+        candidates = [artifact.name]
+        if kind == "style" and artifact.suffix.lower() in (".scss", ".sass"):
+            candidates.append(artifact.with_suffix(".css").name)
+        imported = any(_is_referenced(name, pages) for name in candidates)
+        checks.append({"artifact": artifact.name, "kind": kind, "imported": imported})
+        if not imported:
+            ref_path = f"{components_html_dir}/{artifact.name}"
+            if kind == "style":
+                if artifact.suffix.lower() in (".scss", ".sass"):
+                    compiled_path = ref_path.rsplit(".", 1)[0] + ".css"
+                    hint = (
+                        f'compile {ref_path} with Sass and add '
+                        f'<link rel="stylesheet" href="{compiled_path}">, '
+                        f'or @import "{ref_path}" from your existing Sass '
+                        "entrypoint"
+                    )
+                else:
+                    hint = f'<link rel="stylesheet" href="{ref_path}">'
+            else:
+                hint = f'<script type="module" src="{ref_path}"></script>'
+            reasons.append(
+                f"{artifact.name} not referenced by any page under {root.name}/ "
+                f"— add: {hint}"
+            )
+
+    return {
+        "ok": not reasons,
+        "projectRoot": str(root),
+        "componentsHtmlDir": components_html_dir,
+        "checks": checks,
+        "reasons": reasons,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Self-test
+# ---------------------------------------------------------------------------
 
 def self_test() -> int:
     import tempfile
@@ -341,7 +429,8 @@ def self_test() -> int:
     passed = 0
     failed = 0
 
-    def run(name: str, files: dict, expect_ok: bool, expect_reason_substr: Optional[str] = None) -> None:
+    def run(name: str, files: dict, fn, expect_ok: bool,
+            expect_reason_substr: Optional[str] = None, **kwargs) -> None:
         nonlocal passed, failed
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -349,18 +438,17 @@ def self_test() -> int:
                 p = root / filename
                 p.parent.mkdir(parents=True, exist_ok=True)
                 p.write_text(content, encoding="utf-8")
-            result = verify(root)
-            ok_match = result["ok"] == expect_ok
-            substr_match = True
+            result = fn(root)
+            ok = result["ok"] == expect_ok
             if expect_reason_substr is not None:
-                substr_match = any(expect_reason_substr in r for r in result["reasons"])
-            if ok_match and substr_match:
+                ok = ok and any(expect_reason_substr in r for r in result["reasons"])
+            for key, val in kwargs.items():
+                ok = ok and result.get(key) == val
+            if ok:
                 print(f"PASS: {name}")
                 passed += 1
             else:
-                print(
-                    f"FAIL: {name} — ok={result['ok']} reasons={result['reasons']!r}"
-                )
+                print(f"FAIL: {name} — ok={result['ok']!r} reasons={result['reasons']!r}")
                 failed += 1
 
     pkg = '{"name":"t","dependencies":{"react":"18"}}'
@@ -370,38 +458,42 @@ def self_test() -> int:
         "stack": {"entrypointFile": "src/main.tsx"},
     })
 
+    # React tests
     run(
-        "missing entrypointFile in target",
+        "react — missing entrypointFile in target",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({"componentsDir": "src/components/fpkit"}),
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="stack.entrypointFile not set",
     )
     run(
-        "bridge written but not imported",
+        "react — bridge written but not imported",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
             "src/main.tsx": "console.log('no imports')\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="token-bridge.css",
     )
     run(
-        "bridge imported, no other artifacts",
+        "react — bridge imported, no other artifacts",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
             "src/main.tsx": "import './styles/token-bridge.css';\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=True,
     )
     run(
-        "utilities imported before bridge → ordering reason",
+        "react — utilities imported before bridge → ordering reason",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
@@ -412,22 +504,24 @@ def self_test() -> int:
             "src/styles/token-bridge.css": ":root{}",
             "src/styles/utilities.css": ".m-1{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="bridge must load first",
     )
     run(
-        "ui.tsx vendored but never used",
+        "react — ui.tsx vendored but never used",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
             "src/main.tsx": "console.log('hi')\n",
             "src/components/fpkit/ui.tsx": "export const UI = {};",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="ui.tsx is vendored",
     )
     run(
-        "ui.tsx used in a feature file",
+        "react — ui.tsx used in a feature file",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
@@ -435,21 +529,23 @@ def self_test() -> int:
             "src/app.tsx": "import { UI } from './components/fpkit/ui';\n",
             "src/components/fpkit/ui.tsx": "export const UI = {};",
         },
+        verify_react,
         expect_ok=True,
     )
     run(
-        "find_any_use rejects bare-segment false positive (string mention only, no import)",
+        "react — find_any_use rejects bare-segment false positive",
         {
             "package.json": pkg,
             ".acss-target.json": target_with_entry,
             "src/main.tsx": "// docs reference: see fpkit upstream\n",
             "src/components/fpkit/ui.tsx": "export const UI = {};",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="ui.tsx is vendored",
     )
     run(
-        "bridge imported via SCSS cssEntryFile counts as wired",
+        "react — bridge imported via SCSS cssEntryFile counts as wired",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -464,10 +560,11 @@ def self_test() -> int:
             "src/styles/index.scss": "@import \"./token-bridge.css\";\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=True,
     )
     run(
-        "ordering check fires inside cssEntryFile when bridge follows utilities there",
+        "react — ordering check fires inside cssEntryFile",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -486,11 +583,12 @@ def self_test() -> int:
             "src/styles/token-bridge.css": ":root{}",
             "src/styles/utilities.css": ".m-1{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="bridge must load first",
     )
     run(
-        "split: bridge in TSX, utilities in cssEntryFile → no ordering reason",
+        "react — split bridge/utilities across files → no ordering reason",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -509,10 +607,11 @@ def self_test() -> int:
             "src/styles/token-bridge.css": ":root{}",
             "src/styles/utilities.css": ".m-1{}",
         },
+        verify_react,
         expect_ok=True,
     )
     run(
-        "fixup hint names cssEntryFile with @import syntax when configured",
+        "react — fixup hint names cssEntryFile with @import syntax",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -527,11 +626,12 @@ def self_test() -> int:
             "src/styles/index.scss": "body { margin: 0; }\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="src/styles/index.scss: @import \"./token-bridge.css\";",
     )
     run(
-        "cssEntryFile configured but missing → explicit reason",
+        "react — cssEntryFile configured but missing → explicit reason",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -545,11 +645,12 @@ def self_test() -> int:
             "src/main.tsx": "import './styles/token-bridge.css';\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="stack.cssEntryFile points at src/styles/index.scss but that file does not exist",
     )
     run(
-        "theme imported via SCSS cssEntryFile counts as wired",
+        "react — theme imported via cssEntryFile counts as wired",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -568,10 +669,11 @@ def self_test() -> int:
             "src/styles/theme/light.css": ":root{}",
             "src/styles/theme/dark.css": ":root{}",
         },
+        verify_react,
         expect_ok=True,
     )
     run(
-        "theme files present but neither entry nor cssEntry imports them",
+        "react — theme files present but not imported in either entry",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -587,11 +689,12 @@ def self_test() -> int:
             "src/styles/theme/light.css": ":root{}",
             "src/styles/theme/dark.css": ":root{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="src/main.tsx or src/styles/index.scss",
     )
     run(
-        "Next-style entrypoint outside src/: relpath suggestion is correct",
+        "react — Next-style entrypoint outside src/: relpath suggestion is correct",
         {
             "package.json": pkg,
             ".acss-target.json": json.dumps({
@@ -602,8 +705,198 @@ def self_test() -> int:
             "app/layout.tsx": "export default function L(){return null}\n",
             "src/styles/token-bridge.css": ":root{}",
         },
+        verify_react,
         expect_ok=False,
         expect_reason_substr="../src/styles/token-bridge.css",
+    )
+
+    # HTML tests
+    html_cfg = json.dumps({"componentsHtmlDir": "components/html"})
+
+    run(
+        "html — componentsHtmlDir missing → reason explains why",
+        {".acss-html-target.json": html_cfg},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="does not exist",
+    )
+    run(
+        "html — componentsHtmlDir as a non-string (list) → falls back to default",
+        {".acss-html-target.json": json.dumps({"componentsHtmlDir": ["unexpected"]})},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="components/html does not exist",
+    )
+    run(
+        "html — config JSON is a top-level array → treated as empty",
+        {".acss-html-target.json": "[1, 2, 3]"},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="components/html does not exist",
+    )
+    run(
+        "html — config JSON is a top-level string → treated as empty",
+        {".acss-html-target.json": '"components/html"'},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="components/html does not exist",
+    )
+    run(
+        "html — absolute componentsHtmlDir is rejected",
+        {".acss-html-target.json": json.dumps({"componentsHtmlDir": "/etc/passwd"})},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="must be a project-relative path",
+    )
+    run(
+        "html — traversal segment in componentsHtmlDir is rejected",
+        {".acss-html-target.json": json.dumps({"componentsHtmlDir": "../../escape"})},
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="must be a project-relative path",
+    )
+    run(
+        "html — stylesheet linked from index.html → ok",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "index.html": (
+                "<!doctype html><html><head>"
+                '<link rel="stylesheet" href="components/html/button.scss">'
+                "</head></html>"
+            ),
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — stylesheet not linked anywhere → reason w/ <link> hint",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "index.html": "<!doctype html><html></html>",
+        },
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr='<link rel="stylesheet"',
+    )
+    run(
+        "html — script wired via <script src> → ok",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/dialog.js": "export {}",
+            "index.html": (
+                '<!doctype html><html><body>'
+                '<script type="module" src="components/html/dialog.js"></script>'
+                '</body></html>'
+            ),
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — script not wired → reason w/ <script> hint",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/dialog.js": "export {}",
+            "index.html": "<!doctype html><html></html>",
+        },
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr='<script type="module"',
+    )
+    run(
+        "html — *.html snippets are not checked for inclusion",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.html": "<button class=\"btn\"></button>",
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — _stateful.js is excluded from checks",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/_stateful.js": "export const wireDisabled = ()=>{};",
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — stylesheet linked via @import in user SCSS counts as wired",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "src/styles/main.scss": '@import "../../components/html/button.scss";',
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — multi-line <script src=...> counts as wired",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/dialog.js": "export {}",
+            "index.html": (
+                "<!doctype html><html><body>\n"
+                "<script\n"
+                '  type="module"\n'
+                '  src="components/html/dialog.js"\n'
+                "></script>\n"
+                "</body></html>\n"
+            ),
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — ES-module bootstrap importing the artifact counts as wired",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/dialog.js": "export {}",
+            "src/main.js": "import './components/html/dialog.js';\n",
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — .scss fix-up hint mentions Sass compilation",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "index.html": "<!doctype html><html></html>",
+        },
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="compile components/html/button.scss with Sass",
+    )
+    run(
+        "html — page links compiled .css → satisfies the .scss artifact",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "index.html": (
+                "<!doctype html><html><head>"
+                '<link rel="stylesheet" href="components/html/button.css">'
+                "</head></html>"
+            ),
+        },
+        verify_html,
+        expect_ok=True,
+    )
+    run(
+        "html — node_modules copy of artifact does not count",
+        {
+            ".acss-html-target.json": html_cfg,
+            "components/html/button.scss": ".btn{}",
+            "node_modules/old/index.html": (
+                '<link rel="stylesheet" href="components/html/button.scss">'
+            ),
+        },
+        verify_html,
+        expect_ok=False,
+        expect_reason_substr="button.scss not referenced",
     )
 
     total = passed + failed
@@ -612,6 +905,50 @@ def self_test() -> int:
         return 1
     print(f"\nAll {total} self-tests PASSED")
     return 0
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+def main() -> int:
+    args = sys.argv[1:]
+
+    if "--self-test" in args:
+        return self_test()
+
+    target = "react"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--target="):
+            target = a.split("=", 1)[1].strip().lower()
+        else:
+            positional.append(a)
+
+    if target not in ("react", "html"):
+        print("Usage: verify_integration.py [--target=react|html] [project_root]",
+              file=sys.stderr)
+        return 2
+
+    start = Path(positional[0]).resolve() if positional else Path.cwd()
+
+    if target == "react":
+        root = find_project_root(start)
+        if root is None:
+            print(json.dumps({
+                "ok": False,
+                "projectRoot": None,
+                "entrypointFile": None,
+                "checks": [],
+                "reasons": ["No project root containing react was found."],
+            }, indent=2))
+            return 1
+        result = verify_react(root)
+    else:
+        result = verify_html(start)
+
+    print(json.dumps(result, indent=2))
+    return 0 if result["ok"] else 1
 
 
 if __name__ == "__main__":

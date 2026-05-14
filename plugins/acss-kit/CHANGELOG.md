@@ -4,6 +4,19 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-05-14
+
+### Changed
+
+- **`/kit-add --target=html` unifies HTML and React component generation.** The standalone `skills/components-html/` skill and its `detect_html_target.py` / `verify_html_integration.py` scripts are removed. Their workflows now live as the **HTML Target** section (`## HTML Target`, steps HT-A through HT-F) inside `skills/components/SKILL.md`. Pass `--target=html` to `/kit-add` to generate static HTML + SCSS + vanilla-JS output; the default (`--target=react`) is unchanged.
+- **`/kit-add-html` deprecated.** The command is now a thin alias that forwards to `/kit-add --target=html` and prints a deprecation notice. Existing invocations continue to work.
+- **Shared Python utilities extracted to `scripts/_target.py`.** `find_project_root`, `read_components_dir`, `read_html_dir`, `find_import_line`, and `iter_page_files` are no longer duplicated across four scripts. All callers import via a `sys.path` shim.
+- **`detect_target.py` now handles both React and HTML target detection** via `--target=react|html`. `detect_html_target.py` is removed.
+- **`verify_integration.py` now handles both React and HTML integration verification** via `--target=react|html`. `verify_html_integration.py` is removed.
+- **`components` skill description updated** to cover HTML output alongside React.
+- **Prompt book** updated: "When to use what" table now shows `--target=html`; section 2a notes the deprecation of `/kit-add-html`.
+- **`tests/e2e.sh` step 9** added: end-to-end smoke test for the HTML target path (detect unconfigured → write config → verify unwired → wire → verify ok).
+
 ## [0.12.0] - 2026-05-14
 
 ### Changed
