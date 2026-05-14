@@ -73,6 +73,32 @@ Convert an inline `style` attribute, JSX `style={{ ... }}` object, or `<style>` 
 
 **Name rules** — max 20 characters, kebab-case. Omit `name` to auto-generate from the element tag and first declared property.
 
+### `/create-utilities [description]`
+
+Generate a utility class string from a plain-language description of visual intent. Detects the project's utility framework (acss-kit, Tailwind, Bootstrap, or Tailwind-compatible fallback) and maps the description to specific class names.
+
+**Input** — describe what you want in plain language:
+
+```text
+a centered flex row with 1rem gap and a primary background
+```
+
+```text
+primary submit button with hover state
+```
+
+**Output** — a class string and a one-line HTML example:
+
+```text
+flex items-center gap-4 bg-primary focus-visible:ring
+```
+
+```html
+<button class="flex items-center gap-4 bg-primary focus-visible:ring">Label</button>
+```
+
+For interactive elements (button, link, input), focus-visible classes are included automatically. Run `/css-to-class [name]` on the output to consolidate into a single named CSS class.
+
 ## Developer guide
 
 See [`docs/README.md`](docs/README.md).
