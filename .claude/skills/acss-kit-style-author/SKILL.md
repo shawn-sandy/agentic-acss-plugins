@@ -68,7 +68,7 @@ existing `assets/brand-template.css` user-facing template.
 
 Run from the worktree root as a single pipeline:
 
-```
+```bash
 python3 plugins/acss-kit/scripts/generate_palette.py "<hex>" --mode=brand \
   | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({'brands': {'<preset-name>': d['brand_overrides']}}))" \
   | python3 plugins/acss-kit/scripts/tokens_to_css.py --stdin --out-dir=plugins/acss-kit/assets/brand-presets/
@@ -88,7 +88,7 @@ halt. Confirm the output file
 
 Run:
 
-```
+```bash
 python3 plugins/acss-kit/scripts/validate_theme.py plugins/acss-kit/assets/brand-presets/brand-<preset-name>.css
 ```
 
@@ -241,7 +241,7 @@ For each `brand-<name>.css` under `assets/brand-presets/`:
    recorded, skip the file and note it in the summary (hand-authored preset).
 2. Re-run the same reshape pipeline used by sub-flow A:
 
-   ```
+   ```bash
    python3 plugins/acss-kit/scripts/generate_palette.py "<seed>" --mode=brand \
      | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({'brands': {'<name>': d['brand_overrides']}}))" \
      | python3 plugins/acss-kit/scripts/tokens_to_css.py --stdin --out-dir=plugins/acss-kit/assets/brand-presets/

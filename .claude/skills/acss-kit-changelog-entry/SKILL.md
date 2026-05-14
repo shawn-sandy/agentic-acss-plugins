@@ -40,6 +40,4 @@ Format as a Keep-a-Changelog block using today's date:
 
 Show the proposed entry to the user. Wait for explicit approval before writing.
 Insert it above the previous latest version entry in
-`plugins/acss-kit/CHANGELOG.md`. Show the proposed entry to the user. Wait for
-explicit approval before writing. Insert it above the previous latest version
-entry in `plugins/acss-kit/CHANGELOG.md`.
+`plugins/acss-kit/CHANGELOG.md`.

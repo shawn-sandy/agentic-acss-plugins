@@ -24,7 +24,7 @@ that.
    - Resolve `<component-name>` to
      `plugins/acss-kit/skills/components/references/components/<component-name>.md`.
    - If the file does not exist, halt and suggest
-     `/component-author <component-name>` instead.
+     `/acss-kit-component-author <component-name>` instead.
 
 2. **Read the verification banner and Generation Contract.**
    - Capture `<ref>` from the `**Verified against fpkit source:**` line at the
@@ -46,11 +46,12 @@ that.
    - Repeat for the `.scss` companion if `<scss>` is not `(none)`, using the
      same raw URL form.
    - If WebFetch returns 404, try the alternate translated ref (e.g. `<version>`
-     if `v<version>` failed) or verify the component path. Only as a last resort
-     fall back to the rendered
-     `https://github.com/shawn-sandy/acss/blob/<ref>/...` URL and warn the
-     maintainer that the diff may include HTML noise. If still 404, surface the
-     error and ask the maintainer for a corrected ref or path.
+     if `v<version>` failed) or verify the component path. If `<ref>` resolves
+     to `"main"`, halt and ask the maintainer for a pinned tag or SHA — never
+     construct a `blob/main` URL. Only as a last resort fall back to the rendered
+     `https://github.com/shawn-sandy/acss/blob/<ref>/...` URL (with a pinned
+     ref) and warn the maintainer that the diff may include HTML noise. If still
+     404, surface the error and ask the maintainer for a corrected ref or path.
 
 4. **Diff upstream vs local templates.**
    - Read the `## TSX Template` fenced block from the local reference doc.

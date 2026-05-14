@@ -104,7 +104,7 @@ upstream fpkit source.
 
    ```scss
    // TODO: copy from https://github.com/shawn-sandy/acss/blob/<tag-or-sha>/packages/fpkit/src/components/<component-name>/<component-name>.scss
-   .<component-name > {
+   .<component-name> {
      background: var(--<component-name>-bg, transparent);
      color: var(--<component-name>-color, currentColor);
    }
@@ -142,7 +142,7 @@ upstream fpkit source.
    the "Verification Status" table and append a row before the next section
    header:
 
-   ```
+   ```markdown
    | <PascalCaseName> | [`<component-name>.md`](<component-name>.md) | `<ref>` | New — pending fpkit verification |
    ```
 

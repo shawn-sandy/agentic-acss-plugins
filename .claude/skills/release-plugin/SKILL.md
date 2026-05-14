@@ -87,7 +87,7 @@ If `.claude-plugin/marketplace.json` appears, note it as touched. If not, remind
 
 ### Output
 
-```
+```text
 Release checklist for acss-kit (main...HEAD)
 
   [PASS] plugin.json version bumped (0.2.1 → 0.3.0)

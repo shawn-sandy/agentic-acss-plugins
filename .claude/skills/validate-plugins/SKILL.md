@@ -57,7 +57,7 @@ For each `commands/*.md`:
 
 ### Output
 
-```
+```text
 PASS  Manifest fields
 PASS  Marketplace entry
 FAIL  Command files — app-init.md missing allowed-tools front-matter
@@ -110,7 +110,7 @@ jq -e '.plugins[] | select(.name == "<plugin>") | has("version") | not' .claude-
 
 ### Output
 
-```
+```text
 plugins/acss-kit
   PASS  Manifest fields (name, version, description)
   PASS  Marketplace entry has no version key
@@ -168,7 +168,7 @@ Invoke the `theme-reference-reviewer` agent. Capture its check verdicts. Each FA
 
 ### Step 7 — Render the dashboard
 
-```
+```text
 == plugin-health: <plugin-name> @ v<version> ==
 
 Structure              [OK | FIX] <one-line summary>
@@ -200,7 +200,7 @@ If everything is OK: "All systems green. Plugin is release-ready."
 
 ### Step 8 — Pre-release reminder
 
-```
+```text
 Before opening a PR:
   1. Run /release-plugin <plugin-name> <new-version>
   2. Confirm plugins/<plugin-name>/CHANGELOG.md mentions user-visible changes
