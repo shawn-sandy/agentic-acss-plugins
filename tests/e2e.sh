@@ -213,5 +213,50 @@ if [[ "$MISSING" -ne 0 ]]; then
 fi
 green "expected files present"
 
+# --- Step 9: HTML target smoke test ------------------------------------
+
+section "9. --target=html smoke: detect_target + verify_integration"
+
+HTML_SANDBOX="$(mktemp -d)"
+trap 'rm -rf "$SANDBOX" "$PALETTE_JSON" "$RENDERED_LIST" "$HTML_SANDBOX"' EXIT
+
+HTML_COMP_DIR="$HTML_SANDBOX/components/html"
+mkdir -p "$HTML_COMP_DIR"
+
+# detect_target.py --target=html: no config → source=none (exit 1)
+if python3 "$SCRIPTS/detect_target.py" --target=html "$HTML_SANDBOX" 2>/dev/null; then
+  red "detect_target --target=html: expected exit 1 for unconfigured project, got 0"
+  exit 1
+fi
+green "detect_target --target=html: unconfigured → source=none (exit 1 expected)"
+
+# Write config and re-run: should return source=configured (exit 0)
+echo '{"componentsHtmlDir":"components/html"}' > "$HTML_SANDBOX/.acss-html-target.json"
+if ! python3 "$SCRIPTS/detect_target.py" --target=html "$HTML_SANDBOX" 2>/dev/null; then
+  red "detect_target --target=html: expected exit 0 after writing config, got 1"
+  exit 1
+fi
+green "detect_target --target=html: configured → source=configured (exit 0)"
+
+# verify_integration --target=html: stylesheet present but not referenced → exit 1
+echo ".btn{}" > "$HTML_COMP_DIR/button.scss"
+if python3 "$SCRIPTS/verify_integration.py" --target=html "$HTML_SANDBOX" 2>/dev/null; then
+  red "verify_integration --target=html: expected exit 1 for unwired artifact, got 0"
+  exit 1
+fi
+green "verify_integration --target=html: unwired stylesheet → exit 1 (expected)"
+
+# Wire it up and re-run → exit 0
+cat > "$HTML_SANDBOX/index.html" <<'HTML'
+<!doctype html><html><head>
+<link rel="stylesheet" href="components/html/button.scss">
+</head><body></body></html>
+HTML
+if ! python3 "$SCRIPTS/verify_integration.py" --target=html "$HTML_SANDBOX" 2>/dev/null; then
+  red "verify_integration --target=html: expected exit 0 after wiring, got 1"
+  exit 1
+fi
+green "verify_integration --target=html: wired → exit 0"
+
 green ""
 green "tests/e2e.sh: ALL PASSED"
