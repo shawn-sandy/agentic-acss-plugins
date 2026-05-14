@@ -26,8 +26,8 @@ Several commands sound similar (`/kit-add`, `/kit-create`, `/theme-create`, `/st
 | If you want to… | Use |
 |---|---|
 | Generate a known component (Button, Dialog, …) | `/kit-add <name>` — explicit, fastest. |
-| Describe a component in prose | `/kit-create <description>` (or just describe in chat — `component-creator` auto-triggers on the same phrasing). |
-| Generate a form from prose | Describe the form (`component-form` auto-triggers — e.g. *"create a signup form with email, password, role select"*). |
+| Describe a component in prose | `/kit-create <description>` (or just describe in chat — the `components` skill's Creator Mode auto-triggers on the same phrasing). |
+| Generate a form from prose | Describe the form in chat — the `components` skill's Form Mode auto-triggers (e.g. *"create a signup form with email, password, role select"*). |
 | Generate a new theme from a hex | `/theme-create <hex>` (add `--mode=light` or `--mode=dark` for a single mode; default emits both). |
 | Edit an existing theme's role values | `/theme-update <file> --color-<role>=<hex>`. |
 | Tune the visual feel of a component or theme | `/style-tune <description>` (e.g. *warmer button*, *more elevated dialog*, *tone down the primary*). |
@@ -269,7 +269,7 @@ theme seeded from [#4f46e5]. Track everything in .acss-kit/manifest.json
 so I can re-sync safely later.
 ```
 
-**What you get:** Every catalog component + `ui.tsx` + `light.css` / `dark.css` written via the same generators `/kit-add` and `/theme-create` use, plus `<projectRoot>/.acss-kit/manifest.json` recording the normalized sha256 of each file. Re-runs route every file through the drift check — modified files are skipped, clean files overwritten. Backed by `/kit-sync`. (The `Form` component lives behind the `component-form` skill and is not vendored by `/kit-sync` — use the form-skill prompt above to generate forms on demand.)
+**What you get:** Every catalog component + `ui.tsx` + `light.css` / `dark.css` written via the same generators `/kit-add` and `/theme-create` use, plus `<projectRoot>/.acss-kit/manifest.json` recording the normalized sha256 of each file. Re-runs route every file through the drift check — modified files are skipped, clean files overwritten. Backed by `/kit-sync`. (Form generation lives in the `components` skill's Form Mode and is not vendored by `/kit-sync` — use the form prompt above to generate forms on demand.)
 
 ---
 
