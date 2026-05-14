@@ -4,6 +4,15 @@ All notable changes to the `acss-utilities` plugin are documented here. Format f
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-14
+
+### Changed
+
+- **Plugin tombstoned.** All utility-class commands (`/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune`) and their supporting scripts have moved to `acss-kit` v1.0.0. Existing installs continue to work; no CSS class names or file formats changed.
+- All four command stubs now redirect users to uninstall this plugin and update `acss-kit`.
+- `README.md` replaced with a deprecation notice and migration instructions.
+- See [`plugins/acss-kit/docs/migration-v1.md`](../acss-kit/docs/migration-v1.md) for the full migration guide.
+
 ## [0.5.0] - 2026-05-05
 
 ### Changed
