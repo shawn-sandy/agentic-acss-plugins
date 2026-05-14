@@ -58,12 +58,12 @@ mkdir -p "$EXTRACTED"
 
 # Step 2
 section "2. extract + syntax-check acss-kit references"
-node "$REPO_ROOT/tests/validate_components.mjs"
+node "$REPO_ROOT/tests/validate_extracted_tsx.mjs"
 
 # Step 3
 section "3. SCSS contract"
 SCSS_LOG="$TMP_ROOT/scss-contract.log"
-if python3 "$REPO_ROOT/tests/validate_components.py" "$EXTRACTED" >"$SCSS_LOG"; then
+if python3 "$REPO_ROOT/tests/validate_extracted_scss.py" "$EXTRACTED" >"$SCSS_LOG"; then
   green "SCSS contract OK"
 else
   red "SCSS contract failed:"
@@ -107,15 +107,15 @@ mkdir -p "$KNOWN_BAD_TMP"
 cp "$REPO_ROOT/tests/fixtures/known-bad/known-bad.scss" "$KNOWN_BAD_TMP/"
 
 # (a) SCSS validator must FAIL on known-bad.scss
-if python3 "$REPO_ROOT/tests/validate_components.py" "$KNOWN_BAD_TMP" >/dev/null 2>&1; then
-  red "known-bad: validate_components.py PASSED on known-bad fixtures (regex regressed)"
+if python3 "$REPO_ROOT/tests/validate_extracted_scss.py" "$KNOWN_BAD_TMP" >/dev/null 2>&1; then
+  red "known-bad: validate_extracted_scss.py PASSED on known-bad fixtures (regex regressed)"
   exit 1
 fi
 green "SCSS validator caught known-bad.scss"
 
 # (b) TSX validator must reject the banned import in known-bad.tsx.
 # Build a synthetic reference doc using known-bad.tsx as its TSX Template,
-# then call the *exported* checkImports() from validate_components.mjs
+# then call the *exported* checkImports() from validate_extracted_tsx.mjs
 # directly. This exercises the real validator code path; a stub regex
 # here would let import-allowlist regressions slip through.
 KNOWN_BAD_REF="$KNOWN_BAD_TMP/known-bad.md"
@@ -138,14 +138,14 @@ KNOWN_BAD_REF="$KNOWN_BAD_TMP/known-bad.md"
 
 KNOWN_BAD_REF_PATH="$KNOWN_BAD_REF" node --input-type=module -e "
 import { extractFromFile } from '$REPO_ROOT/plugins/acss-kit/scripts/lib/extract.mjs';
-import { checkImports } from '$REPO_ROOT/tests/validate_components.mjs';
+import { checkImports } from '$REPO_ROOT/tests/validate_extracted_tsx.mjs';
 
 const { tsx } = extractFromFile(process.env.KNOWN_BAD_REF_PATH);
 if (!tsx) { console.error('known-bad: no tsx extracted'); process.exit(1); }
 
 const failures = checkImports('known-bad', tsx);
 if (failures.length === 0) {
-  console.error('known-bad: validate_components.mjs accepted banned import in synthetic reference');
+  console.error('known-bad: validate_extracted_tsx.mjs accepted banned import in synthetic reference');
   process.exit(1);
 }
 console.log('known-bad: TSX validator caught', failures.length, 'failure(s)');
