@@ -30,7 +30,7 @@ The authoring format for theme tokens is **CSS custom properties** — not JSON.
 
 ### Semantic role names
 
-`assets/theme.schema.json` `$defs/palette` declares **18 defined `--color-*` properties** total: **15 required roles** plus 3 optional roles (`--color-surface-subtle`, `--color-text-subtle`, `--color-brand-accent`). Names stay byte-compatible with the bundled CSS theme files — no renames, no removals, ever. Group them by purpose, matching `ROLE_GROUPS` in `${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_css.py`:
+`assets/theme.schema.json` `$defs/palette` declares **18 defined `--color-*` properties** total: **15 required roles** plus 3 optional roles (`--color-surface-subtle`, `--color-text-subtle`, `--color-brand-accent`). Names stay byte-compatible with the bundled CSS theme files — no renames, no removals, ever. Group them by purpose, matching `ROLE_GROUPS` in `${CLAUDE_PLUGIN_ROOT}/scripts/_tokens.py`:
 
 **Backgrounds**
 - `--color-background` *(required)* — page background
