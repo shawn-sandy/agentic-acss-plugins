@@ -1,9 +1,9 @@
 ---
 name: components
-description: Use when the user asks to generate fpkit-style accessible React components (TSX + SCSS) — no @fpkit/acss package required, only React + sass.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+description: Use when the user asks to generate, create, or scaffold fpkit-style accessible React components (TSX + SCSS) — including forms from a description. No @fpkit/acss required.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # SKILL: components
@@ -565,7 +565,7 @@ Read these before generating components:
 | `references/components/field.md` | Field (label + control wrapper) — canonical shape ✓ |
 | `references/components/input.md` | Input with validation states — canonical shape ✓ |
 | `references/components/checkbox.md` | Checkbox (wraps Input) — canonical shape ✓ |
-| `references/components/form.md` | Form composition (legacy bundled reference; superseded by `component-form` skill) |
+| `references/components/form.md` | Form composition (legacy bundled reference; superseded by Form Mode in this skill) |
 | `references/components/nav.md` | Nav compound component (List, Item) — legacy shape |
 
 ---
@@ -605,7 +605,7 @@ Every component reference doc must contain (in order):
 
 Most components live as reference docs at `references/components/<name>.md`. Composable, complex, or high-iteration components can be promoted to their own skill at `skills/component-<name>/SKILL.md` with discovery-friendly trigger phrases in the frontmatter `description`.
 
-The `component-form` skill is the only per-component skill in 0.3.0. It serves as a pilot — adopt the per-component skill pattern for additional components only after observing the Form skill's trigger reliability in real-world usage.
+Form generation and natural-language component creation are handled by the **Form Mode** and **Creator Mode** sections of this skill — see below.
 
 ### Verification log
 
@@ -627,3 +627,593 @@ Before authoring or backfilling a reference doc:
 2. Fetch the canonical fpkit source from `https://github.com/shawn-sandy/acss/blob/<tag-or-sha>/packages/fpkit/src/<component>/...` (full GitHub URL per repo policy — never `blob/main`).
 3. Compare the upstream behavior to what the existing reference doc describes. Note any intentional divergence (inlined hooks, simplified compound APIs, dropped subcomponents) in the verification banner.
 4. Author the canonical sections to match fpkit semantics with relative-path imports — never `@fpkit/acss`.
+
+---
+
+## Creator Mode — Natural-Language Description
+
+Generate a paste-ready TSX snippet (or standalone component file) from a plain-English description. Resolves the user's words against the matched component's Props Interface — never invents props or variants that aren't in the reference doc.
+
+> Delegates to whichever component reference doc matches the description. Each reference doc carries its own `@fpkit/acss@6.5.0` verification line.
+
+**Supported components:** Button, IconButton, Alert, Card, Dialog, Popover, Link, Img, Icon, List, Table, Field, Input, Checkbox, Nav — any component with a dedicated `references/components/<name>.md` file. Components that exist only as inline catalog entries (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are not supported; promote them to a dedicated reference doc first.
+
+**Form-shaped requests** ("signup form", "contact form with email and password") are handled by the **Form Mode** section below — not creator mode.
+
+**Examples:**
+- "Create a primary pill button that says 'Add to cart'."
+- "Make me a soft warning alert titled 'Heads up' with body 'Your card expires next month'."
+- "Build a card with a heading 'Plan' and a primary button labelled Upgrade."
+- "Design a small outline icon-button with `aria-label` 'Close'."
+
+### CM-0. Exit plan mode
+
+Call `ExitPlanMode` before parsing. Step CM-B may delegate to `/kit-add` (writes TSX/SCSS) and Step CM-E (file mode) writes a standalone component file — plan mode blocks both.
+
+Stay in plan mode only when the user explicitly asked for a parse-only preview. In that case, narrate the resolved spec (component, props, content) from CM-A1–CM-A5 without writing files, and wait for approval.
+
+---
+
+### CM-A. Parse the description
+
+#### CM-A1. Component dispatch
+
+Match the description's component noun against `references/components/*.md`. Every `<name>.md` (except `catalog.md`, `foundation.md`, and the legacy `form.md`) is a candidate.
+
+| Phrase contains | Resolves to | Reference doc |
+|-----------------|-------------|---------------|
+| `button`, `btn`, `cta`, `call to action` | Button | `references/components/button.md` |
+| `icon button`, `icon-button` | IconButton | `references/components/icon-button.md` |
+| `alert`, `banner`, `notification` | Alert | `references/components/alert.md` |
+| `card`, `panel`, `tile` | Card | `references/components/card.md` |
+| `dialog`, `modal` | Dialog | `references/components/dialog.md` |
+| `popover`, `floating card` | Popover | `references/components/popover.md` |
+| `link`, `anchor`, `hyperlink` | Link | `references/components/link.md` |
+| `image`, `img`, `picture` | Img | `references/components/img.md` |
+| `icon` (standalone, not "icon button") | Icon | `references/components/icon.md` |
+| `list`, `bullet list`, `ordered list` | List | `references/components/list.md` |
+| `table`, `data table`, `grid` (tabular) | Table | `references/components/table.md` |
+| `field`, `form field`, `labelled control` | Field | `references/components/field.md` |
+| `input`, `text field`, `email field` | Input | `references/components/input.md` |
+| `checkbox`, `tickbox` | Checkbox | `references/components/checkbox.md` |
+| `nav`, `navigation`, `menu bar` | Nav | `references/components/nav.md` |
+
+When no mapping is found, halt: "No `acss-kit` component matches '<phrase>'. Run `/kit-list` to see the catalog."
+
+For **multi-component compositions** ("a card with a button inside"), match the outer component first; the inner component is a refinement turn (CM-G).
+
+#### CM-A2. Load the matched reference doc
+
+Read the matched reference doc and parse:
+
+1. **`## Generation Contract`** — yields `export_name`, `file`, `dependencies`.
+2. **`## Props Interface`** — yields the prop set, types, and JSDoc. Union-literal types are the canonical vocabulary.
+3. **`## Usage Examples`** — used to detect compound API (e.g. `Card.Title`, `Table.Body`).
+
+#### CM-A3. Resolve user phrases against the prop set
+
+First match wins. The only silent defaults are the state-control carve-outs (CM-A3.5) and component-declared safe defaults (CM-A3.6).
+
+**Colour family** (applies to props named `color`, `severity`, `kind`, `tone`, `palette`, or with a colour-like union):
+
+| Synonym | Maps to |
+|---------|---------|
+| `primary`, `main`, `cta` | `primary` |
+| `secondary` | `secondary` |
+| `tertiary`, `accent` | `tertiary` |
+| `info`, `informational` | `info` |
+| `success`, `confirm` | `success` |
+| `warning`, `caution` | `warning` |
+| `danger`, `destructive`, `delete`, `error` | `danger` (or `error` if that's the prop's literal) |
+| `neutral`, `default`, `muted` | `default` (or `neutral`) |
+
+Halt if the resolved synonym is not in the prop's union literal. Never silently substitute the closest one.
+
+**Size family** (applies to props named `size`, `scale`, `density`, or with a size-like union):
+
+| Synonym | Maps to |
+|---------|---------|
+| `extra small`, `xs`, `tiny` | `xs` |
+| `small`, `sm`, `compact` | `sm` |
+| `medium`, `md`, `regular` | `md` |
+| `large`, `lg`, `big` | `lg` |
+| `extra large`, `xl` | `xl` |
+| `huge`, `2xl` | `2xl` |
+
+Halt if the resolved size is not in the prop's union. Some components accept only a subset — the union literal is authoritative.
+
+**Per-component union literals** — common adjective synonyms:
+
+| Synonym group | Canonical target |
+|---------------|------------------|
+| `pill`, `rounded`, `round`, `capsule` | `pill` |
+| `outline`, `outlined`, `bordered`, `ghost` | `outline` or `outlined` — literal match wins |
+| `filled`, `solid` | `filled` |
+| `soft`, `subtle`, `tonal` | `soft` |
+| `text`, `link-style`, `flat` | `text` |
+| `dismissible`, `closable`, `with close button` | `dismissible: true` |
+
+Resolution rule: (1) Literal match wins. (2) If not literal but one canonical spelling exists, use it. (3) If both spellings exist and the user gave a non-literal synonym, halt via `AskUserQuestion`. (4) If the synonym maps to nothing on this component, halt listing the actual union members.
+
+**Boolean props** — set to `true` when the description contains an affirmative phrase for the prop name (`disabled`, `block`, `dismissible`, `external`, etc.). Booleans not mentioned are omitted.
+
+**Slot / content props** (`children`, `title`, `body`, `aria-label`) — extract from: (1) quoted strings in order; (2) `that says <X>` / `labelled <X>` / `with text <X>` → `children`; (3) imperative verb-phrase fallback. Never write a component with placeholder content — halt via `AskUserQuestion` if a slot is unresolvable.
+
+#### CM-A3.5. State-control props (demo defaults)
+
+Some required props represent state bindings. Emit an explicit demo default and document in the summary as a wire-up TODO.
+
+| Prop | Demo default | Summary note |
+|------|--------------|--------------|
+| `open` | `true` | Wire to caller state (e.g. `useState`) |
+| `expanded` | `true` | (same) |
+| `visible` | `true` | (same) |
+| `checked` | `false` | Wire to caller state |
+
+Pair each with a no-op `() => {}` callback when a matching `on*` callback exists in the Props Interface.
+
+#### CM-A3.6. Component-declared safe defaults
+
+Button's `type` prop always defaults to `"button"` — detected by reading the Props Interface JSDoc for `Required — ...` paired with a default in the TSX Template signature. Any other required prop follows the halt-on-unresolved rule from CM-A5.
+
+#### CM-A5. Ambiguity check
+
+Halt via `AskUserQuestion` when: a required prop is unresolved (excluding CM-A3.5/CM-A3.6 carve-outs); a colour-family prop is unresolved; a synonym maps to two different prop axes; two synonyms conflict on the same axis; a resolved value is not in the prop's union.
+
+---
+
+### CM-B. Resolve the target
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py <project_root>
+```
+
+- `source: "generated"` → probe `componentsDir` for the matched component's files and all dependencies from its Generation Contract. Run `/kit-add <component> [...dependencies]` if any are missing.
+- `source: "none"` → run `/kit-add <component> [...dependencies]` to bootstrap.
+
+After `/kit-add` completes, re-run `detect_target.py` to confirm `source` is `"generated"`, then continue.
+
+---
+
+### CM-C. Output mode
+
+Ask once via `AskUserQuestion` (skip if the user already specified):
+
+- **Snippet mode** *(default)* — print a TSX block for pasting. No file written.
+- **File mode** — write `src/components/<Name>.tsx` where `<Name>` is derived from the resolved content (e.g. `"Add to cart"` button → `AddToCartButton`).
+
+---
+
+### CM-D. Validate
+
+Run the CM-H validation matrix before generating. Any halt rule means: stop, print the offending combination, do not write. Any confirm rule means: round-trip through `AskUserQuestion`, only continue once the user accepts.
+
+---
+
+### CM-E. Generate output
+
+**Single-element components** (Button, IconButton, Alert, Link, Img, Icon, Input, Checkbox, Field, Popover):
+
+```tsx
+// Children present:
+<{{COMPONENT}} {{PROPS}}>
+  {{CHILDREN}}
+</{{COMPONENT}}>
+
+// No children (Img, Icon, Input, Checkbox when children absent):
+<{{COMPONENT}} {{PROPS}} />
+```
+
+Branch selection: (1) No `children` slot in Props Interface → always self-closing. (2) `children` present and resolved → open/close. (3) `children` optional and empty → self-closing. (4) `children` required and empty → CM-A5 already halted.
+
+**Compound components** (Card, Table, List) — emit root + slots the description named, in document order per the reference doc's Usage Examples. Skip empty slots — never emit a placeholder.
+
+**Snippet mode imports** — resolve path from `stack.entrypointFile` (in `.acss-target.json`) to `componentsDir`. Fallback: project-root-relative path with a comment to adjust import to the paste destination.
+
+**File mode** — emit import lines + typed function wrapper + JSX at `src/components/<Name>.tsx`. `{{HANDLER_SIGNATURE}}` is the typed callback prop forwarded when the component declares one (e.g. `onClick` for Button, `onDismiss` for Alert).
+
+**Atomic generation** — build entire output in memory; write to disk only on success.
+
+---
+
+### CM-F. Accessibility
+
+The generated component is WCAG 2.2 AA by construction (delegates to the vendored component). Enforce during generation:
+- Required-prop halts (CM-A5) prevent missing `aria-label` on icon-only controls, `alt` on Img, `labelFor` on Field.
+- Pass `disabled` through the component's typed `disabled` prop — not raw HTML `disabled` — to preserve the `aria-disabled` + tab-order pattern via `useDisabledState` (WCAG 2.1.1).
+- Compound slot omission keeps aria-labelledby chains intact.
+
+---
+
+### CM-G. Refinement turns
+
+After a successful generation, the next user turn is a **refinement** (not a fresh CM-A) when both: (1) it doesn't name a different component, and (2) it reads as a delta on the existing spec.
+
+| Phrase | Effect |
+|--------|--------|
+| `make it larger` / `bigger` | size-family prop → next step up (halt at ceiling) |
+| `make it smaller` | size-family prop → next step down (halt at floor) |
+| `swap to <colour>` / `make it <X>` | colour-family prop → resolved from CM-A3 colour table |
+| `make it <variant>` | variant prop → resolved from synonym table |
+| `add full width` / `stretch it` | `block: true` |
+| `disable it` | `disabled: true` |
+| `change the text to "<X>"` | primary content slot → `<X>` |
+| `start over` / `reset` / `forget that` | clear in-memory spec; treat next turn as fresh CM-A |
+
+A refinement re-runs CM-A5 → CM-D → CM-E. Steps B and C are skipped. In file mode, rewrite the same file. In snippet mode, print the full new JSX.
+
+---
+
+### CM-H. Validation matrix
+
+| Combination | Action |
+|-------------|--------|
+| Required prop unresolved (excluding CM-A3.5/CM-A3.6) | Halt |
+| Resolved value not in prop's union literal | Halt — list supported values |
+| Two same-axis synonyms in one description | Halt — reject as conflicting |
+| Slot content empty or whitespace-only | Halt |
+| Slot content > 80 chars | Confirm — long inline labels usually mean a different component |
+| `## Generation Notes — Creator Mode` block in matched reference doc | Apply its halt/confirm entries verbatim |
+
+---
+
+### CM-I. Worked examples
+
+**Button:**
+> "Create a primary pill button that says 'Add to cart'."
+```tsx
+import Button from './fpkit/button/button'
+import './fpkit/button/button.scss'
+
+<Button type="button" color="primary" variant="pill">
+  Add to cart
+</Button>
+```
+
+**Alert:**
+> "Make me a soft warning alert titled 'Heads up' with body 'Your card expires next month' that's dismissible."
+```tsx
+import Alert from './fpkit/alert/alert'
+import './fpkit/alert/alert.scss'
+
+<Alert open={true} severity="warning" variant="soft" title="Heads up" dismissible onDismiss={() => {}}>
+  Your card expires next month
+</Alert>
+```
+(`open` and `onDismiss` are demo defaults — wire to caller state.)
+
+**Card (compound):**
+> "Build a card with a heading 'Plan' and content 'Premium tier with all features.'"
+```tsx
+import Card from './fpkit/card/card'
+import './fpkit/card/card.scss'
+
+<Card>
+  <Card.Title>Plan</Card.Title>
+  <Card.Content>Premium tier with all features.</Card.Content>
+</Card>
+```
+
+**Anti-patterns** — creator mode must never: silently default a colour-family prop; substitute a literal the component doesn't declare; bake the description into a code comment; carry a spec the user dropped; write to disk on an un-confirmed confirm; hard-code the components path (always run `detect_target.py`); emit compound slots the user didn't name.
+
+---
+
+## Form Mode — Accessible Form Scaffolding
+
+Generate a self-contained, accessible React form composed from the `Field`, `Input`, `Button`, and (when needed) `Checkbox` reference components. If any of those don't yet exist in the target directory, this mode walks through `/kit-add field input checkbox button` first.
+
+> **Verified against fpkit source:** `@fpkit/acss@6.5.0`. Follows upstream `components/form/form.tsx` composition pattern, targeting a single self-contained generated file.
+
+**Examples:**
+- "Create a signup form with email, password, and a role dropdown."
+- "Build a contact form with name, email, message, and a newsletter checkbox."
+- "Scaffold a login form."
+
+---
+
+### FM-0. Exit plan mode
+
+Call `ExitPlanMode` before resolving the field list. Step FM-B may delegate to `/kit-add`, and Step FM-C writes the form file — plan mode blocks both.
+
+Stay in plan mode only when the user explicitly asked for a preview. In that case, narrate the resolved field list and the file that would be generated, then wait for approval.
+
+---
+
+### FM-A. Resolve the field list
+
+#### FM-A1. Ambiguity check
+
+If the description is vague (e.g. "a contact form" with no specified fields), pause with `AskUserQuestion`. Safe defaults by form type:
+
+| Form type | Default fields |
+|-----------|----------------|
+| Signup | email (required, autoComplete=email), password (required, minLength=8, autoComplete=new-password) |
+| Login | email (required, autoComplete=email), password (required, autoComplete=current-password) |
+| Contact | name, email (required), message (textarea, rows=4) |
+| Newsletter | email (required, autoComplete=email) |
+
+Confirm with the user before proceeding.
+
+#### FM-A2. Field shape
+
+```
+{
+  name: string,           // form field name
+  label: string,          // visible label
+  type: 'text' | 'email' | 'password' | 'tel' | 'url'
+      | 'number' | 'date'
+      | 'textarea' | 'select' | 'checkbox' | 'radio',
+  required?: boolean,     // adds aria-required + visible *
+  autoComplete?: string,
+  options?: { value, label }[],  // required for select and radio
+  rows?: number,          // textarea default 4
+  minLength?: number,
+}
+```
+
+For unsupported types (`file`, `color`, `range`), note in the summary and generate a plain `<input>` directly.
+
+#### FM-A3. Form name
+
+Derive PascalCase from description: "signup form" → `SignupForm`, "contact us" → `ContactForm`. Confirm only if ambiguous.
+
+---
+
+### FM-B. Verify dependencies
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py <project_root>
+```
+
+- `source: "generated"` → probe `componentsDir` for `field/field.tsx`, `input/input.tsx`, `button/button.tsx`, `checkbox/checkbox.tsx` (only if any field has `type: 'checkbox'`), and `ui.tsx`.
+- `source: "none"` → skip probe, proceed to bootstrap.
+
+Run `/kit-add field input button` (and `checkbox` if needed) when source is `"none"` or any file is missing. Re-run `detect_target.py` to confirm `source` is `"generated"`, then continue.
+
+---
+
+### FM-C. Generate the form file
+
+Write to `src/forms/<FormName>.tsx` by default (or wherever the user specifies).
+
+#### TSX Template
+
+```tsx
+// {{NAME}}.tsx — generated by components skill (form mode)
+import { useState, type FormEvent } from 'react'
+{{IMPORT_SOURCE:Field,Input,Checkbox,Button}}
+
+export type {{NAME}}Values = {
+{{FIELD_TYPES}}
+}
+
+export type {{NAME}}Errors = Partial<Record<keyof {{NAME}}Values, string>>
+
+export default function {{NAME}}({
+  onSubmit,
+}: {
+  onSubmit?: (values: {{NAME}}Values) => void | Promise<void>
+}) {
+  const [errors, setErrors] = useState<{{NAME}}Errors & { _form?: string }>({})
+  const [submitting, setSubmitting] = useState(false)
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (submitting) return
+    setSubmitting(true)
+    setErrors({})
+    try {
+      const formData = new FormData(e.currentTarget)
+      const raw = Object.fromEntries(formData.entries()) as Record<string, FormDataEntryValue>
+      const values = {
+        ...raw,
+{{CHECKBOX_COERCION}}
+{{RADIO_COERCION}}
+      } as unknown as {{NAME}}Values
+      await onSubmit?.(values)
+    } catch (err) {
+      setErrors({ _form: (err as Error).message })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      aria-labelledby="{{NAME_KEBAB}}-heading"
+      className="form"
+    >
+      <h2 id="{{NAME_KEBAB}}-heading">{{HEADING}}</h2>
+
+      {errors._form && (
+        <div role="alert" className="form-error">{errors._form}</div>
+      )}
+
+{{FIELDS}}
+
+      <Button
+        type="submit"
+        disabled={submitting}
+        data-color="primary"
+      >
+        {submitting ? 'Submitting…' : '{{SUBMIT_LABEL}}'}
+      </Button>
+    </form>
+  )
+}
+```
+
+The submit Button uses `useDisabledState` internally — `aria-disabled` gates pointer/keyboard while `submitting` is true, combined with the `if (submitting) return` guard in `handleSubmit` to prevent double-submits.
+
+#### Placeholder substitution
+
+| Placeholder | Substitute with |
+|-------------|-----------------|
+| `{{NAME}}` | PascalCase form name (e.g. `SignupForm`) |
+| `{{NAME_KEBAB}}` | kebab-case form name (e.g. `signup-form`); prefix for all control ids |
+| `{{HEADING}}` | Visible form heading (e.g. `Create your account`) |
+| `{{SUBMIT_LABEL}}` | Submit button label (e.g. `Create account`) |
+| `{{FIELD_TYPES}}` | One TS line per field: `  fieldName: string` (or `boolean` for checkbox) |
+| `{{FIELDS}}` | Rendered field elements — see FM-D below |
+| `{{IMPORT_SOURCE:Field,Input,Checkbox,Button}}` | Resolved local import block from `componentsDir`; drop `Checkbox` when absent |
+| `{{CHECKBOX_COERCION}}` | Per checkbox: `        <name>: formData.get('<name>') === 'on',` |
+| `{{RADIO_COERCION}}` | Per radio: `        <name>: String(formData.get('<name>') ?? ''),` |
+
+#### Component-source imports
+
+Compute the relative path from `src/forms/<FormName>.tsx` to `componentsDir`. Default `src/components/fpkit` gives `../components/fpkit`.
+
+```tsx
+import Field from '<relative>/field/field'
+import Input from '<relative>/input/input'
+import Checkbox from '<relative>/checkbox/checkbox'   // omit if no checkbox field
+import Button from '<relative>/button/button'
+
+import '<relative>/field/field.scss'
+import '<relative>/input/input.scss'
+import '<relative>/checkbox/checkbox.scss'            // omit if no checkbox field
+import '<relative>/button/button.scss'
+```
+
+Build the entire form in memory; write to disk only on success.
+
+---
+
+### FM-D. Field renderers
+
+Substitute into `{{FIELDS}}` with 6-space indentation. All renderers use `{{form_name_kebab}}-{{name}}` as the control's `id`.
+
+**Text-like inputs (text, email, password, tel, url, number, date):**
+
+```tsx
+<Field labelFor="{{form_name_kebab}}-{{name}}" label="{{label}}">
+  <Input
+    id="{{form_name_kebab}}-{{name}}"
+    name="{{name}}"
+    type="{{type}}"
+    {{REQUIRED_PROP}}
+    {{AUTOCOMPLETE_PROP}}
+    {{MINLENGTH_PROP}}
+  />
+</Field>
+```
+
+**Textarea:**
+
+```tsx
+<Field labelFor="{{form_name_kebab}}-{{name}}" label="{{label}}">
+  <textarea
+    id="{{form_name_kebab}}-{{name}}"
+    name="{{name}}"
+    {{ROWS_ATTR}}
+    {{REQUIRED_ATTR}}
+    {{ARIA_REQUIRED_ATTR}}
+  />
+</Field>
+```
+
+**Select:**
+
+```tsx
+<Field labelFor="{{form_name_kebab}}-{{name}}" label="{{label}}">
+  <select
+    id="{{form_name_kebab}}-{{name}}"
+    name="{{name}}"
+    {{REQUIRED_ATTR}}
+    {{ARIA_REQUIRED_ATTR}}
+  >
+    <option value="">Select…</option>
+    {{OPTIONS}}
+  </select>
+</Field>
+```
+
+**Checkbox:**
+
+```tsx
+<Checkbox
+  id="{{form_name_kebab}}-{{name}}"
+  name="{{name}}"
+  label="{{label}}"
+  {{REQUIRED_PROP}}
+/>
+```
+
+(Checkbox renders its own label — do not wrap in `Field`.)
+
+**Radio (group):**
+
+```tsx
+<fieldset>
+  <legend>{{label}}</legend>
+  {{OPTIONS_AS_RADIOS}}
+</fieldset>
+```
+
+Each radio option:
+
+```tsx
+    <label>
+      <input
+        type="radio"
+        id="{{form_name_kebab}}-{{name}}-{{value}}"
+        name="{{name}}"
+        value="{{value}}"
+        {{REQUIRED_ATTR}}
+      />
+      {{option_label}}
+    </label>
+```
+
+Halt before writing if `select` or `radio` has no options.
+
+**Conditional attributes:**
+
+| Property | Expansion |
+|----------|-----------|
+| `required: true` | `required`, `aria-required={true}` |
+| `autoComplete: "email"` | `autoComplete="email"` |
+| `minLength: 8` | `minLength={8}` |
+| `rows: 6` | `rows={6}` (textarea; omit → `rows={4}`) |
+
+**Field-types map for `{{FIELD_TYPES}}`:**
+
+| Field `type` | TypeScript type |
+|--------------|-----------------|
+| text, email, password, tel, url, textarea, select, radio | `string` |
+| number, date | `string` (FormData serialises both as strings; cast at validation time) |
+| checkbox | `boolean` |
+
+---
+
+### FM-E. Accessibility
+
+The generated form is WCAG 2.2 AA by construction:
+- `<form noValidate>` — disables native validation; error truth lives in `aria-describedby` / `errorMessage`.
+- `aria-labelledby` on the form references the `<h2>` so screen readers announce the form's purpose on entry.
+- `<div role="alert">` — form-level submission failure announced immediately.
+- `Field` provides `<label htmlFor>` association for every Input, Textarea, and Select.
+- Submit Button uses `useDisabledState` — `aria-disabled` keeps it focusable while submitting (WCAG 2.1.1).
+
+WCAG 2.2 AA criteria: 1.3.1, 2.1.1, 2.4.3, 2.4.7, 3.3.1, 3.3.2, 4.1.2, 4.1.3.
+
+---
+
+### FM-F. Post-generation summary
+
+```text
+Generated src/forms/<FormName>.tsx
+
+Imports: Field, Input, Button [, Checkbox]
+
+Field summary:
+  email    (email, required, autoComplete=email)
+  password (password, required, minLength=8)
+
+Next steps:
+  - Wire onSubmit handler in your route/page
+  - Add per-field validation (structure is scaffolded; logic is application-specific)
+  - Style overrides via CSS variables — see field.scss / input.scss
+```
