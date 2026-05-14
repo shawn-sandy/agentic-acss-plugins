@@ -57,10 +57,12 @@ def find_project_root(start: Path) -> Optional[Path]:
 # ---------------------------------------------------------------------------
 
 def read_json_config(path: Path) -> dict:
-    """Return parsed JSON from *path*, or {} on any error."""
+    """Return parsed JSON from *path* as a dict, or {} on any error or non-dict root."""
     if path.is_file():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return data
         except Exception:
             pass
     return {}
