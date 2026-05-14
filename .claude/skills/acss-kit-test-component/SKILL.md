@@ -6,7 +6,7 @@ allowed-tools:
   - bash
 ---
 
-# test-component
+# /acss-kit-test-component
 
 Goal: render a one-page visual preview of an `acss-kit` component fast — no dev
 server, no build step, no React. The component's SCSS works as plain CSS in any

@@ -128,8 +128,8 @@ If the section did not exist, create it with a short intro line.
 
 ## Sub-flow B — New role
 
-Usage: `/style-author --role=<--color-name>` (e.g.
-`/style-author --role=--color-accent-muted`)
+Usage: `/acss-kit-style-author --role=<--color-name>` (e.g.
+`/acss-kit-style-author --role=--color-accent-muted`)
 
 ### B1. Validate the role name
 
@@ -201,7 +201,7 @@ across Markdown and the JSON schema. Surface its report inline.
 
 ## Sub-flow C — Palette algorithm tweak
 
-Usage: `/style-author --algorithm`
+Usage: `/acss-kit-style-author --algorithm`
 
 ### C1. Confirm scope via AskUserQuestion
 

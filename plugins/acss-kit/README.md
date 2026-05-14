@@ -155,7 +155,7 @@ Creator mode — generate any acss-kit component from a natural-language descrip
 /kit-create small outline icon-button with aria-label "Close"
 ```
 
-Loads the matched component's reference doc at runtime, parses its `## Props Interface`, resolves the user's phrases against the declared prop set, and emits a paste-ready TSX snippet (default) or a standalone component file. Works with any component that has a dedicated `references/components/<name>.md` doc — Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav. Refinement turns ("make it larger", "swap to secondary", "change the title to 'Save'") merge into the in-memory spec and re-emit. Full reference in [`docs/prompt-book.md`](docs/prompt-book.md#kit-create).
+Loads the matched component's reference doc at runtime, parses its `## Props Interface`, resolves the user's phrases against the declared prop set, and emits a paste-ready TSX snippet (default) or a standalone component file. Works with any component that has a dedicated `references/components/<name>.md` doc — Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav. Refinement turns ("make it larger", "swap to secondary", "change the title to 'Save'") merge into the in-memory spec and re-emit. Full reference in [`docs/prompt-book.md`](docs/prompt-book.md).
 
 ### Auto-trigger: form generation
 
@@ -467,7 +467,7 @@ For end-to-end smoke testing — confirming `/kit-add <component>` actually writ
 Detailed guides are in [`docs/`](docs/):
 
 - [concepts.md](docs/concepts.md) — mental model: UI base, data-\* variants, CSS-var fallbacks, aria-disabled, generation flow
-- [prompt-book.md](docs/prompt-book.md) — full reference for every slash command (`/setup`, `/kit-list`, `/kit-add`, `/kit-create`, `/style-tune`, `/theme-create`, `/theme-brand`, `/theme-update`, `/theme-extract`)
+- [prompt-book.md](docs/prompt-book.md) — prompt catalogue and usage examples for every slash command (`/setup`, `/kit-list`, `/kit-add`, `/kit-create`, `/style-tune`, `/theme-create`, `/theme-brand`, `/theme-update`, `/theme-extract`)
 - [recipes.md](docs/recipes.md) — step-by-step walkthroughs for common tasks
 - [troubleshooting.md](docs/troubleshooting.md) — concrete failure modes and fixes
 - [architecture.md](docs/architecture.md) — contributor guide: adding components, version-bump checklist

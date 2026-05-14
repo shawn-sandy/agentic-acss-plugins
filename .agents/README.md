@@ -8,8 +8,9 @@ Mirror of selected project skills exposed to **GitHub Managed Agents** (Copilot-
 |---|---|---|
 | `add-command` | `.claude/skills/add-command/` | Scaffold a new slash command in a plugin |
 | `release-plugin` | `.claude/skills/release-plugin/` | Bump `plugin.json` version; `--check` mode audits release paperwork |
-| `validate-plugin` | `.claude/skills/validate-plugins/` (stub — use `--scope=plugin`) | Single-plugin structural validation |
-| `verify-plugins` | `.claude/skills/validate-plugins/` (stub — use `--scope=all`) | Cross-plugin structural validation |
+| `validate-plugins` | `.claude/skills/validate-plugins/` | Unified validation — `--scope=plugin`, `--scope=all`, `--scope=health` |
+| `validate-plugin` | `.claude/skills/validate-plugins/` (stub → use `validate-plugins --scope=plugin`) | Legacy single-plugin validation alias |
+| `verify-plugins` | `.claude/skills/validate-plugins/` (stub → use `validate-plugins --scope=all`) | Legacy repo-wide validation alias |
 | `release-check` | `.claude/skills/release-plugin/` (stub — use `--check`) | Audit version-bump + CHANGELOG + README before opening a release PR |
 
 ## Drift policy
