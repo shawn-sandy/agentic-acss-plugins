@@ -15,7 +15,25 @@ If a hook misbehaves, the fix is in `settings.json` — not in `settings.local.j
 
 These run after Claude writes or edits a file. They warn or fail loudly so issues are caught before commit.
 
-### 1. JSON validator
+### 1. WCAG contrast check
+
+| Field | Value |
+|---|---|
+| Matcher | `Write\|Edit` |
+| Status message | `Checking WCAG contrast...` |
+| Behaviour | If the touched file matches `plugins/acss-kit/assets/themes/*.css`, runs `python3 plugins/acss-kit/scripts/validate_theme.py <file>` (timeout 15s). Failures print to stdout. |
+| Why | Theme CSS edits can push color-role pairs below WCAG 2.2 AA contrast thresholds. Running the validator inline catches regressions before commit without requiring a manual batch run. |
+
+### 2. Utility CSS validator
+
+| Field | Value |
+|---|---|
+| Matcher | `Write\|Edit` |
+| Status message | `Validating utility CSS...` |
+| Behaviour | If the touched file matches `plugins/acss-utilities/assets/*.css`, runs `python3 plugins/acss-utilities/scripts/validate_utilities.py <file>` (timeout 15s). Failures print to stdout. |
+| Why | Utility CSS files have structural contracts (kebab-case selectors, `var()` fallbacks, responsive parity, no duplicates). The hook enforces these on every edit rather than only at batch-validation time. |
+
+### 3. JSON validator
 
 | Field | Value |
 |---|---|
@@ -24,7 +42,7 @@ These run after Claude writes or edits a file. They warn or fail loudly so issue
 | Behaviour | If the touched file ends in `.json`, parses it with `python3 json.load`. Parse errors print to stdout (the hook redirects stderr via `2>&1`) and the command exits non-zero, surfacing as a PostToolUse error. |
 | Why | Catches truncated edits in `plugin.json`, `marketplace.json`, `theme.tokens.json` before they propagate. |
 
-### 2. plugin.json schema check
+### 4. plugin.json schema check
 
 | Field | Value |
 |---|---|
@@ -33,7 +51,7 @@ These run after Claude writes or edits a file. They warn or fail loudly so issue
 | Behaviour | If the touched file matches `plugins/*/.claude-plugin/plugin.json`, runs `jq` to confirm `name`, `version`, and `description` are non-empty strings. **Exits 2 on failure**, blocking the operation. |
 | Why | Plugin manifests are silently authoritative for `/plugin update` — a broken manifest is a release-blocker. |
 
-### 3. Command front-matter check
+### 5. Command front-matter check
 
 | Field | Value |
 |---|---|
@@ -42,7 +60,7 @@ These run after Claude writes or edits a file. They warn or fail loudly so issue
 | Behaviour | If the touched file matches `plugins/*/commands/*.md`, warns when `description:` or `allowed-tools:` is missing from the YAML front-matter. Warning only — no exit code. |
 | Why | These two fields drive how Claude surfaces and gates the command — easy to forget when scaffolding by hand. |
 
-### 4. SKILL.md front-matter check
+### 6. SKILL.md front-matter check
 
 | Field | Value |
 |---|---|
@@ -55,7 +73,7 @@ These run after Claude writes or edits a file. They warn or fail loudly so issue
 
 These run before Claude executes a Bash command. They can block dangerous operations.
 
-### 5. Main-branch guard
+### 7. Main-branch guard
 
 | Field | Value |
 |---|---|

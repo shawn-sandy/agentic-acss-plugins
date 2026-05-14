@@ -323,7 +323,7 @@ All checks passed (≈ 28s).
 | Generate your first component end-to-end | [tutorial.md](tutorial.md) |
 | Solve a specific task (regenerate, change target dir, multiple components in one pass) | [recipes.md](recipes.md) |
 | Understand the polymorphic UI base, data-* variants, and CSS-var fallbacks | [concepts.md](concepts.md) |
-| Look up a slash command flag | [commands.md](commands.md) |
+| Look up a slash command flag | [prompt-book.md](prompt-book.md) |
 | Diagnose a failure | [troubleshooting.md](troubleshooting.md) |
 | Author a new component or theme inside the plugin | [architecture.md](architecture.md) and [CONTRIBUTING.md](../../../CONTRIBUTING.md) |
 | Browse the canonical reference docs | [`skills/components/references/components/`](../skills/components/references/components/) |

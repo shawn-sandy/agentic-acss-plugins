@@ -1,9 +1,9 @@
 ---
-name: changelog-entry
+name: acss-kit-changelog-entry
 description:
-  Generate a Keep-a-Changelog entry for acss-kit from git log since last tag.
-  Groups commits by type and appends under plugins/acss-kit/CHANGELOG.md's
-  Unreleased section.
+  "[Maintainer] Generate a Keep-a-Changelog entry for acss-kit from git log
+  since last tag. Groups commits by conventional type and appends to
+  plugins/acss-kit/CHANGELOG.md under the Unreleased section."
 disable-model-invocation: true
 ---
 

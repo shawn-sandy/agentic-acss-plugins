@@ -1,19 +1,16 @@
 ---
-name: style-update
-description:
-  Use when the maintainer asks to update or re-validate theme assets after
-  editing the role-catalogue, palette-algorithm, theme-schema, a brand preset,
-  or the styles SKILL.
+name: acss-kit-style-update
+description: "[Maintainer] Use when the maintainer asks to update or re-validate theme assets after editing the role-catalogue, palette-algorithm, theme-schema, a brand preset, or the styles SKILL."
 disable-model-invocation: false
 ---
 
-# /style-update
+# /acss-kit-style-update
 
-Usage: `/style-update <path>` (e.g.
-`/style-update plugins/acss-kit/skills/styles/references/role-catalogue.md`)
+Usage: `/acss-kit-style-update <path>` (e.g.
+`/acss-kit-style-update plugins/acss-kit/skills/styles/references/role-catalogue.md`)
 
 Detects which kind of theme asset was edited and runs the appropriate downstream
-re-validation. Does not author new assets — use `/style-author` for that.
+re-validation. Does not author new assets — use `/acss-kit-style-author` for that.
 
 ## Step 1 — Detect the asset kind
 
@@ -77,7 +74,7 @@ were derived algorithmically.
      seed is recorded, skip the file and note it (hand-authored preset).
    - Run the same reshape pipeline used by `style-author` sub-flow A:
 
-     ```
+     ```bash
      python3 plugins/acss-kit/scripts/generate_palette.py "<seed>" --mode=brand \
        | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps({'brands': {'<name>': d['brand_overrides']}}))" \
        | python3 plugins/acss-kit/scripts/tokens_to_css.py --stdin --out-dir=plugins/acss-kit/assets/brand-presets/

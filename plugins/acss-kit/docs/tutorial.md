@@ -169,7 +169,7 @@ You have generated, imported, and customized one component. From here:
 
 - [recipes.md](recipes.md) — variations: multiple components in one pass, components with dependencies (Dialog pulls in Button), regenerate after an upstream change, change the target directory.
 - [concepts.md](concepts.md) — the mental model: the `UI` polymorphic base, `data-*` attribute variants, why `aria-disabled` instead of the native attribute.
-- [commands.md](commands.md) — full `/kit-list` and `/kit-add` reference.
+- [prompt-book.md](prompt-book.md) — full `/kit-list` and `/kit-add` reference.
 - [Button reference](../skills/components/references/components/button.md) — every prop, every CSS variable, and the full implementation source.
 - [troubleshooting.md](troubleshooting.md) — when things don't work.
 
