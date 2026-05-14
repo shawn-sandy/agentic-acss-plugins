@@ -45,10 +45,10 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
    find . \( -name "utilities.css" -o -name "tailwind.config.*" -o -name "bootstrap.css" \) \
      -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/build/*"
    ```
-   Also grep for `@tailwind base` in `.css`/`.scss` files. If multiple frameworks are found, or if the user confirms no framework, fall back to Tailwind-compatible naming.
+   Also grep for `@tailwind base` in `.css`/`.scss` files. If multiple frameworks are found, use `AskUserQuestion` to confirm which vocabulary to use — do not auto-fallback. Only fall back to Tailwind-compatible naming when no framework is detected, or when the user explicitly confirms no framework after clarification.
 
 3. **Map to classes.** For each extracted visual property, use LLM reasoning to select the best class name from the detected framework's vocabulary. Apply framework-specific naming conventions:
-   - **acss-kit**: `.bg-primary`, `.p-4`, `.flex`, `.items-center`, `.rounded`, `.shadow`
+   - **acss-kit**: `bg-primary`, `p-4`, `flex`, `items-center`, `rounded`, `shadow`
    - **Tailwind**: `bg-primary`, `p-4`, `flex`, `items-center`, `rounded`, `shadow`
    - **Bootstrap**: `bg-primary`, `p-3`, `d-flex`, `align-items-center`, `rounded`, `shadow-sm`
    - **Fallback**: Tailwind-compatible names
@@ -62,7 +62,7 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
 5. **Emit output.** Print two fenced code blocks:
 
    **Class string:**
-   ```
+   ```text
    flex items-center p-4 bg-primary rounded shadow focus-visible:ring
    ```
 

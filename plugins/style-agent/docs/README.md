@@ -21,7 +21,7 @@
 
 ## Skills
 
-The plugin ships two skills. Command logic delegates to each skill file.
+The plugin ships three skills. Command logic delegates to each skill file.
 
 - `skills/css-to-class/SKILL.md`
 - `skills/inline-style-to-class/SKILL.md`
