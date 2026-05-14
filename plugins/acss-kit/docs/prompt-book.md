@@ -25,7 +25,7 @@ Several commands sound similar (`/kit-add`, `/kit-create`, `/theme-create`, `/st
 
 | If you want to… | Use |
 |---|---|
-| Generate a known component (Button, Dialog, …) | `/kit-add <name>` — explicit, fastest. |
+| Generate a known component (Button, Dialog, …) | `/kit-add <name>` — explicit, fastest. Add `--target=html` for a non-React project. |
 | Describe a component in prose | `/kit-create <description>` (or just describe in chat — the `components` skill's Creator Mode auto-triggers on the same phrasing). |
 | Generate a form from prose | Describe the form in chat — the `components` skill's Form Mode auto-triggers (e.g. *"create a signup form with email, password, role select"*). |
 | Generate a new theme from a hex | `/theme-create <hex>` (add `--mode=light` or `--mode=dark` for a single mode; default emits both). |
@@ -79,7 +79,7 @@ acss-kit — no React, just markup + SCSS + a tiny vanilla-JS file for
 behavior.
 ```
 
-**What you get:** `<name>.html` (fragment markup with the same classes / `data-*` attributes / ARIA as the React version), `<name>.scss` (byte-identical to `/kit-add`'s SCSS — compile with Sass before linking), and `<name>.js` for components with runtime behavior (Button, Card-interactive, Alert, Dialog). On first run, prompts for the target directory (default `components/html`) and copies a `_stateful.js` foundation helper. Backed by `/kit-add-html`.
+**What you get:** `<name>.html` (fragment markup with the same classes / `data-*` attributes / ARIA as the React version), `<name>.scss` (byte-identical to `/kit-add`'s SCSS — compile with Sass before linking), and `<name>.js` for components with runtime behavior (Button, Card-interactive, Alert, Dialog). On first run, prompts for the target directory (default `components/html`) and copies a `_stateful.js` foundation helper. Backed by `/kit-add --target=html` (the older `/kit-add-html` alias still works but is deprecated).
 
 ---
 
