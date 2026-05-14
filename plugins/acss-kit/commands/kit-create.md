@@ -27,7 +27,7 @@ The skill auto-triggers on natural-language phrases like *"create a <component>�
 
 ## Workflow
 
-When this command is invoked, follow the workflow documented in the `component-creator` skill at `${CLAUDE_PLUGIN_ROOT}/skills/component-creator/SKILL.md`.
+When this command is invoked, follow the Creator Mode workflow documented in `${CLAUDE_PLUGIN_ROOT}/skills/components/SKILL.md` under the `## Creator Mode` section.
 
 ### Quick reference
 
@@ -47,8 +47,8 @@ After a generation, follow-up phrases like *"make it larger"*, *"swap to seconda
 ### Out of scope for v0.1
 
 - **Multi-component compositions in one prompt** ("a card with a switch and a slider") — generate the outer component, then refine to add inner components one at a time. Multi-component prompts land in v0.3.
-- **Form-shaped descriptions** ("signup form with email and password") — handled by the `component-form` skill, not this one.
+- **Form-shaped descriptions** ("signup form with email and password") — handled by Form Mode in the same skill; say "create a signup form with email and password" to enter that flow.
 
 ### Full workflow
 
-See `SKILL.md` for the complete step-by-step including the global synonym tables, the per-reference-doc parsing rules, the validation matrix, and worked examples for Button, Alert, and Card.
+See the `## Creator Mode` section in `skills/components/SKILL.md` for the complete step-by-step including the global synonym tables, the per-reference-doc parsing rules, the validation matrix, and worked examples for Button, Alert, and Card.

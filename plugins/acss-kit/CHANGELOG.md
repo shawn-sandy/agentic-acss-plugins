@@ -4,6 +4,15 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-05-14
+
+### Changed
+
+- **Pilot skills absorbed into parent skills.** `skills/component-creator/` and `skills/component-form/` are removed as standalone skills. Their workflows now live as **Creator Mode** (`## Creator Mode` section) and **Form Mode** (`## Form Mode` section) inside `skills/components/SKILL.md`. The `/kit-create` command continues to work unchanged — it now delegates to the merged section rather than the deleted skill file. Natural-language form generation continues to auto-trigger via the updated `components` skill description. No user-facing command behavior changed.
+- **`style-tune` skill shrunk to a dispatch router.** The 357-line `style-tune/SKILL.md` is now a ~65-line router (Steps A and F). The theme-layer adjustment workflow (OKLCH shifts, paired-role rule, dark-mirror, pre-validation batch) moved to `styles/SKILL.md` under `## Style-Tune Mode`. The component-level SCSS token adjustment workflow moved to `components/SKILL.md` under `## Style-Tune Mode`. The `/style-tune` command and all natural-language triggers are unchanged.
+- **`components` skill description updated** to cover natural-language component creation and form generation, allowing it to auto-trigger on the same phrases that previously triggered the pilot skills.
+- **Prompt book** updated to reflect that Creator Mode and Form Mode are sections of the `components` skill rather than separate auto-triggering pilots.
+
 ## [0.11.2] - 2026-05-08
 
 ### Added
