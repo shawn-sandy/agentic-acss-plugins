@@ -4,6 +4,22 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-14
+
+### Added
+
+- **All `/utility-*` commands absorbed from `acss-utilities`.** `/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune` are now part of acss-kit — no separate `acss-utilities` install required. The `utilities` skill, all utility scripts (`generate_utilities.py`, `validate_utilities.py`, `migrate_classnames.py`), and all utility assets (`assets/utilities/`) are included.
+- **`generate_bridge.py` — generated token-bridge.** `token-bridge.css` is now generated at theme-creation and theme-update time rather than being a static committed file. `generate_bridge.py` reads `vocab.json` + your active `light.css`/`dark.css` and emits a fresh bridge with hex fallbacks derived from your actual theme.
+- **`vocab.json` — vocabulary mapping.** `assets/utilities/vocab.json` is the single source of truth for the acss-kit-role ↔ fpkit-name delta (`danger→error`, `surface-raised→surface-secondary`, derived `-bg` variants, `secondary→primary` fallback).
+- **`detect_target.py --what=utilities`.** Utilities target detection (configured vs default, `bundlePath`, `bridgePath`) is now part of the unified `detect_target.py` rather than a separate `detect_utility_target.py`.
+- **Migration guide.** `docs/migration-v1.md` covers the full upgrade path from `acss-utilities` v0.x.
+
+### Changed
+
+- **`/theme-create` and `/theme-update` regenerate `token-bridge.css` automatically** when a `utilitiesDir` is configured. No manual `/utility-bridge` run required after theme changes.
+- **Prompt book** updated to remove `acss-utilities` install step and reflect that all utility commands are in acss-kit.
+- **`acss-utilities` tombstoned at v1.0.0.** Existing installs continue to work; no new features will be added there.
+
 ## [0.13.0] - 2026-05-14
 
 ### Changed

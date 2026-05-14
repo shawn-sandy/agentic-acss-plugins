@@ -5,7 +5,7 @@
 
 A Claude Code **plugin marketplace** for building accessible React applications with the [fpkit/acss](https://github.com/shawn-sandy/acss) design system. Two decoupled plugins, no npm package to add.
 
-> **What this is:** a marketplace of [Claude Code plugins](https://docs.claude.com/en/docs/claude-code/plugins) — markdown-as-source skills, slash commands, and Python 3 scripts (mostly stdlib-only; `acss-utilities/scripts/validate_utilities.py` uses `tinycss2`). There is no Node.js build and no publish pipeline; the only GitHub Actions workflows are Claude-driven review automations under `.github/workflows/`. Plugins drop generated TSX/SCSS/CSS straight into your project using local imports.
+> **What this is:** a marketplace of [Claude Code plugins](https://docs.claude.com/en/docs/claude-code/plugins) — markdown-as-source skills, slash commands, and Python 3 scripts (mostly stdlib-only; `acss-kit/scripts/validate_utilities.py` uses `tinycss2`). There is no Node.js build and no publish pipeline; the only GitHub Actions workflows are Claude-driven review automations under `.github/workflows/`. Plugins drop generated TSX/SCSS/CSS straight into your project using local imports.
 >
 > **Who it's for:** developers working in **React + TypeScript + Sass** projects who want accessible components and a token-driven theming system without taking on a new runtime dependency.
 
@@ -13,8 +13,8 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 0.11.2 | Accessible React components and OKLCH CSS themes. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`); 14 slash commands covering setup, component generation (React + static HTML), bulk install/update, natural-language creator mode, theme creation, brand presets, image/Figma extraction, color scales, natural-language style tuning, and a bundled prompt book. |
-| [`acss-utilities`](./plugins/acss-utilities) | 0.5.0 | Tailwind-style atomic CSS utility classes (`.bg-primary`, `.mt-4`, `.sm-hide`) generated from a token source-of-truth. Hyphen-prefix responsive variants — no CSS escaping. Pairs with `acss-kit` via a token-bridge so utility colors resolve against the same OKLCH roles. |
+| [`acss-kit`](./plugins/acss-kit) | 1.0.0 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. All `/utility-*` commands are now part of this plugin (replaces `acss-utilities`). WCAG 2.2 AA validation built-in. See [`docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md) if upgrading from v0.x with `acss-utilities` installed. |
+| [`acss-utilities`](./plugins/acss-utilities) | 1.0.0 | **Deprecated.** All utility-class commands have moved to `acss-kit` v1.0.0. Existing installs continue to work; no new features will be added. Uninstall and update `acss-kit` — see [`migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md). |
 | [`style-agent`](./plugins/style-agent) | 0.2.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. |
 
 The three plugins are **decoupled** — install any combination independently.
@@ -50,8 +50,9 @@ Inside any Claude Code session running in your React + TS project — register t
 ```text
 /plugin marketplace add shawn-sandy/agentic-acss-plugins
 /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
-/plugin install acss-utilities@shawn-sandy-agentic-acss-plugins
 ```
+
+> Upgrading from v0.x with `acss-utilities` installed? See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md).
 
 > **Do this first:** Run `/setup` once before anything else. Subsequent `/kit-add` and `/theme-create` calls depend on the `.acss-target.json` it writes.
 
@@ -74,7 +75,7 @@ Then bootstrap and add your first component + theme:
 
 ### Configuration
 
-Both plugins read `.acss-target.json` at your project root — created by `/setup` and updated by detection scripts. Top-level keys: `componentsDir` (where `/kit-add` writes generated TSX/SCSS, default `src/components/fpkit`), `utilitiesDir` (where `/utility-add` writes `utilities.css` and `token-bridge.css`, default `src/styles`), and `stack` (detected framework, bundler, CSS pipeline, plus `entrypointFile` and `cssEntryFile` so `verify_integration.py` knows where theme imports live). Generated artifacts plus this file should be **committed**, not gitignored. If you delete or move it, re-run `/setup` — pass `--target=<dir>` again if your original custom path differed from the default. Full schema with field semantics: [`plugins/acss-kit/docs/architecture.md`](./plugins/acss-kit/docs/architecture.md).
+`acss-kit` reads `.acss-target.json` at your project root — created by `/setup` and updated by detection scripts. Top-level keys: `componentsDir` (where `/kit-add` writes generated TSX/SCSS, default `src/components/fpkit`), `utilitiesDir` (where `/utility-add` writes `utilities.css` and `token-bridge.css`, default `src/styles`), and `stack` (detected framework, bundler, CSS pipeline, plus `entrypointFile` and `cssEntryFile` so `verify_integration.py` knows where theme imports live). Generated artifacts plus this file should be **committed**, not gitignored. If you delete or move it, re-run `/setup` — pass `--target=<dir>` again if your original custom path differed from the default. Full schema with field semantics: [`plugins/acss-kit/docs/architecture.md`](./plugins/acss-kit/docs/architecture.md).
 
 ## Command reference
 
@@ -117,7 +118,16 @@ Both plugins read `.acss-target.json` at your project root — created by `/setu
 
 | Command | Purpose |
 |---|---|
-| [`/prompt-book [section-number]`](./plugins/acss-kit/commands/prompt-book.md) | Print a copy-paste catalogue of natural-language prompts for every shipped slash command across both plugins. |
+| [`/prompt-book [section-number]`](./plugins/acss-kit/commands/prompt-book.md) | Print a copy-paste catalogue of natural-language prompts for every shipped slash command. |
+
+**Utility classes** (moved from `acss-utilities` in v1.0.0)
+
+| Command | Purpose |
+|---|---|
+| [`/utility-add`](./plugins/acss-kit/commands/utility-add.md) | Copy `utilities.css` (and `token-bridge.css`) into a target project. Family filtering supported. |
+| [`/utility-list [family]`](./plugins/acss-kit/commands/utility-list.md) | List utility families and their classes. |
+| [`/utility-bridge`](./plugins/acss-kit/commands/utility-bridge.md) | Regenerate `token-bridge.css` against the active acss-kit theme. |
+| [`/utility-tune <description>`](./plugins/acss-kit/commands/utility-tune.md) | Adjust `utilities.tokens.json` from natural language and regenerate. |
 
 **Skills:**
 
@@ -128,18 +138,9 @@ Both plugins read `.acss-target.json` at your project root — created by `/setu
 - **`setup`** — cross-domain init skill backing `/setup`.
 - **`style-tune`** — pilot per-feel skill backing `/style-tune`.
 
-### acss-utilities
+### acss-utilities (deprecated)
 
-| Command | Purpose |
-|---|---|
-| [`/utility-add`](./plugins/acss-utilities/commands/utility-add.md) | Copy the prebuilt `utilities.css` (and `token-bridge.css`) into a target project. Family filtering supported. |
-| [`/utility-list [family]`](./plugins/acss-utilities/commands/utility-list.md) | List utility families and their classes. |
-| [`/utility-bridge [--theme=<file>]`](./plugins/acss-utilities/commands/utility-bridge.md) | Regenerate `token-bridge.css` against the active `acss-kit` theme — emits both `:root` and `[data-theme="dark"]` blocks. |
-| [`/utility-tune <description>`](./plugins/acss-utilities/commands/utility-tune.md) | Adjust `utilities.tokens.json` (spacing baseline, breakpoints, family enables) from natural language and regenerate. |
-
-**Skill:**
-
-- **`utilities`** — generation, listing, tuning, and bridging of atomic utility classes with hyphen-prefix responsive variants (`sm-hide`, `md-p-6`, `lg-flex-row`).
+All `/utility-*` commands have moved to `acss-kit` v1.0.0. The `acss-utilities` plugin is tombstoned — no new features will be added. See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md).
 
 ## Repository layout
 
@@ -170,11 +171,18 @@ agentic-acss-plugins/
 
 ## Migration
 
-If you previously installed `acss-kit-builder`, `acss-theme-builder`, `acss-app-builder`, or `acss-component-specs` — these have been consolidated into the single `acss-kit` plugin (or, in the case of `acss-app-builder` and `acss-component-specs`, removed entirely). Uninstall the old plugins and install `acss-kit` instead. See [`plugins/acss-kit/CHANGELOG.md`](./plugins/acss-kit/CHANGELOG.md) for the full migration notes.
+**acss-utilities → acss-kit v1.0.0:** All `/utility-*` commands are now part of `acss-kit`. Uninstall `acss-utilities` and update `acss-kit`:
+
+```text
+/plugin uninstall acss-utilities@shawn-sandy-agentic-acss-plugins
+/plugin update acss-kit@shawn-sandy-agentic-acss-plugins
+```
+
+No CSS class names changed. See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md) for the full guide including asset-path changes and custom `token-bridge.css` handling.
+
+If you previously installed `acss-kit-builder`, `acss-theme-builder`, `acss-app-builder`, or `acss-component-specs` — these have been consolidated into `acss-kit` (or removed entirely). Uninstall the old plugins and install `acss-kit` instead. See [`plugins/acss-kit/CHANGELOG.md`](./plugins/acss-kit/CHANGELOG.md) for the full history.
 
 Existing `.acss-target.json` files at project roots remain compatible — the schema is unchanged.
-
-If you installed `acss-utilities` 0.1.0, the 0.2.0 release switched responsive variants from the escaped-colon form (`.sm\:hide`) to a plain hyphen (`.sm-hide`) — see [`plugins/acss-utilities/CHANGELOG.md`](./plugins/acss-utilities/CHANGELOG.md) and the `scripts/migrate_classnames.py` dry-run helper.
 
 ## Testing locally
 

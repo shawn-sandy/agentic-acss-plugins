@@ -120,7 +120,8 @@ files hold the only source of truth for every `--color-*` variable.
 3. Determine output directory. If `src/styles/theme/` exists in the project, use it. Otherwise ask the developer where to write theme files.
 4. Run `${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_css.py --stdin --out-dir=<dir>` piping the palette JSON. This writes `light.css` and/or `dark.css` with mandatory `var(--x, <fallback>)` syntax.
 5. Run `${CLAUDE_PLUGIN_ROOT}/scripts/validate_theme.py <dir>`. If contrast failures are found, print them as warnings and continue — generation is complete but the developer should adjust the seed or manually tune values.
-6. Print a summary: files written, primary color, top contrast ratios.
+6. **Regenerate bridge** — if `${CLAUDE_PLUGIN_ROOT}/assets/utilities/token-bridge.css` exists, run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate_bridge.py --theme-dir=<dir> --out=<projectRoot>/<utilitiesDir>/token-bridge.css` so utility aliases reflect the new palette. Skip silently when no `utilitiesDir` is configured (i.e. `detect_target.py --what=utilities` returns `source: none`).
+7. Print a summary: files written, primary color, top contrast ratios.
 
 ### References to load
 
@@ -164,7 +165,8 @@ files hold the only source of truth for every `--color-*` variable.
    a. Use Edit to replace the existing hex value for that role in-place, preserving comments and file structure.
    b. After each edit, run `${CLAUDE_PLUGIN_ROOT}/scripts/validate_theme.py <file>`.
    c. If any contrast pair fails: print the failure, revert the edit for that role (restore original value), and continue with remaining roles.
-4. Print a final table: role / old value / new value / accepted|reverted.
+4. **Regenerate bridge** — after all accepted edits, run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate_bridge.py --theme-dir=<dir> --out=<projectRoot>/<utilitiesDir>/token-bridge.css` so utility aliases stay in sync. Skip silently when no `utilitiesDir` is configured.
+5. Print a final table: role / old value / new value / accepted|reverted.
 
 ### References to load
 

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Detect the component-output target for an acss-kit project.
+Detect the component-output or utilities target for an acss-kit project.
 
 Usage:
     python detect_target.py [--target=react|html] [project_root]
+    python detect_target.py --what=utilities [project_root]
     python detect_target.py --self-test
 
---target defaults to "react".
+--target defaults to "react". --what=utilities selects the utilities path.
 
 --- React target ---
 
@@ -106,9 +107,11 @@ sys.path.insert(0, os.path.dirname(__file__))
 from _target import (
     DEFAULT_COMPONENTS_DIR,
     DEFAULT_HTML_DIR,
+    DEFAULT_UTILITIES_DIR,
     find_project_root,
     read_components_dir,
     read_html_dir,
+    read_json_config,
 )
 
 FOUNDATION_FILENAME = "_stateful.js"
@@ -186,6 +189,46 @@ def detect_html(start: Path) -> tuple[dict, int]:
             "and write this file.",
         ],
     }, 1
+
+
+# ---------------------------------------------------------------------------
+# Utilities target
+# ---------------------------------------------------------------------------
+
+def detect_utilities(start: Path) -> tuple[dict, int]:
+    """Detect the drop directory for utilities.css and token-bridge.css.
+
+    Resolution order:
+      1. "configured" — .acss-target.json#utilitiesDir points at an existing dir.
+      2. "default"    — React root found; fall back to DEFAULT_UTILITIES_DIR.
+      3. "none"       — No React project root found.
+    """
+    root = find_project_root(start)
+    if root is None:
+        return {
+            "source": "none",
+            "projectRoot": None,
+            "utilitiesDir": DEFAULT_UTILITIES_DIR,
+            "bundlePath": "",
+            "bridgePath": "",
+            "reasons": ["No project root containing react was found."],
+        }, 1
+
+    data = read_json_config(root / ".acss-target.json")
+    cd = data.get("utilitiesDir")
+    if isinstance(cd, str) and cd.strip() and (root / cd.strip()).is_dir():
+        utilities_dir, source = cd.strip(), "configured"
+    else:
+        utilities_dir, source = DEFAULT_UTILITIES_DIR, "default"
+
+    return {
+        "source": source,
+        "projectRoot": str(root),
+        "utilitiesDir": utilities_dir,
+        "bundlePath": f"{utilities_dir}/utilities.css",
+        "bridgePath": f"{utilities_dir}/token-bridge.css",
+        "reasons": [],
+    }, 0
 
 
 # ---------------------------------------------------------------------------
@@ -293,6 +336,41 @@ def self_test() -> int:
         "none",
     )
 
+    # Utilities tests
+    run(
+        "utilities — no package.json → none",
+        {},
+        detect_utilities,
+        "none",
+    )
+    run(
+        "utilities — react found, no utilitiesDir in target → default",
+        {"package.json": json.dumps({"dependencies": {"react": "^18"}})},
+        detect_utilities,
+        "default",
+        utilitiesDir=DEFAULT_UTILITIES_DIR,
+    )
+    run(
+        "utilities — configured utilitiesDir exists → configured",
+        {
+            "package.json": json.dumps({"dependencies": {"react": "^18"}}),
+            ".acss-target.json": json.dumps({"utilitiesDir": "src/styles"}),
+            "src/styles/.keep": "",
+        },
+        detect_utilities,
+        "configured",
+        utilitiesDir="src/styles",
+    )
+    run(
+        "utilities — configured utilitiesDir missing on disk → default",
+        {
+            "package.json": json.dumps({"dependencies": {"react": "^18"}}),
+            ".acss-target.json": json.dumps({"utilitiesDir": "src/styles"}),
+        },
+        detect_utilities,
+        "default",
+    )
+
     total = passed + failed
     if failed:
         print(f"\n{failed}/{total} self-test(s) FAILED")
@@ -311,19 +389,28 @@ def main() -> int:
     if "--self-test" in args:
         return self_test()
 
+    what = None
     target = "react"
     positional: list[str] = []
     for a in args:
-        if a.startswith("--target="):
+        if a.startswith("--what="):
+            what = a.split("=", 1)[1].strip().lower()
+        elif a.startswith("--target="):
             target = a.split("=", 1)[1].strip().lower()
         else:
             positional.append(a)
 
-    if target not in ("react", "html"):
-        print(f"Usage: detect_target.py [--target=react|html] [project_root]", file=sys.stderr)
-        return 2
-
     start = Path(positional[0]).resolve() if positional else Path.cwd()
+
+    if what == "utilities":
+        result, code = detect_utilities(start)
+        print(json.dumps(result, indent=2))
+        return code
+
+    if target not in ("react", "html"):
+        print("Usage: detect_target.py [--target=react|html|] [--what=utilities] [project_root]",
+              file=sys.stderr)
+        return 2
 
     if target == "react":
         result, code = detect_react(start)
