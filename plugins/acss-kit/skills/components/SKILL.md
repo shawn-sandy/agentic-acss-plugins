@@ -1,6 +1,6 @@
 ---
 name: components
-description: Use when the user asks to generate, create, or scaffold fpkit-style accessible React components (TSX + SCSS) — including forms from a description. No @fpkit/acss required.
+description: Use when the user asks to generate, create, or scaffold fpkit-style accessible components (TSX + SCSS for React, or HTML + SCSS + JS for static/non-React projects). No @fpkit/acss required.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 metadata:
   version: "0.4.0"
@@ -1262,3 +1262,121 @@ Safety rules:
 On failure, restore from the in-memory pre-edit copy and halt.
 
 **Idempotency:** if the computed value equals the current value within tolerance (hex equality, or rem within 0.0001), skip the write and report "already at target" in Step F. Note that cumulative drift is still possible across iteration passes — `× 0.75` then `× 1.25` lands at `× 0.9375`, not the original. Document this when a chroma or scale modifier is applied.
+
+---
+
+## HTML Target
+
+Generate static HTML versions of fpkit-style components for projects that don't use React — server-rendered apps, static sites, design-system docs, email templates, prototypes.
+
+Triggers: user asks for `/kit-add --target=html`, `/kit-add-html`, "static HTML components", "HTML version of \<component\>", or mentions a non-React project.
+
+Both this section and the React workflow above read the same reference docs at `references/components/<name>.md`. The React workflow extracts `## TSX Template`; this section extracts `## HTML Template` and (for stateful components) `## Vanilla JS`. The `## SCSS Template` block is identical for both.
+
+### HT-A. Initialization
+
+Run this check at the start of every HTML-target invocation.
+
+**HT-A1. Determine target directory**
+
+Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py --target=html <project_root>`.
+
+1. `"source": "configured"` → use the reported `componentsHtmlDir`. Skip the prompt.
+2. `"source": "none"` → ask:
+
+   ```text
+   Where should HTML components be generated? (default: components/html)
+   ```
+
+   After the developer answers, write `.acss-html-target.json` at the project root:
+
+   ```json
+   { "componentsHtmlDir": "components/html" }
+   ```
+
+   Commit this file — subsequent runs read it.
+
+**HT-A2. Copy the foundation helper**
+
+Check if `_stateful.js` exists in `<componentsHtmlDir>`. If not:
+
+- Copy `${CLAUDE_PLUGIN_ROOT}/assets/html-foundation/_stateful.js` into `<componentsHtmlDir>/_stateful.js`.
+- Inform the developer: `Created _stateful.js (foundation helper — required by stateful components)`.
+
+---
+
+### HT-B. Component generation
+
+**HT-B1. Look up the component** — same catalog path as the React workflow: `references/components/catalog.md` → `references/components/<name>.md`.
+
+**HT-B2. Read canonical sections** — a reference doc that supports HTML output contains:
+
+- `## Generation Contract` — `export_name`, `file`, `scss`, `dependencies`. Reuse verbatim.
+- `## HTML Template` — fenced `html` block. Copy verbatim into `<name>.html`.
+- `## SCSS Template` — fenced `scss` block. Copy verbatim into `<name>.scss`.
+- `## Vanilla JS` — fenced `js` block. Present on stateful components only. Copy verbatim into `<name>.js`.
+- `## Accessibility` — read it. Do not strip ARIA attributes.
+
+If `## HTML Template` is missing, warn the developer and offer to author markup from the TSX template by hand. Do not silently skip.
+
+**HT-B3. Resolve dependencies** — same algorithm as React Step B3.
+
+**HT-B4. Show dependency tree and wait for confirmation** — same format as React Step B4, using the `componentsHtmlDir` path.
+
+**HT-B5. Generate files bottom-up** — leaf dependencies first. Skip existing files.
+
+The HTML output is a **fragment** — no `<html>`/`<head>`/`<body>` wrapper. Slot placeholders use HTML comments: `<!-- slot: children -->`.
+
+---
+
+### HT-C. Output characteristics
+
+**HTML (`.html`):** Fragment. Same class names, `data-*` attributes, and ARIA as the TSX output. Slot placeholders as HTML comments. Multiple variants separated by `<!-- variant: <name> -->`.
+
+**SCSS (`.scss`):** Byte-identical to the React generator output. Rules: rem only, `--{component}-{element?}-{variant?}-{property}` naming, hardcoded fallbacks on global tokens, `[aria-disabled="true"]` on every interactive component.
+
+**JS (`.js`) — stateful components only:** Emitted for Button, Card (interactive variant), Alert, Dialog, Popover, Checkbox, Input, IconButton. Plain ES module, no bundler required. Imports `wireDisabled` from `./_stateful.js` where applicable. Exports an idempotent `init()` function.
+
+---
+
+### HT-D. Post-generation summary
+
+```text
+Generated HTML components in components/html/:
+
+  Created:
+    button.html  button.scss  button.js
+
+  Skipped (already existed):
+    _stateful.js
+
+How to wire it up:
+  1. Compile SCSS: npx sass components/html/button.scss components/html/button.css
+     Then: <link rel="stylesheet" href="components/html/button.css">
+     (Or @import the .scss from your existing Sass entrypoint.)
+  2. <script type="module" src="components/html/button.js"></script>
+  3. Paste the markup from button.html into your page or template.
+```
+
+---
+
+### HT-E. Verify integration
+
+Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify_integration.py --target=html <project_root>`.
+
+- Exit 0 → every `.scss`/`.js` artifact is referenced by at least one page. No action.
+- Exit 1 → print each `reasons` entry as a numbered fix-up list. Do not auto-edit user pages.
+
+`*.html` snippets are listed but not checked — they're copy-paste fragments.
+
+---
+
+### HT-F. Key rules
+
+1. **Fragments only** — no `<html>`/`<body>` wrappers.
+2. **Same classes, data attributes, ARIA** as TSX — SCSS reused unchanged.
+3. **Vanilla JS for stateful components** — no React, no bundler.
+4. **`_stateful.js` is the disabled-state helper** — copied once per project.
+5. **Skip existing** — never overwrite; the user owns generated code.
+6. **Bottom-up dependency order** — leaf components first.
+7. **No auto-edits to user pages** — HT-E reports missing references only.
