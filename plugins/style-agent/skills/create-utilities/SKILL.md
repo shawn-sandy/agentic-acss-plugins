@@ -45,7 +45,13 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
    find . \( -name "utilities.css" -o -name "tailwind.config.*" -o -name "bootstrap*.css" \) \
      -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/build/*"
    ```
-   Also grep for `@tailwind base` in `.css`/`.scss` files. If multiple frameworks are found, use `AskUserQuestion` to confirm which vocabulary to use — do not auto-fallback. Only fall back to Tailwind-compatible naming when no framework is detected, or when the user explicitly confirms no framework after clarification.
+   Also grep for `@tailwind base` in `.css`/`.scss` files. If a `utilities.css` file is found, confirm it is acss-kit by grepping for a distinctive selector before concluding:
+   ```bash
+   grep -l "\.bg-primary" <path-to-utilities.css>
+   ```
+   If the grep does not match, treat `utilities.css` as an unrecognised file and do not classify it as acss-kit.
+
+   If multiple frameworks are found, use `AskUserQuestion` to confirm which vocabulary to use — do not auto-fallback. Only fall back to Tailwind-compatible naming when no framework is detected, or when the user explicitly confirms no framework after clarification.
 
 3. **Map to classes.** For each extracted visual property, use LLM reasoning to select the best class name from the detected framework's vocabulary. Apply framework-specific naming conventions:
    - **acss-kit**: `bg-primary`, `p-4`, `flex`, `items-center`, `rounded`, `shadow`
@@ -59,7 +65,7 @@ When multiple frameworks are detected, use `AskUserQuestion` to confirm which vo
 
 4. **Apply accessibility defaults.** If the description implies an interactive element (button, link, input, select, or similar), handle focus styling based on the detected framework:
    - **Tailwind / fallback**: append `focus-visible:ring` to the class list.
-   - **acss-kit**: do not add an extra class — acss-kit components handle `:focus-visible` via their own component CSS. Note this in the summary instead.
+   - **acss-kit**: the utility bundle does not ship a focus-visible or focus-ring utility class. Do not add a class. Instead, emit a warning in the summary: "No focus utility available in acss-kit's utility bundle — add `:focus-visible { outline: 2px solid var(--color-primary, currentColor); outline-offset: 2px; }` to your project CSS, or use an acss-kit component class (e.g., `.btn`) that provides focus styling."
    - **Bootstrap**: append `focus-ring` (Bootstrap 5.3+) or note that Bootstrap provides native focus styling.
 
    Always add a brief `# a11y` note in the summary explaining what was added (or why no class was added).
