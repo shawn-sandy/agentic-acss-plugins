@@ -7,7 +7,7 @@ description:
 disable-model-invocation: false
 ---
 
-# /style-author
+# /acss-kit-style-author
 
 Three sub-flows scaffold new style assets bundled with the acss-kit plugin. The
 maintainer picks one at the start. Each sub-flow ends with a contrast-pair
@@ -34,8 +34,8 @@ Branch to the matching step set below.
 
 ## Sub-flow A — Brand preset
 
-Usage: `/style-author <preset-name> --from=<hex>` (e.g.
-`/style-author sunset --from=#f97316`)
+Usage: `/acss-kit-style-author <preset-name> --from=<hex>` (e.g.
+`/acss-kit-style-author sunset --from=#f97316`)
 
 The output filename is always `brand-<preset-name>.css` (with the `brand-`
 prefix). Two scripts are involved:
@@ -183,13 +183,13 @@ Print a prominent reminder:
 If the role is required (not optional), also remind:
 
 > Required roles must be present in every bundled `light.css`, `dark.css`, and
-> brand preset. Run `/style-update` after adding the role to backfill existing
+> brand preset. Run `/acss-kit-style-update` after adding the role to backfill existing
 > themes.
 
 ### B8. Run the reviewer agent
 
 Invoke `theme-reference-reviewer` to confirm the role appears consistently
-across markdown and the JSON schema. Surface its report inline.
+across Markdown and the JSON schema. Surface its report inline.
 
 ### B9. Print summary
 
@@ -262,7 +262,7 @@ Surface any contrast failures with the failing pair names.
 
 ### C6. Run the reviewer agent
 
-Invoke `theme-reference-reviewer` to confirm the algorithm constants in markdown
+Invoke `theme-reference-reviewer` to confirm the algorithm constants in Markdown
 match the Python script. Surface its report.
 
 ### C7. Print summary

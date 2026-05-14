@@ -78,7 +78,7 @@ Land Phase 1 end-to-end as a sequence of focused commits on the existing branch 
 
 *Why:* one source of truth for the command catalogue.
 
-*Verify:* `find plugins -name commands.md` returns nothing; each plugin's docs index links to `prompt-book.md`.
+*Verify:* `find plugins -name commands.md` returns only `plugins/acss-utilities/docs/commands.md` (kept — no prompt-book.md exists there); `plugins/acss-kit/docs/README.md` links to `prompt-book.md` only.
 
 </li>
 

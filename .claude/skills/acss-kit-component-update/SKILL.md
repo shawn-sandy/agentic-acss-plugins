@@ -7,15 +7,15 @@ description:
 disable-model-invocation: false
 ---
 
-# /component-update
+# /acss-kit-component-update
 
-Usage: `/component-update <component-name>`
+Usage: `/acss-kit-component-update <component-name>`
 
-Example: `/component-update button`
+Example: `/acss-kit-component-update button`
 
 Re-verifies an existing component reference doc against its captured fpkit ref,
 surfaces any drift in the TSX or SCSS templates, and runs the canonical-shape
-reviewer agent. Does NOT scaffold new components — use `/component-author` for
+reviewer agent. Does NOT scaffold new components — use `/acss-kit-component-author` for
 that.
 
 ## Steps

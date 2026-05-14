@@ -7,10 +7,10 @@ Mirror of selected project skills exposed to **GitHub Managed Agents** (Copilot-
 | Skill | Mirrors | Purpose |
 |---|---|---|
 | `add-command` | `.claude/skills/add-command/` | Scaffold a new slash command in a plugin |
-| `release-check` | `.claude/skills/release-check/` | Audit version-bump + CHANGELOG + README before opening a release PR |
-| `release-plugin` | `.claude/skills/release-plugin/` | Bump `plugin.json` version and refresh `marketplace.json` description |
-| `validate-plugin` | `.claude/skills/validate-plugin/` | Single-plugin structural validation |
-| `verify-plugins` | `.claude/skills/verify-plugins/` | Cross-plugin structural validation |
+| `release-plugin` | `.claude/skills/release-plugin/` | Bump `plugin.json` version; `--check` mode audits release paperwork |
+| `validate-plugin` | `.claude/skills/validate-plugins/` (stub — use `--scope=plugin`) | Single-plugin structural validation |
+| `verify-plugins` | `.claude/skills/validate-plugins/` (stub — use `--scope=all`) | Cross-plugin structural validation |
+| `release-check` | `.claude/skills/release-plugin/` (stub — use `--check`) | Audit version-bump + CHANGELOG + README before opening a release PR |
 
 ## Drift policy
 

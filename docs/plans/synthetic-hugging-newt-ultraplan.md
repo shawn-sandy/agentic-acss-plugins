@@ -1,4 +1,9 @@
-# Plan: Simplify and de-duplicate the acss-plugins marketplace
+# Plan: Simplify and de-duplicate the acss-plugins marketplace [SUPERSEDED]
+
+> **This plan was a discarded alternative.** The canonical Phase 1 implementation is in
+> [`simplify-acss-plugins-marketplace.md`](simplify-acss-plugins-marketplace.md).
+> Maintainer skills are tagged `acss-kit-*` and kept under `.claude/skills/` — not moved
+> into `plugins/acss-kit/skills/_maintainer/` as proposed here. Do not follow this plan.
 
 ## Context
 

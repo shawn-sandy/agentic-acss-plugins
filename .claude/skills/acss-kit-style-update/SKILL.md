@@ -10,7 +10,7 @@ Usage: `/acss-kit-style-update <path>` (e.g.
 `/acss-kit-style-update plugins/acss-kit/skills/styles/references/role-catalogue.md`)
 
 Detects which kind of theme asset was edited and runs the appropriate downstream
-re-validation. Does not author new assets — use `/style-author` for that.
+re-validation. Does not author new assets — use `/acss-kit-style-author` for that.
 
 ## Step 1 — Detect the asset kind
 

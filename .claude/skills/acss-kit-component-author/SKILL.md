@@ -7,11 +7,11 @@ description:
 disable-model-invocation: false
 ---
 
-# /component-author
+# /acss-kit-component-author
 
-Usage: `/component-author <component-name>`
+Usage: `/acss-kit-component-author <component-name>`
 
-Example: `/component-author tabs`
+Example: `/acss-kit-component-author tabs`
 
 Scaffolds
 `plugins/acss-kit/skills/components/references/components/<component-name>.md`
