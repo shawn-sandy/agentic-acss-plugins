@@ -35,10 +35,13 @@ const requireCjs = createRequire(import.meta.url)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '..')
-const REFS_DIR = join(
+// Two-root layout (transitional): kit-core holds legacy per-component docs;
+// component-<name>/ skill dirs hold migrated docs as reference.md.
+const KIT_CORE_REFS_DIR = join(
   REPO_ROOT,
-  'plugins/acss-kit/skills/components/references/components',
+  'plugins/acss-kit/skills/kit-core/references/components',
 )
+const SKILLS_DIR = join(REPO_ROOT, 'plugins/acss-kit/skills')
 const TMP_DIR = join(REPO_ROOT, 'tests/.tmp/extracted')
 const FIXTURES = join(REPO_ROOT, 'tests/fixtures/component-vars.json')
 
@@ -55,10 +58,38 @@ function loadVars() {
   return JSON.parse(readFileSync(FIXTURES, 'utf8'))
 }
 
+// Derive component name from a reference file path.
+// Handles both layouts:
+//   kit-core/references/components/button.md  → "button"
+//   skills/component-button/reference.md      → "button"
+function componentName(refPath) {
+  const fname = basename(refPath, '.md')
+  if (fname === 'reference') {
+    return basename(dirname(refPath)).replace(/^component-/, '')
+  }
+  return fname
+}
+
 function listReferences() {
-  return readdirSync(REFS_DIR)
-    .filter((f) => f.endsWith('.md') && f !== 'catalog.md')
-    .map((f) => join(REFS_DIR, f))
+  const refs = []
+
+  // Legacy path: kit-core holds docs not yet migrated to per-component skills.
+  if (existsSync(KIT_CORE_REFS_DIR)) {
+    readdirSync(KIT_CORE_REFS_DIR)
+      .filter((f) => f.endsWith('.md') && f !== 'catalog.md')
+      .forEach((f) => refs.push(join(KIT_CORE_REFS_DIR, f)))
+  }
+
+  // Per-component skills: skills/component-<name>/reference.md
+  if (existsSync(SKILLS_DIR)) {
+    readdirSync(SKILLS_DIR)
+      .filter((d) => d.startsWith('component-'))
+      .map((d) => join(SKILLS_DIR, d, 'reference.md'))
+      .filter((p) => existsSync(p))
+      .forEach((p) => refs.push(p))
+  }
+
+  return refs
 }
 
 export function findImports(tsx) {
@@ -170,7 +201,7 @@ function main() {
   const tsxFiles = []
   if (foundationWritten) tsxFiles.push(['foundation', join(TMP_DIR, 'ui.tsx')])
   for (const refPath of refs) {
-    const name = basename(refPath, '.md')
+    const name = componentName(refPath)
     if (name === 'foundation') continue
     const candidate = join(TMP_DIR, name, `${name}.tsx`)
     if (existsSync(candidate)) tsxFiles.push([name, candidate])

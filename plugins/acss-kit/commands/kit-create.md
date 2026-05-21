@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion
 
 # /kit-create
 
-Creator mode — describe a UI element in plain English and have it generated as a paste-ready snippet (or standalone component file). Works with any component that has a dedicated reference doc under `references/components/<name>.md` (Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav). Components that exist only as inline entries in `catalog.md` — currently Badge, Tag, Heading, Text/Paragraph, Details, Progress — are **not** supported in v0.1; promote them via the `component-author` maintainer skill first.
+Creator mode — describe a UI element in plain English and have it generated as a paste-ready snippet (or standalone component file). Works with any component that has a dedicated per-component skill at `skills/component-<name>/` or a reference doc at `skills/kit-core/references/components/<name>.md` (Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav). Components that exist only as inline entries in `catalog.md` — currently Badge, Tag, Heading, Text/Paragraph, Details, Progress — are **not** supported in v0.1; promote them via the `component-author` maintainer skill first.
 
 ## Usage
 
@@ -27,11 +27,11 @@ The skill auto-triggers on natural-language phrases like *"create a <component>�
 
 ## Workflow
 
-When this command is invoked, follow the Creator Mode workflow documented in `${CLAUDE_PLUGIN_ROOT}/skills/components/SKILL.md` under the `## Creator Mode` section.
+When this command is invoked, follow the Creator Mode workflow documented in `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/SKILL.md` under the `## Creator Mode` section.
 
 ### Quick reference
 
-1. **Dispatch** — match the component noun against the reference-doc directory `references/components/*.md` (catalog.md is supplemental, not the dispatch source); halt if no `<name>.md` exists.
+1. **Dispatch** — match the component noun against per-component skills at `skills/component-<name>/` first; fall back to `skills/kit-core/references/components/<name>.md`. Halt if neither exists.
 2. **Parse** — load the matched reference doc, read its Props Interface, and resolve the user's phrases against the prop set (global colour/size synonyms + per-component union literals).
 3. **Resolve target** — `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py` to locate `componentsDir`.
 4. **Vendor** — run `/kit-add <component> [...dependencies]` if any of them aren't yet present.
@@ -51,4 +51,4 @@ After a generation, follow-up phrases like *"make it larger"*, *"swap to seconda
 
 ### Full workflow
 
-See the `## Creator Mode` section in `skills/components/SKILL.md` for the complete step-by-step including the global synonym tables, the per-reference-doc parsing rules, the validation matrix, and worked examples for Button, Alert, and Card.
+See the `## Creator Mode` section in `skills/kit-core/SKILL.md` for the complete step-by-step including the global synonym tables, the per-reference-doc parsing rules, the validation matrix, and worked examples for Button, Alert, and Card.
