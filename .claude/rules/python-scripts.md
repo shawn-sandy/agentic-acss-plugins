@@ -5,7 +5,7 @@ paths:
 
 # Python Script Contracts
 
-All scripts in `plugins/*/scripts/` use **Python 3 stdlib only** — no external dependencies, with one documented exception: `plugins/acss-utilities/scripts/validate_utilities.py` imports `tinycss2` (install: `pip3 install --user tinycss2`). All other scripts must remain stdlib-only.
+All scripts in `plugins/*/scripts/` use **Python 3 stdlib only** — no external dependencies, with one documented exception: `plugins/acss-kit/scripts/validate_utilities.py` imports `tinycss2` (install: `pip3 install --user tinycss2`). All other scripts must remain stdlib-only.
 
 Two contract families coexist. Choose based on who calls the script:
 

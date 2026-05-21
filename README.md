@@ -13,11 +13,10 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 1.0.0 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. All `/utility-*` commands are now part of this plugin (replaces `acss-utilities`). WCAG 2.2 AA validation built-in. See [`docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md) if upgrading from v0.x with `acss-utilities` installed. |
-| [`acss-utilities`](./plugins/acss-utilities) | 1.0.0 | **Deprecated.** All utility-class commands have moved to `acss-kit` v1.0.0. Existing installs continue to work; no new features will be added. Uninstall and update `acss-kit` — see [`migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md). |
+| [`acss-kit`](./plugins/acss-kit) | 1.1.0 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. WCAG 2.2 AA validation built-in. |
 | [`style-agent`](./plugins/style-agent) | 0.2.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. |
 
-The three plugins are **decoupled** — install any combination independently.
+The two plugins are **decoupled** — install either or both independently.
 
 ## Why agent-driven instead of an npm package?
 
@@ -51,8 +50,6 @@ Inside any Claude Code session running in your React + TS project — register t
 /plugin marketplace add shawn-sandy/agentic-acss-plugins
 /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
 ```
-
-> Upgrading from v0.x with `acss-utilities` installed? See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md).
 
 > **Do this first:** Run `/setup` once before anything else. Subsequent `/kit-add` and `/theme-create` calls depend on the `.acss-target.json` it writes.
 
@@ -92,8 +89,7 @@ Then bootstrap and add your first component + theme:
 | Command | Purpose |
 |---|---|
 | [`/kit-list [component]`](./plugins/acss-kit/commands/kit-list.md) | List available component references or inspect one in detail (read-only). |
-| [`/kit-add <component> ...`](./plugins/acss-kit/commands/kit-add.md) | Generate accessible React components using local imports only. No `@fpkit/acss` package. |
-| [`/kit-add-html <component> ...`](./plugins/acss-kit/commands/kit-add-html.md) | Generate static HTML + SCSS + vanilla JS versions of components for non-React projects (server-rendered apps, static sites, email templates). |
+| [`/kit-add <component> ...`](./plugins/acss-kit/commands/kit-add.md) | Generate accessible React components using local imports only. No `@fpkit/acss` package. Pass `--target=html` to generate static HTML + SCSS + vanilla JS instead, for non-React projects (server-rendered apps, static sites, email templates). |
 | [`/kit-create <description>`](./plugins/acss-kit/commands/kit-create.md) | Creator mode — generate a paste-ready TSX snippet (or standalone component file) from a natural-language description (`"primary pill button that says 'Add to cart'"`). The underlying `component-creator` skill also auto-triggers on the same phrasing. |
 | [`/kit-sync`](./plugins/acss-kit/commands/kit-sync.md) | Bulk-install every shipped component, the `ui.tsx` foundation, and a starter theme in one command. Records each file in `.acss-kit/manifest.json` for safe re-syncs. |
 | [`/kit-update [<component> ...]`](./plugins/acss-kit/commands/kit-update.md) | Safely re-copy unmodified generated files after a plugin upgrade. Drift detection via normalized sha256 — files you've edited are skipped by default. |
@@ -120,7 +116,7 @@ Then bootstrap and add your first component + theme:
 |---|---|
 | [`/prompt-book [section-number]`](./plugins/acss-kit/commands/prompt-book.md) | Print a copy-paste catalogue of natural-language prompts for every shipped slash command. |
 
-**Utility classes** (moved from `acss-utilities` in v1.0.0)
+**Utility classes**
 
 | Command | Purpose |
 |---|---|
@@ -138,10 +134,6 @@ Then bootstrap and add your first component + theme:
 - **`setup`** — cross-domain init skill backing `/setup`.
 - **`style-tune`** — pilot per-feel skill backing `/style-tune`.
 
-### acss-utilities (deprecated)
-
-All `/utility-*` commands have moved to `acss-kit` v1.0.0. The `acss-utilities` plugin is tombstoned — no new features will be added. See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md).
-
 ## Repository layout
 
 ```text
@@ -150,17 +142,15 @@ agentic-acss-plugins/
 ├── plugins/
 │   ├── acss-kit/
 │   │   ├── .claude-plugin/plugin.json     # version source of truth
-│   │   ├── commands/*.md                  # 14 slash commands
-│   │   ├── skills/{components,components-html,styles,setup,kit-sync,prompt-book,component-form,component-creator,style-tune}/SKILL.md
+│   │   ├── commands/*.md                  # slash commands
+│   │   ├── skills/{components,styles,setup,kit-sync,prompt-book,component-form,component-creator,style-tune,utilities}/SKILL.md
 │   │   ├── scripts/                       # Python 3 stdlib (palette, validate, detect_target, …)
-│   │   ├── assets/                        # ui.tsx foundation, brand template, theme schema
+│   │   ├── assets/                        # ui.tsx foundation, brand template, theme schema, utilities bundle
 │   │   └── docs/                          # architecture, recipes, troubleshooting, tutorial
-│   └── acss-utilities/
+│   └── style-agent/
 │       ├── .claude-plugin/plugin.json
-│       ├── commands/*.md                  # 4 utility-* commands
-│       ├── skills/utilities/SKILL.md
-│       ├── scripts/                       # generator + validator + classname migration
-│       └── docs/                          # developer guide
+│       ├── commands/*.md                  # /css-to-class, /inline-style-to-class, /create-utilities
+│       └── skills/                        # framework-agnostic CSS authoring skills
 ├── tests/                              # tests/run.sh structural validation, tests/e2e.sh deeper check
 ├── docs/                               # cross-plugin documentation
 ├── .claude/                            # maintainer-only — project rules, hooks, skills, and review agents for plugin development; not surfaced to plugin users
@@ -170,15 +160,6 @@ agentic-acss-plugins/
 ```
 
 ## Migration
-
-**acss-utilities → acss-kit v1.0.0:** All `/utility-*` commands are now part of `acss-kit`. Uninstall `acss-utilities` and update `acss-kit`:
-
-```text
-/plugin uninstall acss-utilities@shawn-sandy-agentic-acss-plugins
-/plugin update acss-kit@shawn-sandy-agentic-acss-plugins
-```
-
-No CSS class names changed. See [`plugins/acss-kit/docs/migration-v1.md`](./plugins/acss-kit/docs/migration-v1.md) for the full guide including asset-path changes and custom `token-bridge.css` handling.
 
 If you previously installed `acss-kit-builder`, `acss-theme-builder`, `acss-app-builder`, or `acss-component-specs` — these have been consolidated into `acss-kit` (or removed entirely). Uninstall the old plugins and install `acss-kit` instead. See [`plugins/acss-kit/CHANGELOG.md`](./plugins/acss-kit/CHANGELOG.md) for the full history.
 
@@ -218,8 +199,6 @@ See [`tests/README.md`](./tests/README.md) for the full workflow, the `--reset` 
 | [`AGENTS.md`](./AGENTS.md) | Maintainers | Project agent definitions |
 | [`plugins/acss-kit/README.md`](./plugins/acss-kit/README.md) | acss-kit users | Full plugin behavior, command catalog, skills overview |
 | [`plugins/acss-kit/docs/`](./plugins/acss-kit/docs/) | acss-kit contributors | Architecture, recipes, troubleshooting, tutorial |
-| [`plugins/acss-utilities/README.md`](./plugins/acss-utilities/README.md) | acss-utilities users | Utility-class behavior, bridge file, families |
-| [`plugins/acss-utilities/docs/`](./plugins/acss-utilities/docs/) | acss-utilities contributors | Developer guide, recipes, architecture |
 | [`tests/README.md`](./tests/README.md) | All | Local test workflow, sandbox fixtures, reset/troubleshooting |
 
 ## Relationship to the main fpkit repo

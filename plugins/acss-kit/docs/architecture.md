@@ -150,14 +150,8 @@ When both pilots reach their graduation criteria (see each SKILL.md `description
 
 The helper should live alongside the pilots (e.g. `skills/_shared/phrase-parser.md`), not in `assets/`, so it stays markdown-as-source. Do not ship until both pilots are graduating — premature extraction would solidify a contract before either pilot's vocabulary has stabilised.
 
-### Unifying `components` and `components-html` skills
+### `/kit-add --target=html` (HTML output mode)
 
-`/kit-add` and `/kit-add-html` share most of their pipeline: target detection, dependency resolution, manifest tracking, integration verification, and SCSS emission are byte-identical. They diverge only at the final emit step (TSX vs HTML markup + vanilla JS). Today the two SKILLs duplicate the shared pipeline.
+`/kit-add` shares most of its pipeline across React and HTML output: target detection, dependency resolution, manifest tracking, integration verification, and SCSS emission are byte-identical. The two modes diverge only at the final emit step (TSX vs HTML markup + vanilla JS).
 
-When the HTML-output catalog reaches parity with the React catalog (currently 4 of ~16 components — see `references/components/catalog.md` `## HTML Output Status`), unify into a single `components` skill with an `--output={react|html}` selector at the entry point:
-
-- Steps A–E (init, target detection, dependency resolution, preview, generation order) move to a shared section.
-- Step F (emit) gains two emitter implementations behind a single dispatch.
-- `kit-add.md` and `kit-add-html.md` both become thin command files setting the output flag and delegating.
-
-Defer until catalog parity is reached. Doing it earlier means the unified skill has to handle a "this component does not have an HTML template yet" branch in every code path, which complicates the very thing the merge is meant to simplify.
+The `components` skill (`skills/components/SKILL.md`) houses both: Steps A–G drive the shared React pipeline, and the `## HTML Target` section (HT-A through HT-F) covers the static-HTML emit. Pass `--target=html` to `/kit-add` to switch modes; the default (`--target=react`) is unchanged. Components without a `## HTML Template` block in their reference doc fall through to a "not yet" warning — see `references/components/catalog.md` `## HTML Output Status` for current coverage.

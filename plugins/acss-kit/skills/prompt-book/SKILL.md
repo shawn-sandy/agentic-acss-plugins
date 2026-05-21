@@ -1,6 +1,6 @@
 ---
 name: prompt-book
-description: Display the bundled prompt book — copy-paste prompts mapped to every slash command in acss-kit and acss-utilities. Use when the user runs /prompt-book.
+description: Display the bundled prompt book — copy-paste prompts mapped to every slash command in acss-kit. Use when the user runs /prompt-book.
 ---
 
 # Prompt Book

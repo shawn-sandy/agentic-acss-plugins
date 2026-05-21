@@ -30,7 +30,7 @@ These run after Claude writes or edits a file. They warn or fail loudly so issue
 |---|---|
 | Matcher | `Write\|Edit` |
 | Status message | `Validating utility CSS...` |
-| Behaviour | If the touched file matches `plugins/acss-utilities/assets/*.css`, runs `python3 plugins/acss-utilities/scripts/validate_utilities.py <file>` (timeout 15s). Failures print to stdout. |
+| Behaviour | If the touched file matches `plugins/acss-kit/assets/utilities/*.css`, runs `python3 plugins/acss-kit/scripts/validate_utilities.py <file>` (timeout 15s). Failures print to stdout. |
 | Why | Utility CSS files have structural contracts (kebab-case selectors, `var()` fallbacks, responsive parity, no duplicates). The hook enforces these on every edit rather than only at batch-validation time. |
 
 ### 3. JSON validator

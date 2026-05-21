@@ -8,10 +8,9 @@ A Claude Code **plugin marketplace** — not a Node.js or Python package. There 
 
 **Stack:** Claude Code plugin format, Python 3 (scripts), SCSS/CSS custom properties (generated output).
 
-The repo contains three plugins:
+The repo contains two plugins:
 
-- `plugins/acss-kit` — accessible React components and CSS themes for fpkit/acss projects. Two top-level skills (`components`, `styles`), a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`).
-- `plugins/acss-utilities` — Tailwind-style atomic CSS utility classes paired with `acss-kit`'s OKLCH theme tokens via a bridge file. Generator + validator + four `/utility-*` commands. See [`plugins/acss-utilities/docs/`](plugins/acss-utilities/docs/README.md) for the developer guide.
+- `plugins/acss-kit` — accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects. Two top-level skills (`components`, `styles`), a `utilities` skill, a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`).
 - `plugins/style-agent` — framework-agnostic CSS authoring skills for any web project. First skill: `/css-to-class` (extract utility-class lists into a single named CSS class). See [`plugins/style-agent/docs/`](plugins/style-agent/docs/README.md).
 
 Install from a Claude Code session:
@@ -19,7 +18,6 @@ Install from a Claude Code session:
 ```text
 /plugin marketplace add shawn-sandy/agentic-acss-plugins
 /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
-/plugin install acss-utilities@shawn-sandy-agentic-acss-plugins
 /plugin install style-agent@shawn-sandy-agentic-acss-plugins
 ```
 
@@ -43,8 +41,6 @@ plugins/acss-kit/
 ├── assets/                        # foundation/ui.tsx, brand template, internal schema
 └── docs/                          # developer guides (architecture, recipes, troubleshooting, tutorial)
 ```
-
-`plugins/acss-utilities/` mirrors the same shape (`.claude-plugin/`, `commands/`, `skills/`, `scripts/`, `assets/`, `docs/`) — four `/utility-*` commands plus `detect_utility_target.py`, `generate_utilities.py`, `migrate_classnames.py`, and `validate_utilities.py`. See [`plugins/acss-utilities/docs/README.md`](plugins/acss-utilities/docs/README.md) for the developer guide.
 
 `plugins/style-agent/` — lighter shape (`.claude-plugin/`, `commands/`, `skills/`, `docs/`, no scripts or assets yet). One skill (`css-to-class`) and one command (`/css-to-class`). See [`plugins/style-agent/docs/README.md`](plugins/style-agent/docs/README.md).
 
@@ -98,8 +94,7 @@ Claude Code on the web sessions develop on `claude/<slug>` branches assigned per
 
 | Plugin | Commands |
 |---|---|
-| `acss-kit` | `/kit-add`, `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, `/prompt-book`, `/setup`, `/style-tune`, `/theme-brand`, `/theme-create`, `/theme-extract`, `/theme-update` |
-| `acss-utilities` | `/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune` |
+| `acss-kit` | `/kit-add`, `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, `/prompt-book`, `/setup`, `/style-tune`, `/theme-brand`, `/theme-create`, `/theme-extract`, `/theme-update`, `/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune` |
 | `style-agent` | `/css-to-class` |
 
 Each command's body is in `plugins/<plugin>/commands/<name>.md`; logic lives in the corresponding SKILL.md.

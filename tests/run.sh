@@ -19,10 +19,10 @@
 #   7b. verify_integration.py --self-test (entrypoint wiring checks).
 #   7c. detect_css_entry.py --self-test (CSS/SCSS entry candidates +
 #       @import / @use scan).
-#   8. acss-utilities validator over plugins/acss-utilities/assets/
+#   8. acss-kit utilities validator over plugins/acss-kit/assets/utilities/
 #      (selector grammar, var() fallbacks, bridge dark-mode parity,
 #      bundle-size budget).
-#   9. acss-utilities idempotency: regenerate from utilities.tokens.json
+#   9. acss-kit utilities idempotency: regenerate from utilities.tokens.json
 #      and diff against the committed bundle + per-family partials.
 #  10. migrate_classnames.py fixture round-trip + idempotency.
 #
@@ -260,31 +260,31 @@ else
 fi
 
 # Step 8
-section "8. acss-utilities validator"
-UTIL_DIR="$REPO_ROOT/plugins/acss-utilities/assets"
+section "8. acss-kit utilities validator"
+UTIL_DIR="$REPO_ROOT/plugins/acss-kit/assets/utilities"
 if [ -d "$UTIL_DIR" ]; then
   UTIL_LOG="$TMP_ROOT/utilities-validate.log"
-  if python3 "$REPO_ROOT/plugins/acss-utilities/scripts/validate_utilities.py" "$UTIL_DIR" >"$UTIL_LOG"; then
-    green "acss-utilities validator OK"
+  if python3 "$REPO_ROOT/plugins/acss-kit/scripts/validate_utilities.py" "$UTIL_DIR" >"$UTIL_LOG"; then
+    green "acss-kit utilities validator OK"
   else
-    red "acss-utilities validator failed:"
+    red "acss-kit utilities validator failed:"
     cat "$UTIL_LOG"
     exit 1
   fi
 else
-  yellow "no plugins/acss-utilities/assets — skipping utilities validator"
+  yellow "no plugins/acss-kit/assets/utilities — skipping utilities validator"
 fi
 
 # Step 9
-section "9. acss-utilities idempotency"
+section "9. acss-kit utilities idempotency"
 if [ -f "$UTIL_DIR/utilities.tokens.json" ]; then
   UTIL_REGEN_DIR="$TMP_ROOT/utilities-regen"
   mkdir -p "$UTIL_REGEN_DIR"
   REGEN_LOG="$TMP_ROOT/utilities-regen.log"
-  if ! python3 "$REPO_ROOT/plugins/acss-utilities/scripts/generate_utilities.py" \
+  if ! python3 "$REPO_ROOT/plugins/acss-kit/scripts/generate_utilities.py" \
          --tokens "$UTIL_DIR/utilities.tokens.json" \
          --out-dir "$UTIL_REGEN_DIR" >"$REGEN_LOG" 2>&1; then
-    red "acss-utilities generator failed:"
+    red "acss-kit utilities generator failed:"
     cat "$REGEN_LOG"
     exit 1
   fi
@@ -292,25 +292,35 @@ if [ -f "$UTIL_DIR/utilities.tokens.json" ]; then
   if ! diff -q "$UTIL_DIR/utilities.css" "$UTIL_REGEN_DIR/utilities.css" >/dev/null; then
     IDEMPOTENT=0
   fi
-  if ! diff -qr "$UTIL_DIR/utilities/" "$UTIL_REGEN_DIR/utilities/" >/dev/null; then
-    IDEMPOTENT=0
-  fi
+  # acss-kit's committed layout keeps per-family partials flat at
+  # assets/utilities/<family>.css, while generate_utilities.py writes them
+  # to <out>/utilities/<family>.css. Compare across the layout difference.
+  for partial in "$UTIL_DIR"/*.css; do
+    name="$(basename "$partial")"
+    [ "$name" = "utilities.css" ] && continue
+    [ "$name" = "token-bridge.css" ] && continue
+    if [ -f "$UTIL_REGEN_DIR/utilities/$name" ]; then
+      if ! diff -q "$partial" "$UTIL_REGEN_DIR/utilities/$name" >/dev/null; then
+        IDEMPOTENT=0
+      fi
+    fi
+  done
   if [ "$IDEMPOTENT" -eq 0 ]; then
-    red "acss-utilities idempotency check failed — regenerated bundle diverges from the committed copy."
-    red "Run \`python3 plugins/acss-utilities/scripts/generate_utilities.py --tokens \\"
-    red "  plugins/acss-utilities/assets/utilities.tokens.json --out-dir plugins/acss-utilities/assets/\` and commit."
+    red "acss-kit utilities idempotency check failed — regenerated bundle diverges from the committed copy."
+    red "Run \`python3 plugins/acss-kit/scripts/generate_utilities.py --tokens \\"
+    red "  plugins/acss-kit/assets/utilities/utilities.tokens.json --out-dir plugins/acss-kit/assets/utilities/\` and commit."
     diff "$UTIL_DIR/utilities.css" "$UTIL_REGEN_DIR/utilities.css" | head -40 || true
     exit 1
   fi
-  green "acss-utilities idempotency OK"
+  green "acss-kit utilities idempotency OK"
 else
-  yellow "no plugins/acss-utilities/assets/utilities.tokens.json — skipping idempotency check"
+  yellow "no plugins/acss-kit/assets/utilities/utilities.tokens.json — skipping idempotency check"
 fi
 
 # Step 10
 section "10. migrate_classnames.py fixture round-trip + idempotency"
-MIGRATE_SCRIPT="$REPO_ROOT/plugins/acss-utilities/scripts/migrate_classnames.py"
-FIXTURES_DIR="$REPO_ROOT/plugins/acss-utilities/scripts/tests/migrate_fixtures"
+MIGRATE_SCRIPT="$REPO_ROOT/plugins/acss-kit/scripts/migrate_classnames.py"
+FIXTURES_DIR="$REPO_ROOT/plugins/acss-kit/scripts/tests/migrate_fixtures"
 if [ -f "$MIGRATE_SCRIPT" ] && [ -d "$FIXTURES_DIR" ]; then
   MIGRATE_LOG="$TMP_ROOT/migrate-classnames.log"
   MIGRATE_FAIL=0

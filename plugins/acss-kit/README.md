@@ -93,7 +93,7 @@ If you delete `.acss-target.json`, re-run `/setup` to regenerate it. If your pro
 
 ### `/kit-list [component]`
 
-List available components or inspect one without writing any files. Read-only — useful for discovering names, props, CSS variables, and dependencies before running `/kit-add`. As of `0.11.1`, the listing appends `[HTML]` to components whose static-HTML output is **Verified** (Button, Card, Alert, Dialog), and `/kit-list <name>` prints a dedicated `HTML output:` line so you can see at a glance whether `/kit-add-html` will succeed. The full reference (signature, examples, output shape) is in [`docs/prompt-book.md`](docs/prompt-book.md).
+List available components or inspect one without writing any files. Read-only — useful for discovering names, props, CSS variables, and dependencies before running `/kit-add`. As of `0.11.1`, the listing appends `[HTML]` to components whose static-HTML output is **Verified** (Button, Card, Alert, Dialog), and `/kit-list <name>` prints a dedicated `HTML output:` line so you can see at a glance whether `/kit-add --target=html` will succeed. The full reference (signature, examples, output shape) is in [`docs/prompt-book.md`](docs/prompt-book.md).
 
 ```
 /kit-list
@@ -123,26 +123,26 @@ Generate one or more components into your project.
 8. **Summary** — displays created/skipped files and an import/usage snippet.
 9. **Verify integration** — runs `scripts/verify_integration.py` against the recorded `stack.entrypointFile`. Missing imports are surfaced as a numbered fix-up list; the plugin never auto-edits the entrypoint.
 
-### `/kit-add-html <component> [component2 ...]`
+### `/kit-add --target=html <component> [component2 ...]`
 
-Generate **static HTML** versions of components for projects that don't use React — server-rendered apps, static sites, design-system docs, email templates, prototypes. Reads the same component reference docs as `/kit-add`, but emits markup + SCSS + tiny vanilla JS instead of TSX.
+Generate **static HTML** versions of components for projects that don't use React — server-rendered apps, static sites, design-system docs, email templates, prototypes. Reads the same component reference docs as the default React mode, but emits markup + SCSS + tiny vanilla JS instead of TSX.
 
 ```text
-/kit-add-html button
-/kit-add-html card alert
-/kit-add-html dialog
-/kit-add-html button card alert dialog
+/kit-add --target=html button
+/kit-add --target=html card alert
+/kit-add --target=html dialog
+/kit-add --target=html button card alert dialog
 ```
 
 **Output for each component:**
 
 - `<componentsHtmlDir>/<name>.html` — fragment markup. Same classes, `data-*` attributes, and ARIA as the React version, so the SCSS works unchanged. Slot placeholders are HTML comments (`<!-- slot: children -->`).
-- `<componentsHtmlDir>/<name>.scss` — byte-identical to `/kit-add`'s SCSS (the framework-agnostic CSS is shared). Compile to `.css` with Sass (`npx sass <name>.scss <name>.css`) before referencing it from a `<link>` tag — browsers cannot load `.scss` directly.
+- `<componentsHtmlDir>/<name>.scss` — byte-identical to the React generator's SCSS (the framework-agnostic CSS is shared). Compile to `.css` with Sass (`npx sass <name>.scss <name>.css`) before referencing it from a `<link>` tag — browsers cannot load `.scss` directly.
 - `<componentsHtmlDir>/<name>.js` — for components with runtime behavior: Button (aria-disabled wrap), Card (interactive variant — keyboard activation + `card:activate` event), Alert (dismiss + auto-hide + pause-on-hover), Dialog (showModal + backdrop close), plus Popover, Checkbox, Input, IconButton once their refs are augmented. Stateless components (Img, Link, Icon, List, Table, Field, Nav, plain Card) emit no `.js`. Plain ES module — no bundler required.
 
-On first run, prompts for the target directory (default `components/html`), persists the choice to `.acss-html-target.json`, and copies the foundation helper `_stateful.js` into the target. After generation, runs `scripts/verify_html_integration.py` and reports any pages missing `<link rel="stylesheet">` / `<script src>` references.
+On first run, prompts for the target directory (default `components/html`), persists the choice to `.acss-html-target.json`, and copies the foundation helper `_stateful.js` into the target. After generation, runs `scripts/verify_integration.py --target=html` and reports any pages missing `<link rel="stylesheet">` / `<script src>` references.
 
-The first batch of reference docs supporting `/kit-add-html` is **Button**, **Card**, **Alert**, and **Dialog**. Remaining components fall through to a "not yet" warning until backfilled — see the `HTML Output Status` table in [`references/components/catalog.md`](skills/components/references/components/catalog.md).
+The first batch of reference docs supporting `--target=html` is **Button**, **Card**, **Alert**, and **Dialog**. Remaining components fall through to a "not yet" warning until backfilled — see the `HTML Output Status` table in [`references/components/catalog.md`](skills/components/references/components/catalog.md).
 
 ### `/kit-create <description>`
 
@@ -268,7 +268,7 @@ Theme-layer edits delegate to `/theme-update` after a pre-validation pass; compo
 
 ### `/prompt-book [section-number]`
 
-Print a copy-paste catalogue of natural-language prompts for every shipped slash command across `acss-kit` and `acss-utilities`. Useful when you'd rather describe what you want than remember command syntax.
+Print a copy-paste catalogue of natural-language prompts for every shipped slash command in `acss-kit`. Useful when you'd rather describe what you want than remember command syntax.
 
 ```shell
 /prompt-book

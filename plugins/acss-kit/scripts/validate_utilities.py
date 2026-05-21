@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validate utility CSS files for the acss-utilities plugin.
+Validate utility CSS files for the acss-kit utilities bundle.
 
 Two modes (auto-detected by filename):
 

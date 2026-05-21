@@ -47,7 +47,7 @@ reviews:
 
     - path: "plugins/*/scripts/**/*.py"
       instructions: |
-        - Python 3 stdlib only — do not introduce new third-party dependencies. The one existing exception is `tinycss2` in `plugins/acss-utilities/scripts/validate_utilities.py`; flag any other third-party imports.
+        - Python 3 stdlib only — do not introduce new third-party dependencies. The one existing exception is `tinycss2` in `plugins/acss-kit/scripts/validate_utilities.py`; flag any other third-party imports.
         - Detector contract: JSON object to stdout, `reasons` array always present, exit 0 (pass), 1 (fail), or 2 (usage/IO error).
         - Generator/validator contract: data to stdout, errors to stderr, exit 0/1/2.
         - Scripts must be self-contained and runnable standalone with no extra setup.

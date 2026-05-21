@@ -4,6 +4,19 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-21
+
+### Removed
+
+- **`/kit-add-html` deprecated alias removed.** The thin alias that forwarded to `/kit-add --target=html` no longer exists. Call `/kit-add --target=html <component>` directly.
+- **`docs/migration-v1.md` removed.** The v0.x → v1.0 migration guide has been retired now that `acss-utilities` is no longer published from this marketplace.
+- **`theme.schema.json` "deprecated" flag dropped.** The JSON-schema-level `"deprecated": true` is gone. The schema remains the internal contract for `tokens_to_css.py` / `css_to_tokens.py` round-trip; user-facing theme authoring is still the CSS Token Convention documented in `skills/styles/SKILL.md`.
+- **`@deprecated` JSDoc tags on `UI.renderStyles` cleared** in both `assets/foundation/ui.tsx` and `skills/components/references/components/foundation.md`. The prop itself is unchanged (reserved for future use); only the JSDoc marker was removed.
+
+### Changed
+
+- **Repo-wide `acss-utilities` references stripped.** The companion plugin was tombstoned in 1.0.0 and has now been removed from the marketplace entirely; READMEs, CLAUDE.md, AGENTS.md, hooks, and `tests/run.sh` paths now point at the acss-kit-native copies of the utility scripts and assets.
+
 ## [1.0.0] - 2026-05-14
 
 ### Added

@@ -89,7 +89,6 @@ type PolymorphicComponentPropWithRef<
 type UIProps<C extends React.ElementType> = PolymorphicComponentPropWithRef<
   C,
   {
-    /** @deprecated Reserved for future use. Currently has no effect. */
     renderStyles?: boolean;
     styles?: React.CSSProperties;
     defaultStyles?: React.CSSProperties;

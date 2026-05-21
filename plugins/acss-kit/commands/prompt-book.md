@@ -6,7 +6,7 @@ allowed-tools: Read
 
 # /prompt-book
 
-Display the acss-kit + acss-utilities prompt book — a catalogue of copy-paste prompts mapped to every shipped slash command.
+Display the acss-kit prompt book — a catalogue of copy-paste prompts mapped to every shipped slash command.
 
 Follow the workflow in `${CLAUDE_PLUGIN_ROOT}/skills/prompt-book/SKILL.md`.
 

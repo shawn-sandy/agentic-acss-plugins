@@ -4,7 +4,7 @@ argument-hint: [family]
 allowed-tools: Read, Glob, Grep
 ---
 
-Read-only catalogue printer for the acss-utilities bundle.
+Read-only catalogue printer for the acss-kit utilities bundle.
 
 Follow the `/utility-list` section of `${CLAUDE_PLUGIN_ROOT}/skills/utilities/SKILL.md`.
 
