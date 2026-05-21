@@ -4,6 +4,18 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-05-21
+
+### Added
+
+- **New `hint:` front-matter field on every component skill.** Each `skills/component-*/SKILL.md` declares a `hint:` describing the invocation surfaces (`/kit-add <name>`, `/kit-create`, direct skill name) and the component-specific details to describe (variant, size, state, slots). `hint:` is a project-controlled convention; the Claude Code harness ignores unknown front-matter keys at runtime.
+- **`.claude/rules/skill-front-matter.md` rule** codifies the component-tier vs orchestrator-tier front-matter convention (component-tier requires `disable-model-invocation: true` + `hint:`; orchestrator-tier — `kit-core`, `styles`, `utilities`, `setup`, `style-tune`, `kit-sync`, `prompt-book` — does not). Fires on `plugins/*/skills/**/SKILL.md`.
+
+### Changed
+
+- **15 component skills now set `disable-model-invocation: true`.** Each `skills/component-*/SKILL.md` is hidden from the model's initial context at session start to reduce context bloat now that acss-kit ships fifteen components. Dispatch is unchanged — `/kit-add <component>`, `/kit-create`, `/kit-list`, and the kit-core orchestrator's lookup table all route by exact path/name, not by description matching. Users invoke component skills explicitly (via the slash commands or by name); auto-routing from a vague "add a button" prompt no longer applies.
+- **`acss-kit-component-author` scaffolder updated.** Newly scaffolded `component-<name>/SKILL.md` files now include `disable-model-invocation: true` and a `hint:` template by default.
+
 ## [1.2.0] - 2026-05-21
 
 ### Added

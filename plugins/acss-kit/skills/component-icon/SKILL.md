@@ -1,6 +1,12 @@
 ---
 name: component-icon
 description: Use when the user asks to generate, create, or scaffold an Icon — accessible SVG icon wrapper with aria-hidden/aria-label toggle, size variants, and decorative/semantic modes.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add icon`, `/kit-create` (then ask for an
+  icon), or call the `component-icon` skill by name. Describe the icon
+  source (name or SVG path), the size, whether it is decorative
+  (aria-hidden) or semantic (aria-label), and any color or stroke override.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

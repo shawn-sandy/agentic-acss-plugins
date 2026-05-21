@@ -1,6 +1,12 @@
 ---
 name: component-table
 description: Use when the user asks to generate, create, or scaffold a Table — accessible data table with caption, scope headers, responsive scroll wrapper, and sortable column support.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add table`, `/kit-create` (then ask for a
+  table), or call the `component-table` skill by name. Describe the
+  caption, the column headers (with scope), the row shape, whether any
+  columns are sortable, and if a responsive scroll wrapper is needed.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

@@ -1,6 +1,12 @@
 ---
 name: component-input
 description: Use when the user asks to generate, create, or scaffold an Input — accessible text/number/email input with aria-invalid, error state, and controlled/uncontrolled patterns.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add input`, `/kit-create` (then ask for an
+  input), or call the `component-input` skill by name. Describe the
+  input type (text/email/number/password/...), the label, placeholder,
+  controlled vs uncontrolled, and any validation/error state.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

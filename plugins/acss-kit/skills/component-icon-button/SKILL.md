@@ -1,6 +1,12 @@
 ---
 name: component-icon-button
 description: Use when the user asks to generate, create, or scaffold an IconButton — accessible icon-only button with required aria-label, tooltip fallback, and Button dependency.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add icon-button`, `/kit-create` (then ask
+  for an icon button), or call the `component-icon-button` skill by name.
+  Describe the icon, the required aria-label (always required for icon-
+  only buttons), the variant/size, and any tooltip text.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

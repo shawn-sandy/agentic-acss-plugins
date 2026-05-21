@@ -1,6 +1,12 @@
 ---
 name: component-button
 description: Use when the user asks to generate, create, or scaffold a Button — accessible TSX or HTML+JS, with primary/secondary/destructive variants and a11y.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add button`, `/kit-create` (then ask for a
+  button), or call the `component-button` skill by name. Describe the
+  variant (primary/secondary/destructive/ghost), size, state
+  (loading/disabled), and any leading/trailing icon or aria-label.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

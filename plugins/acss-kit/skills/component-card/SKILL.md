@@ -1,6 +1,12 @@
 ---
 name: component-card
 description: Use when the user asks to generate, create, or scaffold a Card — accessible content container with header/body/footer slots and interactive variant support.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add card`, `/kit-create` (then ask for a
+  card), or call the `component-card` skill by name. Describe which slots
+  you need (header/body/footer/media), whether the card is interactive
+  (link or button wrapper), and any elevation/border styling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 
