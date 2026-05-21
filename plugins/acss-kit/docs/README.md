@@ -29,9 +29,9 @@ These files are the authoritative source of truth. The guides in this folder sum
 
 | File | Purpose |
 |------|---------|
-| [`../skills/components/SKILL.md`](../skills/components/SKILL.md) | Full generation workflow (Steps A–F) invoked by Claude on every `/kit-add` call |
-| [`../skills/components/references/architecture.md`](../skills/components/references/architecture.md) | UI polymorphic types, `classes` vs `className`, compound component pattern, data-attribute selectors |
-| [`../skills/components/references/accessibility.md`](../skills/components/references/accessibility.md) | WCAG rationale, full `useDisabledState` hook source, WCAG checklist per component category |
-| [`../skills/components/references/composition.md`](../skills/components/references/composition.md) | Component categories, generation decision tree, inline-types pattern |
-| [`../skills/components/references/css-variables.md`](../skills/components/references/css-variables.md) | Naming convention, approved abbreviations, logical properties, rem conversion |
-| [`../skills/components/references/components/`](../skills/components/references/components/) | Per-component Generation Contracts, props, CSS vars, usage snippets |
+| [`../skills/kit-core/SKILL.md`](../skills/kit-core/SKILL.md) | Full generation workflow (Steps A–F) invoked by Claude on every `/kit-add` call |
+| [`../skills/kit-core/references/architecture.md`](../skills/kit-core/references/architecture.md) | UI polymorphic types, `classes` vs `className`, compound component pattern, data-attribute selectors |
+| [`../skills/kit-core/references/accessibility.md`](../skills/kit-core/references/accessibility.md) | WCAG rationale, full `useDisabledState` hook source, WCAG checklist per component category |
+| [`../skills/kit-core/references/composition.md`](../skills/kit-core/references/composition.md) | Component categories, generation decision tree, inline-types pattern |
+| [`../skills/kit-core/references/css-variables.md`](../skills/kit-core/references/css-variables.md) | Naming convention, approved abbreviations, logical properties, rem conversion |
+| `../skills/component-<name>/reference.md` | Per-component Generation Contracts, props, CSS vars, usage snippets (15 components) |

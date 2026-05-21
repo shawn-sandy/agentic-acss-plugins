@@ -103,7 +103,7 @@ Reviewing: plugins/acss-theme-builder/scripts/generate_palette.py
 
 **File:** `component-reference-reviewer.md`
 
-Reviews a single component reference doc under `plugins/acss-kit/skills/components/references/components/<name>.md` against the canonical embedded-markdown shape and the catalog parity table. Pairs with the `/component-author` and `/component-update` skills.
+Reviews a single component reference doc at `plugins/acss-kit/skills/component-<name>/reference.md` against the canonical embedded-markdown shape and skill directory structure. Pairs with the `/acss-kit-component-author` and `/acss-kit-component-update` skills.
 
 ### Checks
 
@@ -113,27 +113,27 @@ Reviews a single component reference doc under `plugins/acss-kit/skills/componen
 | Canonical sections | All nine sections present and in order (Overview → Generation Contract → Props Interface → TSX Template → CSS Variables → SCSS Template → Accessibility → Usage Examples) |
 | Generation Contract fields | `export_name`, `file`, `scss`, `imports`, `dependencies` all present |
 | fpkit URL hygiene | All `github.com/shawn-sandy/acss` URLs pin to a tag/SHA, never `blob/main` |
-| Catalog entry | Component appears in `catalog.md` "Verification Status" table |
+| Skill directory | Sibling `SKILL.md` exists in the same `component-<name>/` directory |
 | TSX Template imports | Only `react`, `'../ui'`, and relative paths to vendored components — never `@fpkit/acss` |
 
 ### How it gets invoked
 
 Three triggers, none of them via a `settings.json` hook (no PostToolUse hook for component reference docs is currently wired):
 
-- **Model-invocation** — Claude routes to the agent when the request matches its `description` (e.g. authoring or editing a `references/components/<name>.md` file in a maintenance conversation).
+- **Model-invocation** — Claude routes to the agent when the request matches its `description` (e.g. authoring or editing a `skills/component-<name>/reference.md` file in a maintenance conversation).
 - **From the `/component-update` skill** — that skill explicitly delegates to this agent on every run.
 - **Manually via slash command** — `/review-component <path>` (see below).
 
 ### Manual invocation
 
 ```
-/review-component plugins/acss-kit/skills/components/references/components/button.md
+/review-component plugins/acss-kit/skills/component-button/reference.md
 ```
 
 ### Sample output
 
 ```
-Reviewing: plugins/acss-kit/skills/components/references/components/button.md
+Reviewing: plugins/acss-kit/skills/component-button/reference.md
 
   [PASS] Verification banner
   [PASS] Canonical sections

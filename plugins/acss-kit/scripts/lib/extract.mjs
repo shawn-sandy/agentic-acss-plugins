@@ -3,7 +3,7 @@
 // MIRROR THIS IN /kit-add: this module is a deterministic re-implementation
 // of the assembly logic that /kit-add performs at runtime. If you change
 // substitution rules, section names, or extraction order here, mirror the
-// change in plugins/acss-kit/skills/components/SKILL.md and any /kit-add
+// change in plugins/acss-kit/skills/kit-core/SKILL.md and any /kit-add
 // command prose. Drift between this module and /kit-add silently breaks the
 // validation harness.
 //

@@ -141,20 +141,19 @@ Run the `--scope=plugin` checks above on `<plugin-name>`. Capture output as the 
 
 ### Step 3 — Component reference scan
 
-If `plugins/<plugin-name>/skills/components/references/components/` does not exist, skip Steps 3 and 4 and record "N/A" for both Components and Catalog parity in the dashboard.
+Glob `plugins/<plugin-name>/skills/component-*/reference.md`. If none are found, skip Steps 3 and 4 and record "N/A" for Component checks in the dashboard.
 
-For each file under `plugins/<plugin-name>/skills/components/references/components/*.md` (excluding `catalog.md`):
+For each matched `reference.md`:
 
 1. Check whether the file contains all nine canonical sections (verification banner, Overview, Generation Contract, Props Interface, TSX Template, CSS Variables, SCSS Template, Accessibility, Usage Examples).
-2. Mark `OK` if all present, `FIX` if any are missing or out of order.
+2. Verify that a sibling `SKILL.md` exists in the same directory.
+3. Mark `OK` if all present, `FIX` if any are missing or out of order.
 
 Roll up to: `N components OK / M components FIX`.
 
-### Step 4 — Catalog parity
+### Step 4 — Skill directory completeness
 
-1. Read `plugins/<plugin-name>/skills/components/references/components/catalog.md`. Extract every component name from the "Verification Status" table.
-2. Compare to `*.md` files in `references/components/` (excluding `catalog.md`).
-3. Report orphans (file present, no catalog row) and stale rows (catalog row, no file).
+Glob `plugins/<plugin-name>/skills/component-*/`. For each directory, confirm both `SKILL.md` and `reference.md` exist. Report any directory with a missing file.
 
 ### Step 5 — Theme reference parity
 
@@ -195,7 +194,7 @@ Bundled theme failures:
   Run /validate-plugins <name>           (for each Structure FIX)
   Run /acss-kit-component-update <name>  (for each Component FIX)
   Run /acss-kit-style-update <path>      (for each Theme FIX)
-  Manual: edit catalog.md                (for each Catalog issue)
+  Run /acss-kit-component-author <name>  (for each missing component skill)
 ```
 
 If everything is OK: "All systems green. Plugin is release-ready."

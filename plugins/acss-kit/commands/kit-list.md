@@ -28,9 +28,8 @@ List available components or show detailed information about a specific componen
 
 When this command is invoked, follow the **`/kit-list` workflow** documented in the `kit-core` skill at `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/SKILL.md` (section *"`/kit-list` workflow — read-only inspection"*).
 
-Component inventory comes from two sources (transitional — PR 1):
-- Per-component skills: `${CLAUDE_PLUGIN_ROOT}/skills/component-*/SKILL.md` (read `name:` + `description:` from frontmatter)
-- kit-core reference docs: `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/references/components/*.md` (excluding `catalog.md`)
+Component inventory comes from per-component skills only:
+- `${CLAUDE_PLUGIN_ROOT}/skills/component-*/SKILL.md` (read `name:` + `description:` from frontmatter)
 
 Lowercase the argument before lookup to handle casing variants (e.g. `/kit-list Button` → look for `button`).
 

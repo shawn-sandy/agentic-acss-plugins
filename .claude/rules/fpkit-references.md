@@ -1,6 +1,7 @@
 ---
 paths:
   - "plugins/*/skills/*/references/**"
+  - "plugins/*/skills/component-*/reference.md"
 ---
 
 # fpkit Reference Doc Conventions

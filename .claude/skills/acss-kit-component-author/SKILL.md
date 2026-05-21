@@ -13,27 +13,23 @@ Usage: `/acss-kit-component-author <component-name>`
 
 Example: `/acss-kit-component-author tabs`
 
-Scaffolds
-`plugins/acss-kit/skills/components/references/components/<component-name>.md`
-with all nine canonical sections and adds a placeholder row to the catalog. Does
-NOT implement the TSX/SCSS — the maintainer fills those in after consulting the
-upstream fpkit source.
+Scaffolds `plugins/acss-kit/skills/component-<component-name>/` with `SKILL.md`
+and `reference.md` (all nine canonical sections). Does NOT implement the
+TSX/SCSS — the maintainer fills those in after consulting the upstream fpkit
+source.
 
 ## Steps
 
 1. **Validate inputs.**
    - `<component-name>` must be lowercase kebab-case (alphanumeric + hyphens).
-   - Refuse if
-     `plugins/acss-kit/skills/components/references/components/<component-name>.md`
-     already exists.
-   - Refuse if a row matching the component already appears in `catalog.md`
-     "Verification Status".
+   - Refuse if `plugins/acss-kit/skills/component-<component-name>/` already
+     exists.
 
 2. **Capture the fpkit ref via AskUserQuestion.** Ask the maintainer for the
    fpkit version this reference will be verified against. Default to the
    most-common existing ceiling — read the verification banner of
-   `plugins/acss-kit/skills/components/references/components/button.md` (line
-   ~3) and offer that as the default option (currently `@fpkit/acss@6.5.0`).
+   `plugins/acss-kit/skills/component-button/reference.md` (line ~3) and offer
+   that as the default option (currently `@fpkit/acss@6.5.0`).
    Capture the answer as `<ref>` for the banner and as `<tag-or-sha>` for any
    GitHub URLs in the body.
 
@@ -44,8 +40,15 @@ upstream fpkit source.
    future maintainers — if there are no divergences, write "none" rather than
    leaving the field empty.
 
-4. **Write the reference doc skeleton** to
-   `plugins/acss-kit/skills/components/references/components/<component-name>.md`.
+4. **Write the skill directory.** Create
+   `plugins/acss-kit/skills/component-<component-name>/` and write two files:
+
+   a. **`SKILL.md`** — mirror the shape of `plugins/acss-kit/skills/component-button/SKILL.md`:
+      - frontmatter: `name: component-<component-name>`, `description:` (one line, under 160 chars, "Use when the user asks to generate, create, or scaffold a <PascalCaseName>…"), `allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion`
+      - Workflow: 5-step workflow (Read reference.md → init check → dep resolution → generate → verify)
+      - Reference section linking to `reference.md` and `kit-core/references/`
+
+   b. **`reference.md`** — the reference doc skeleton with all nine canonical sections:
    Outer fence uses 4 backticks so the inner triple-backtick blocks render
    correctly:
 
@@ -137,33 +140,19 @@ upstream fpkit source.
    portion is the project-level path the developer chose during `/kit-add`
    initialization, not part of the relative import.
 
-5. **Add a row to `catalog.md` Verification Status.** Read
-   `plugins/acss-kit/skills/components/references/components/catalog.md`. Find
-   the "Verification Status" table and append a row before the next section
-   header:
-
-   ```markdown
-   | <PascalCaseName> | [`<component-name>.md`](<component-name>.md) | `<ref>` | New — pending fpkit verification |
-   ```
-
-   Preserve existing rows and table alignment.
-
-6. **Run the reviewer agent.** Invoke the `component-reference-reviewer` agent
+5. **Run the reviewer agent.** Invoke the `component-reference-reviewer` agent
    against the new file. Expected outcome on a fresh skeleton: all checks PASS
    except possibly TSX Template imports (the placeholder uses only React +
    `'../ui'`, which should pass). Surface the agent's report inline.
 
 7. **Print a summary.**
-   - Files created: `<component-name>.md`
-   - Files modified: `catalog.md`
+   - Files created: `skills/component-<component-name>/SKILL.md`, `skills/component-<component-name>/reference.md`
    - Reminders:
      - Resolve every `TODO:` placeholder before committing.
      - If the component has dependencies (e.g. wraps Button), update the
-       `dependencies:` field in the Generation Contract.
+       `dependencies:` field in the Generation Contract and Step 3 of the SKILL.md workflow.
      - Re-run `/review-component <path>` after filling in the TSX/SCSS
        templates.
-     - Update the catalog row's Status column from "New — pending fpkit
-       verification" to "Verified" after the maintainer confirms parity.
 
 Do not write the TSX or SCSS implementation — those come from the upstream fpkit
 source at the captured ref. The maintainer fills them in.

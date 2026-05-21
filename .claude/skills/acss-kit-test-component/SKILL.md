@@ -26,11 +26,11 @@ Usage examples (any of these should trigger):
 1. **Resolve the component name.** Lower-case the user's input and strip the
    words `the`, `a`, `component`. If the result is empty or names a component
    without a reference doc, list
-   `plugins/acss-kit/skills/components/references/components/*.md` and ask the
+   `plugins/acss-kit/skills/component-*/reference.md` and ask the
    user to pick.
 
 2. **Read the reference doc.** Read
-   `plugins/acss-kit/skills/components/references/components/<name>.md` once.
+   `plugins/acss-kit/skills/component-<name>/reference.md` once.
    You need three sections from it. For each, locate the `##` heading first,
    then take the first fenced block **within that section's range** (i.e. before
    the next `##` heading) — never the first fence in the file:
@@ -96,7 +96,7 @@ Usage examples (any of these should trigger):
    </head>
    <body>
      <h1>Preview: <PascalCaseName></h1>
-     <p class="meta">Source: <code>plugins/acss-kit/skills/components/references/components/<name>.md</code></p>
+     <p class="meta">Source: <code>plugins/acss-kit/skills/component-<name>/reference.md</code></p>
 
      <h2>Default</h2>
      <div class="row swatch">

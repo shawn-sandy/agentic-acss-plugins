@@ -14,34 +14,32 @@ plugins/acss-kit/
     foundation/
       ui.tsx                   # Polymorphic UI base — copied verbatim into user projects
   commands/
-    kit-add.md                 # /kit-add; delegates to skills/components/SKILL.md
-    kit-list.md                # /kit-list; delegates to skills/components/SKILL.md
+    kit-add.md                 # /kit-add; delegates to skills/kit-core/SKILL.md
+    kit-list.md                # /kit-list; delegates to skills/kit-core/SKILL.md
     theme-create.md            # /theme-create; delegates to skills/styles/SKILL.md
     theme-brand.md             # /theme-brand; delegates to skills/styles/SKILL.md
     theme-update.md            # /theme-update; delegates to skills/styles/SKILL.md
     theme-extract.md           # /theme-extract; delegates to skills/styles/SKILL.md
   skills/
-    components/
-      SKILL.md                 # Component generation workflow (Steps A–F)
+    kit-core/
+      SKILL.md                 # Orchestrator for /kit-create, /kit-list, /kit-sync, /kit-update, Form/HTML/Style-Tune modes
       references/
         architecture.md        # UI polymorphic chain, compound pattern, data-attr selectors
         accessibility.md       # WCAG rationale, useDisabledState source, WCAG checklist
         composition.md         # Component categories, decision tree, inline-types pattern
         css-variables.md       # Naming convention, fallbacks, rem conversion
-        components/
-          catalog.md           # Verification status table + leaf components (Badge, Tag, Heading, Text, Details, Progress)
-          button.md            # Canonical 9-section example
-          alert.md, card.md, dialog.md, popover.md, table.md, img.md, icon.md
-          link.md, list.md, field.md, input.md, checkbox.md, icon-button.md
-          form.md, nav.md      # nav.md retains the legacy shape
+        inline-components.md   # Badge, Tag, Heading, Text/Paragraph, Details, Progress
+        form.md                # Form composition (legacy; superseded by kit-core Form Mode)
+        foundation.md          # UI polymorphic base documentation
+    component-<name>/          # 15 per-component skills (alert, button, card, …)
+      SKILL.md                 # Component skill (description, 5-step workflow)
+      reference.md             # Nine-section reference doc (canonical 9-section example: component-button/)
     styles/
       SKILL.md                 # Theme generation workflow (4 flows)
       references/
         role-catalogue.md      # 15 required + 3 optional --color-* roles, contrast pairings
         palette-algorithm.md   # OKLCH lightness targets, state hue offsets
         theme-schema.md        # Internal JSON schema for the round-trip scripts
-    component-form/
-      SKILL.md                 # Pilot per-component skill (auto-triggers on "create a form")
 ```
 
 ## Command → SKILL delegation
@@ -55,7 +53,7 @@ The logic lives entirely in `SKILL.md`. Do not duplicate generation logic inside
 
 ## How to add a new component reference
 
-1. **Create `references/components/<name>.md`** (or add the component to `catalog.md` for simple leaf components).
+1. **Run `/acss-kit-component-author <name>`** to scaffold `skills/component-<name>/SKILL.md` + `skills/component-<name>/reference.md`. Or create them manually following the shape of `skills/component-button/`.
 
 2. **Add a Generation Contract block:**
 
@@ -73,7 +71,7 @@ The logic lives entirely in `SKILL.md`. Do not duplicate generation logic inside
 
    Every field is required. `dependencies` is an array of component names (lowercase, matching their reference doc names). An empty array `[]` means a leaf component.
 
-3. **Add the props interface, CSS variables, and a usage snippet** following the pattern in existing reference docs (see `references/components/button.md` for the most complete example).
+3. **Add the props interface, CSS variables, and a usage snippet** following the pattern in existing reference docs (see `skills/component-button/reference.md` for the most complete example).
 
 4. **Cross-link the relevant shared references** within the doc body:
    - Polymorphic `UI` type chain → `references/architecture.md`
@@ -81,13 +79,11 @@ The logic lives entirely in `SKILL.md`. Do not duplicate generation logic inside
    - Compound component pattern → `references/composition.md`
    - CSS variable naming / fallback strategy → `references/css-variables.md`
 
-5. **Update `catalog.md` if the component is a simple leaf.** Simple components (no state, no deps, one `.tsx` + one `.scss`) belong in `catalog.md` rather than a dedicated file, to keep the file count manageable.
-
-6. **All fpkit source references must use full GitHub URLs pinned to a tag or commit SHA** — never repo-relative paths and never `blob/main`. For example:
+5. **All fpkit source references must use full GitHub URLs pinned to a tag or commit SHA** — never repo-relative paths and never `blob/main`. For example:
    ```text
    https://github.com/shawn-sandy/acss/blob/v6.5.0/packages/fpkit/src/components/button/btn.tsx
    ```
-   See `.claude/rules/fpkit-references.md` for the full policy.
+   See `.claude/rules/fpkit-references.md` for the full policy. The rule now auto-loads for both `plugins/*/skills/*/references/**` and `plugins/*/skills/component-*/reference.md`.
 
 ## .acss-target.json — target directory contract
 
@@ -154,4 +150,4 @@ The helper should live alongside the pilots (e.g. `skills/_shared/phrase-parser.
 
 `/kit-add` shares most of its pipeline across React and HTML output: target detection, dependency resolution, manifest tracking, integration verification, and SCSS emission are byte-identical. The two modes diverge only at the final emit step (TSX vs HTML markup + vanilla JS).
 
-The `components` skill (`skills/components/SKILL.md`) houses both: Steps A–G drive the shared React pipeline, and the `## HTML Target` section (HT-A through HT-F) covers the static-HTML emit. Pass `--target=html` to `/kit-add` to switch modes; the default (`--target=react`) is unchanged. Components without a `## HTML Template` block in their reference doc fall through to a "not yet" warning — see `references/components/catalog.md` `## HTML Output Status` for current coverage.
+The kit-core skill (`skills/kit-core/SKILL.md`) houses both modes: Steps A–G drive the shared React pipeline, and the `## HTML Target` section (HT-A through HT-F) covers the static-HTML emit. Pass `--target=html` to `/kit-add` to switch modes; the default (`--target=react`) is unchanged. Components without a `## HTML Template` block in their `reference.md` fall through to a "not yet" warning.

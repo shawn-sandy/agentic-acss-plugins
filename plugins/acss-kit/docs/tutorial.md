@@ -140,7 +140,7 @@ Generated files are yours to edit, but you rarely need to — variants and themi
 
 Why prefer overrides over editing `button.scss` directly? The skip-existing rule in `/kit-add` means re-running the command never touches your generated files — but if you ever delete and regenerate (see [recipes.md — Regenerate a component](recipes.md#regenerate-a-component-after-upstream-changes)), customizations stored in `:root` or theme classes survive because they live outside the component file.
 
-The full naming convention and per-component variable sets are in [`references/css-variables.md`](../skills/components/references/css-variables.md).
+The full naming convention and per-component variable sets are in [`references/css-variables.md`](../skills/kit-core/references/css-variables.md).
 
 ---
 
@@ -170,7 +170,7 @@ You have generated, imported, and customized one component. From here:
 - [recipes.md](recipes.md) — variations: multiple components in one pass, components with dependencies (Dialog pulls in Button), regenerate after an upstream change, change the target directory.
 - [concepts.md](concepts.md) — the mental model: the `UI` polymorphic base, `data-*` attribute variants, why `aria-disabled` instead of the native attribute.
 - [prompt-book.md](prompt-book.md) — full `/kit-list` and `/kit-add` reference.
-- [Button reference](../skills/components/references/components/button.md) — every prop, every CSS variable, and the full implementation source.
+- [Button reference](../skills/component-button/reference.md) — every prop, every CSS variable, and the full implementation source.
 - [troubleshooting.md](troubleshooting.md) — when things don't work.
 
 Ready to generate themes for those components? Try `/theme-create` to scaffold a light/dark palette from a seed color — see the [`styles` skill](../skills/styles/SKILL.md) for the full workflow.
