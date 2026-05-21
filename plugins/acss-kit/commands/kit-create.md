@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep, Write, Edit, Bash, AskUserQuestion
 
 # /kit-create
 
-Creator mode — describe a UI element in plain English and have it generated as a paste-ready snippet (or standalone component file). Works with any component that has a dedicated per-component skill at `skills/component-<name>/` or a reference doc at `skills/kit-core/references/components/<name>.md` (Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav). Components that exist only as inline entries in `catalog.md` — currently Badge, Tag, Heading, Text/Paragraph, Details, Progress — are **not** supported in v0.1; promote them via the `component-author` maintainer skill first.
+Creator mode — describe a UI element in plain English and have it generated as a paste-ready snippet (or standalone component file). Works with any component that has a dedicated per-component skill at `skills/component-<name>/` (Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav). Components that exist only as inline entries in `kit-core/references/inline-components.md` — currently Badge, Tag, Heading, Text/Paragraph, Details, Progress — are **not** supported in v0.1; promote them via the `/acss-kit-component-author` maintainer skill first.
 
 ## Usage
 
@@ -31,7 +31,7 @@ When this command is invoked, follow the Creator Mode workflow documented in `${
 
 ### Quick reference
 
-1. **Dispatch** — match the component noun against per-component skills at `skills/component-<name>/` first; fall back to `skills/kit-core/references/components/<name>.md`. Halt if neither exists.
+1. **Dispatch** — match the component noun against per-component skills at `skills/component-<name>/`. Halt if no match is found.
 2. **Parse** — load the matched reference doc, read its Props Interface, and resolve the user's phrases against the prop set (global colour/size synonyms + per-component union literals).
 3. **Resolve target** — `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/detect_target.py` to locate `componentsDir`.
 4. **Vendor** — run `/kit-add <component> [...dependencies]` if any of them aren't yet present.

@@ -10,7 +10,7 @@ A Claude Code **plugin marketplace** — not a Node.js or Python package. There 
 
 The repo contains two plugins:
 
-- `plugins/acss-kit` — accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects. Two top-level skills (`components`, `styles`), a `utilities` skill, a cross-domain `setup` skill, and three pilot skills (`component-form`, `component-creator`, `style-tune`).
+- `plugins/acss-kit` — accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects. Fifteen per-component skills (`component-alert`, `component-button`, …), an orchestrator skill (`kit-core`), a `styles` skill, a `utilities` skill, a cross-domain `setup` skill, and two pilot skills (`style-tune`, `kit-sync`).
 - `plugins/style-agent` — framework-agnostic CSS authoring skills for any web project. First skill: `/css-to-class` (extract utility-class lists into a single named CSS class). See [`plugins/style-agent/docs/`](plugins/style-agent/docs/README.md).
 
 Install from a Claude Code session:
@@ -29,14 +29,15 @@ plugins/acss-kit/
 ├── README.md                      # user-facing docs
 ├── CHANGELOG.md                   # version history
 ├── commands/*.md                  # slash command definitions (YAML front-matter)
-├── skills/components/SKILL.md     # components skill (markdown-as-source TSX/SCSS)
-├── skills/components/references/  # component reference docs (see references/components/catalog.md)
+├── skills/kit-core/SKILL.md       # orchestrator — /kit-create, /kit-list, /kit-sync, /kit-update, Form/HTML/Style-Tune modes
+├── skills/kit-core/references/    # shared references (accessibility, architecture, css-variables, composition, inline-components, form, foundation)
+├── skills/component-<name>/       # per-component skills (15 total: alert, button, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table)
+│   ├── SKILL.md                   # component skill (description, 5-step workflow)
+│   └── reference.md               # component reference doc (templates, contract, props, a11y)
 ├── skills/styles/SKILL.md         # styles skill (OKLCH theme generation)
 ├── skills/styles/references/      # role catalogue, palette algorithm, theme schema
-├── skills/component-form/SKILL.md     # form pilot — auto-triggers on natural language
-├── skills/component-creator/SKILL.md  # creator-mode pilot — auto-triggers on "create a <component>" phrasing
-├── skills/style-tune/SKILL.md         # style-feel pilot — backs /style-tune
-├── skills/setup/SKILL.md              # cross-domain bootstrap — backs /setup
+├── skills/style-tune/SKILL.md     # style-feel pilot — backs /style-tune
+├── skills/setup/SKILL.md          # cross-domain bootstrap — backs /setup
 ├── scripts/                       # Python 3 stdlib scripts (see .claude/rules/python-scripts.md for inventory)
 ├── assets/                        # foundation/ui.tsx, brand template, internal schema
 └── docs/                          # developer guides (architecture, recipes, troubleshooting, tutorial)

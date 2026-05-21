@@ -5,9 +5,9 @@
 When generating a component, ask these questions in order:
 
 ```
-1. Is it in catalog.md (simple component)?
-   YES → Read its catalog entry, generate single tsx + scss file
-   NO  → Read its dedicated reference doc in references/components/
+1. Does it have a per-component skill at component-<name>/reference.md?
+   YES → Read that reference.md, generate tsx + scss file from its Generation Contract
+   NO  → Check references/inline-components.md for inline-only entries (Badge, Tag, etc.)
 
 2. Does it have dependencies in its Generation Contract?
    NO  → Generate directly (bottom of tree)

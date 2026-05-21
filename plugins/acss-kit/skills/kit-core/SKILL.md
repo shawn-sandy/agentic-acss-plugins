@@ -159,10 +159,10 @@ Cascade outcome: **theme > utilities > components > foundation**.
 ### B1. Lookup the component
 
 Read the component's reference doc:
-- Detailed refs: `references/components/{name}.md`
-- Catalog: `references/components/catalog.md`
+- Per-component skills: `../../component-{name}/reference.md`
+- Inline-only components: `references/inline-components.md` (Badge, Tag, Heading, Text, Details, Progress)
 
-If the component is not in either, inform the developer. Run `/kit-list` to show available components.
+If the component is not found, inform the developer. Run `/kit-list` to show available components.
 
 ### B2. Read the Generation Contract
 
@@ -187,7 +187,7 @@ Reference docs follow the canonical embedded-markdown shape with three required 
 - **`## SCSS Template`** — fenced ```scss``` block with the canonical styles. Copy verbatim into the generated `.scss` file.
 - **`## Accessibility`** — WCAG 2.2 AA criteria the component addresses (keyboard, ARIA, focus, contrast, target size). Don't strip a11y patterns out of the TSX/SCSS during generation; they're load-bearing.
 
-If a reference doc is missing any of these three sections, fall back to the older "Key Pattern" / "Full Implementation Reference" / "SCSS Pattern" shape. The catalog.md "Verification Status" table records which components have been migrated to the canonical shape; treat any others as legacy and synthesize from the available pieces.
+If a reference doc is missing any of these three sections, fall back to the older "Key Pattern" / "Full Implementation Reference" / "SCSS Pattern" shape. The verification banner at the top of each `reference.md` records its verification status against fpkit source; treat any without a banner as legacy and synthesize from the available pieces.
 
 ### B3. Resolve the dependency tree
 
@@ -461,11 +461,11 @@ The verifier reads `stack.entrypointFile` from `.acss-target.json`, so Step A3.1
 
 ## `/kit-list` workflow — read-only inspection
 
-This is a separate command flow from `/kit-add` (Steps A–G above). `/kit-list` never writes files. It reads `references/components/catalog.md` and individual reference docs and prints a formatted summary.
+This is a separate command flow from `/kit-add` (Steps A–G above). `/kit-list` never writes files. It globs `../../component-*/SKILL.md` for the full component list and reads individual `reference.md` files for per-component detail.
 
 ### L1. No arguments — categorized listing
 
-Read `references/components/catalog.md` — both the per-component listing and the `## HTML Output Status` table — and display every available component organized by category. Append `[HTML]` to any component whose row in the HTML Output Status table is marked **Verified**; these are the components `/kit-add --target=html` can generate today. Components without the marker exist as React only and `/kit-add --target=html` will warn.
+Glob `../../component-*/SKILL.md` and read each skill's `name:` and `description:` frontmatter fields to enumerate all available components. Append `[HTML]` to any component whose `reference.md` contains a `## HTML Template` section (i.e. `/kit-add --target=html` can generate it). Components without that section exist as React only and `/kit-add --target=html` will warn.
 
 Output format:
 
@@ -496,11 +496,11 @@ Run /kit-add <component> to generate React components, or /kit-add --target=html
 
 ### L2. With a component name — per-component detail
 
-Read the component's reference doc (or its entry in `catalog.md`) and display:
+Read the component's `reference.md` from `../../component-<name>/reference.md` (or its entry in `references/inline-components.md` for inline-only components) and display:
 
 1. **Generation Contract** — files that would be created, imports used
 2. **Dependencies** — other components that would be co-generated
-3. **HTML output** — read the `## HTML Output Status` table in `catalog.md`; print `Verified` if the component appears as Verified there (i.e. `/kit-add --target=html` can generate it), otherwise `Not yet — React only`
+3. **HTML output** — check whether the `reference.md` has a `## HTML Template` section; print `Verified` if present (i.e. `/kit-add --target=html` can generate it), otherwise `Not yet — React only`
 4. **Props** — TypeScript interface with descriptions
 5. **CSS Variables** — customizable properties with defaults
 6. **Usage Example** — import + JSX snippet
@@ -551,23 +551,23 @@ Read these before generating components:
 | `references/css-variables.md` | CSS variable naming conventions, fallback strategy |
 | `references/accessibility.md` | WCAG patterns, aria-disabled, condensed useDisabledState |
 | `references/composition.md` | Compound components, generation decision tree |
-| `references/components/catalog.md` | Verification status table + remaining inline components (Badge, Tag, Heading, Text, Details, Progress) |
-| `references/components/button.md` | Button — canonical shape ✓ |
-| `references/components/icon-button.md` | IconButton (wraps Button + XOR aria-label/aria-labelledby) — canonical shape ✓ |
-| `references/components/alert.md` | Alert with severity levels, auto-dismiss — canonical shape ✓ |
-| `references/components/card.md` | Card compound component (Title, Content, Footer) — canonical shape ✓ |
-| `references/components/dialog.md` | Dialog with native `<dialog>` — canonical shape ✓ |
-| `references/components/popover.md` | Popover via native HTML Popover API — canonical shape ✓ |
-| `references/components/table.md` | Table compound (Caption, Head, Body, Row, HeaderCell, Cell) — canonical shape ✓ |
-| `references/components/img.md` | Img with lazy loading + SVG-gradient placeholder — canonical shape ✓ |
-| `references/components/icon.md` | Icon with built-in 9-icon SVG dispatch — canonical shape ✓ |
-| `references/components/link.md` | Link with auto security defaults — canonical shape ✓ |
-| `references/components/list.md` | List + List.ListItem (ul/ol/dl) — canonical shape ✓ |
-| `references/components/field.md` | Field (label + control wrapper) — canonical shape ✓ |
-| `references/components/input.md` | Input with validation states — canonical shape ✓ |
-| `references/components/checkbox.md` | Checkbox (wraps Input) — canonical shape ✓ |
-| `references/components/form.md` | Form composition (legacy bundled reference; superseded by Form Mode in this skill) |
-| `references/components/nav.md` | Nav compound component (List, Item) — legacy shape |
+| `references/inline-components.md` | Inline-only components (Badge, Tag, Heading, Text, Details, Progress) |
+| `../../component-button/reference.md` | Button — canonical shape ✓ |
+| `../../component-icon-button/reference.md` | IconButton (wraps Button + XOR aria-label/aria-labelledby) — canonical shape ✓ |
+| `../../component-alert/reference.md` | Alert with severity levels, auto-dismiss — canonical shape ✓ |
+| `../../component-card/reference.md` | Card compound component (Title, Content, Footer) — canonical shape ✓ |
+| `../../component-dialog/reference.md` | Dialog with native `<dialog>` — canonical shape ✓ |
+| `../../component-popover/reference.md` | Popover via native HTML Popover API — canonical shape ✓ |
+| `../../component-table/reference.md` | Table compound (Caption, Head, Body, Row, HeaderCell, Cell) — canonical shape ✓ |
+| `../../component-img/reference.md` | Img with lazy loading + SVG-gradient placeholder — canonical shape ✓ |
+| `../../component-icon/reference.md` | Icon with built-in 9-icon SVG dispatch — canonical shape ✓ |
+| `../../component-link/reference.md` | Link with auto security defaults — canonical shape ✓ |
+| `../../component-list/reference.md` | List + List.ListItem (ul/ol/dl) — canonical shape ✓ |
+| `../../component-field/reference.md` | Field (label + control wrapper) — canonical shape ✓ |
+| `../../component-input/reference.md` | Input with validation states — canonical shape ✓ |
+| `../../component-checkbox/reference.md` | Checkbox (wraps Input) — canonical shape ✓ |
+| `references/form.md` | Form composition (legacy bundled reference; superseded by Form Mode in this skill) |
+| `../../component-nav/reference.md` | Nav compound component (List, Item) — legacy shape |
 
 ---
 
@@ -604,21 +604,19 @@ Every component reference doc must contain (in order):
 
 ### Reference vs Skill (hybrid packaging)
 
-Most components live as reference docs at `references/components/<name>.md`. Composable, complex, or high-iteration components can be promoted to their own skill at `skills/component-<name>/SKILL.md` with discovery-friendly trigger phrases in the frontmatter `description`.
+Every component lives in its own `component-<name>/` skill directory (`SKILL.md` + `reference.md`). New components are added via `/acss-kit-component-author <name>`, which scaffolds both files.
 
 Form generation and natural-language component creation are handled by the **Form Mode** and **Creator Mode** sections of this skill — see below.
 
 ### Verification log
 
-Every new or migrated component gets an entry in `references/components/catalog.md` under "Verification Status":
+Every `component-<name>/reference.md` carries a verification banner at the top of the file:
 
 ```
-| Component | Reference | Verified against | Status |
-|-----------|-----------|------------------|--------|
-| Foo | [`foo.md`](foo.md) | `@fpkit/acss@<version>` | New / Verified — <intentional divergences if any> |
+> **Verified against fpkit source:** `@fpkit/acss@<version>`. Intentional divergences: <none or description>.
 ```
 
-This table is the single source of truth for which components have been migrated to the canonical shape.
+This banner is the single source of truth for which fpkit version a component was verified against and what intentional divergences exist.
 
 ### fpkit verification workflow
 
@@ -637,7 +635,7 @@ Generate a paste-ready TSX snippet (or standalone component file) from a plain-E
 
 > Delegates to whichever component reference doc matches the description. Each reference doc carries its own `@fpkit/acss@6.5.0` verification line.
 
-**Supported components:** Button, IconButton, Alert, Card, Dialog, Popover, Link, Img, Icon, List, Table, Field, Input, Checkbox, Nav — any component with a dedicated `references/components/<name>.md` file. Components that exist only as inline catalog entries (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are not supported; promote them to a dedicated reference doc first.
+**Supported components:** Button, IconButton, Alert, Card, Dialog, Popover, Link, Img, Icon, List, Table, Field, Input, Checkbox, Nav — any component with a dedicated `component-<name>/reference.md` skill. Components that exist only as inline entries in `references/inline-components.md` (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are not supported; promote them via `/acss-kit-component-author <name>` first.
 
 **Form-shaped requests** ("signup form", "contact form with email and password") are handled by the **Form Mode** section below — not creator mode.
 
@@ -659,25 +657,25 @@ Stay in plan mode only when the user explicitly asked for a parse-only preview. 
 
 #### CM-A1. Component dispatch
 
-Match the description's component noun against `references/components/*.md`. Every `<name>.md` (except `catalog.md`, `foundation.md`, and the legacy `form.md`) is a candidate.
+Match the description's component noun against per-component skill directories (`../../component-<name>/reference.md`). Each component has its own `component-<name>` skill and `reference.md`.
 
 | Phrase contains | Resolves to | Reference doc |
 |-----------------|-------------|---------------|
-| `button`, `btn`, `cta`, `call to action` | Button | `references/components/button.md` |
-| `icon button`, `icon-button` | IconButton | `references/components/icon-button.md` |
-| `alert`, `banner`, `notification` | Alert | `references/components/alert.md` |
-| `card`, `panel`, `tile` | Card | `references/components/card.md` |
-| `dialog`, `modal` | Dialog | `references/components/dialog.md` |
-| `popover`, `floating card` | Popover | `references/components/popover.md` |
-| `link`, `anchor`, `hyperlink` | Link | `references/components/link.md` |
-| `image`, `img`, `picture` | Img | `references/components/img.md` |
-| `icon` (standalone, not "icon button") | Icon | `references/components/icon.md` |
-| `list`, `bullet list`, `ordered list` | List | `references/components/list.md` |
-| `table`, `data table`, `grid` (tabular) | Table | `references/components/table.md` |
-| `field`, `form field`, `labelled control` | Field | `references/components/field.md` |
-| `input`, `text field`, `email field` | Input | `references/components/input.md` |
-| `checkbox`, `tickbox` | Checkbox | `references/components/checkbox.md` |
-| `nav`, `navigation`, `menu bar` | Nav | `references/components/nav.md` |
+| `button`, `btn`, `cta`, `call to action` | Button | `../../component-button/reference.md` |
+| `icon button`, `icon-button` | IconButton | `../../component-icon-button/reference.md` |
+| `alert`, `banner`, `notification` | Alert | `../../component-alert/reference.md` |
+| `card`, `panel`, `tile` | Card | `../../component-card/reference.md` |
+| `dialog`, `modal` | Dialog | `../../component-dialog/reference.md` |
+| `popover`, `floating card` | Popover | `../../component-popover/reference.md` |
+| `link`, `anchor`, `hyperlink` | Link | `../../component-link/reference.md` |
+| `image`, `img`, `picture` | Img | `../../component-img/reference.md` |
+| `icon` (standalone, not "icon button") | Icon | `../../component-icon/reference.md` |
+| `list`, `bullet list`, `ordered list` | List | `../../component-list/reference.md` |
+| `table`, `data table`, `grid` (tabular) | Table | `../../component-table/reference.md` |
+| `field`, `form field`, `labelled control` | Field | `../../component-field/reference.md` |
+| `input`, `text field`, `email field` | Input | `../../component-input/reference.md` |
+| `checkbox`, `tickbox` | Checkbox | `../../component-checkbox/reference.md` |
+| `nav`, `navigation`, `menu bar` | Nav | `../../component-nav/reference.md` |
 
 When no mapping is found, halt: "No `acss-kit` component matches '<phrase>'. Run `/kit-list` to see the catalog."
 
@@ -1272,7 +1270,7 @@ Generate static HTML versions of fpkit-style components for projects that don't 
 
 Triggers: user asks for `/kit-add --target=html`, "static HTML components", "HTML version of \<component\>", or mentions a non-React project.
 
-Both this section and the React workflow above read the same reference docs at `references/components/<name>.md`. The React workflow extracts `## TSX Template`; this section extracts `## HTML Template` and (for stateful components) `## Vanilla JS`. The `## SCSS Template` block is identical for both.
+Both this section and the React workflow above read the same reference docs at `../../component-<name>/reference.md`. The React workflow extracts `## TSX Template`; this section extracts `## HTML Template` and (for stateful components) `## Vanilla JS`. The `## SCSS Template` block is identical for both.
 
 ### HT-A. Initialization
 
@@ -1308,7 +1306,7 @@ Check if `_stateful.js` exists in `<componentsHtmlDir>`. If not:
 
 ### HT-B. Component generation
 
-**HT-B1. Look up the component** — same catalog path as the React workflow: `references/components/catalog.md` → `references/components/<name>.md`.
+**HT-B1. Look up the component** — same lookup as the React workflow: `../../component-<name>/reference.md`.
 
 **HT-B2. Read canonical sections** — a reference doc that supports HTML output contains:
 

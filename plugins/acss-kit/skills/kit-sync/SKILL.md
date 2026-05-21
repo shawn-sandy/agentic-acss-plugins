@@ -14,7 +14,7 @@ Bulk install every shipped component + foundation + theme into a developer's pro
 
 `/kit-add` is per-component. `/setup` is one-time bootstrap. Neither helps a developer who wants to:
 
-1. **Bulk-install everything** — vendor every component listed in `skills/kit-core/references/components/catalog.md` plus the foundation and a starter theme in a single command.
+1. **Bulk-install everything** — vendor every component with a per-component skill at `skills/component-*/` plus the foundation and a starter theme in a single command.
 2. **Stay current safely** — re-copy unmodified components after an `acss-kit` upgrade without overwriting files they've edited.
 
 This skill closes both gaps via a manifest at `<project>/.acss-kit/manifest.json` that records the sha256 of every generated file at the moment it was written. Drift detection compares on-disk content to that recorded hash to classify each tracked file as `clean`, `modified`, or `missing`.
@@ -99,7 +99,7 @@ Triggered by `/kit-sync` and by natural-language phrasing like "install all comp
 
 ### Step S2 — Enumerate the catalog
 
-Read `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/references/components/catalog.md`. Every component named in the **Verification Status** table is in scope, plus the inline catalog entries (Badge, Tag, Heading, Text/Paragraph, Details, Progress) that have a Generation Contract.
+Glob `${CLAUDE_PLUGIN_ROOT}/skills/component-*/SKILL.md`. Every component with a per-component skill is in scope. Also read `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/references/inline-components.md` to include the inline-only entries (Badge, Tag, Heading, Text/Paragraph, Details, Progress) that have a Generation Contract.
 
 Exclude `Form` (lives as a skill, not a reference doc) and `UI (foundation)` (handled separately as `ui.tsx`).
 

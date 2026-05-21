@@ -1,7 +1,7 @@
 // Compound-component dependency walker for the e2e harness.
 //
 // MIRRORS the recursive resolution logic in
-// plugins/acss-kit/skills/components/SKILL.md (Step B3, "Resolve the
+// plugins/acss-kit/skills/kit-core/SKILL.md (Step B3, "Resolve the
 // dependency tree"). The skill itself walks dependencies at /kit-add time
 // based on the `dependencies:` line in each reference doc's Generation
 // Contract section. The harness needs the same walk to know which files to

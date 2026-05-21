@@ -4,6 +4,27 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-21
+
+### Added
+
+- **15 per-component skills.** Each component (alert, button, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table) now lives in its own `skills/component-<name>/` directory with a `SKILL.md` (description, 5-step workflow) and a `reference.md` (templates, Generation Contract, props, accessibility). Developers can now invoke `/kit-add button` via the dedicated `component-button` skill rather than the monolithic `components` skill.
+- **JSDoc on `component-button/reference.md` templates.** `ButtonProps`, `Button`, `useDisabledState`, and `resolveDisabledState` now carry JSDoc annotations in the TSX template so generated files are AI-assistant- and IDE-friendly out of the box.
+- **`kit-core/references/inline-components.md`.** The six inline-only components (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are now documented in a dedicated file instead of the deleted `catalog.md`.
+
+### Changed
+
+- **`skills/components/` renamed to `skills/kit-core/`.** The monolithic components skill is now the orchestrator for `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, and Form/HTML/Style-Tune modes. Its description explicitly excludes per-component requests to prevent auto-trigger collision.
+- **`kit-core/references/components/*.md` reference docs moved.** All 14 component reference docs (plus `form.md` and `foundation.md`) relocated to their per-component skill directories or one level up in `kit-core/references/`.
+- **`/kit-add`, `/kit-list`, `/kit-create` updated** to route through per-component skills only (no more kit-core fallback).
+- **`/kit-sync` updated** to enumerate components via `skills/component-*/SKILL.md` glob instead of reading `catalog.md`.
+- **Maintainer skills updated:** `acss-kit-component-author` now scaffolds `component-<name>/SKILL.md` + `reference.md`; `acss-kit-component-update` resolves `component-<name>/reference.md`.
+- **`component-reference-reviewer` agent updated** to check for sibling `SKILL.md` instead of catalog row.
+
+### Removed
+
+- **`skills/kit-core/references/components/catalog.md` deleted.** Component enumeration is now done by globbing `skills/component-*/SKILL.md`. The verification status information lives in each component's `reference.md` verification banner.
+
 ## [1.1.0] - 2026-05-21
 
 ### Removed
@@ -11,7 +32,7 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 - **`/kit-add-html` deprecated alias removed.** The thin alias that forwarded to `/kit-add --target=html` no longer exists. Call `/kit-add --target=html <component>` directly.
 - **`docs/migration-v1.md` removed.** The v0.x → v1.0 migration guide has been retired now that `acss-utilities` is no longer published from this marketplace.
 - **`theme.schema.json` "deprecated" flag dropped.** The JSON-schema-level `"deprecated": true` is gone. The schema remains the internal contract for `tokens_to_css.py` / `css_to_tokens.py` round-trip; user-facing theme authoring is still the CSS Token Convention documented in `skills/styles/SKILL.md`.
-- **`@deprecated` JSDoc tags on `UI.renderStyles` cleared** in both `assets/foundation/ui.tsx` and `skills/components/references/components/foundation.md`. The prop itself is unchanged (reserved for future use); only the JSDoc marker was removed.
+- **`@deprecated` JSDoc tags on `UI.renderStyles` cleared** in both `assets/foundation/ui.tsx` and `skills/kit-core/references/foundation.md`. The prop itself is unchanged (reserved for future use); only the JSDoc marker was removed.
 
 ### Changed
 

@@ -35,11 +35,9 @@ const requireCjs = createRequire(import.meta.url)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '..')
-// Two-root layout (transitional): kit-core holds legacy per-component docs;
-// component-<name>/ skill dirs hold migrated docs as reference.md.
 const KIT_CORE_REFS_DIR = join(
   REPO_ROOT,
-  'plugins/acss-kit/skills/kit-core/references/components',
+  'plugins/acss-kit/skills/kit-core/references',
 )
 const SKILLS_DIR = join(REPO_ROOT, 'plugins/acss-kit/skills')
 const TMP_DIR = join(REPO_ROOT, 'tests/.tmp/extracted')
@@ -59,9 +57,9 @@ function loadVars() {
 }
 
 // Derive component name from a reference file path.
-// Handles both layouts:
-//   kit-core/references/components/button.md  → "button"
-//   skills/component-button/reference.md      → "button"
+// Handles two layouts:
+//   component-button/reference.md → "button"  (per-component skill)
+//   kit-core/references/foundation.md → "foundation"  (shared reference)
 function componentName(refPath) {
   const fname = basename(refPath, '.md')
   if (fname === 'reference') {
@@ -73,12 +71,10 @@ function componentName(refPath) {
 function listReferences() {
   const refs = []
 
-  // Legacy path: kit-core holds docs not yet migrated to per-component skills.
-  if (existsSync(KIT_CORE_REFS_DIR)) {
-    readdirSync(KIT_CORE_REFS_DIR)
-      .filter((f) => f.endsWith('.md') && f !== 'catalog.md')
-      .forEach((f) => refs.push(join(KIT_CORE_REFS_DIR, f)))
-  }
+  // foundation.md lives at kit-core/references/foundation.md — add it first
+  // so it is extracted to ui.tsx before any component that imports `../ui`.
+  const foundationPath = join(KIT_CORE_REFS_DIR, 'foundation.md')
+  if (existsSync(foundationPath)) refs.push(foundationPath)
 
   // Per-component skills: skills/component-<name>/reference.md
   if (existsSync(SKILLS_DIR)) {

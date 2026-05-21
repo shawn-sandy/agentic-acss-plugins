@@ -43,7 +43,7 @@ Commit `.acss-target.json` to git so subsequent `/kit-add` runs use the same pat
 /kit-add badge
 ```
 
-Badge has no dependencies. The plugin reads `catalog.md`, shows a preview (`badge/badge.tsx + badge/badge.scss`), waits for confirmation, then writes both files.
+Badge has no dependencies. The plugin reads its Generation Contract from `kit-core/references/inline-components.md`, shows a preview (`badge/badge.tsx + badge/badge.scss`), waits for confirmation, then writes both files.
 
 Import in your project:
 
@@ -146,7 +146,7 @@ Components use CSS custom properties with hardcoded fallbacks. Override at any s
 }
 ```
 
-See [`references/css-variables.md`](../skills/components/references/css-variables.md) for the full naming convention and the per-component variable sets.
+See [`references/css-variables.md`](../skills/kit-core/references/css-variables.md) for the full naming convention and the per-component variable sets.
 
 ---
 

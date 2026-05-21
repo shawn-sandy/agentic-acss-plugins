@@ -4,7 +4,7 @@ Slash commands at the repo root that delegate to one of the [review agents](agen
 
 | Command | Argument | Description | Dispatches to |
 |---|---|---|---|
-| [`/review-component`](commands/review-component.md) | `<path/to/references/components/<name>.md>` | Verify a component reference doc against the canonical embedded-markdown shape and catalog parity table. | [`component-reference-reviewer`](agents/README.md#component-reference-reviewer) |
+| [`/review-component`](commands/review-component.md) | `<path/to/skills/component-<name>/reference.md>` | Verify a component reference doc against the canonical embedded-markdown shape and skill directory structure. | [`component-reference-reviewer`](agents/README.md#component-reference-reviewer) |
 | [`/review-script`](commands/review-script.md) | `<path/to/script.py>` | Audit a single Python script against the project contract (stdlib only, JSON to stdout, exit codes, reasons array). | [`python-script-reviewer`](agents/README.md#python-script-reviewer) |
 | [`/review-scripts`](commands/review-scripts.md) | _(none)_ | Audit every `plugins/*/scripts/*.py` in parallel and report a summary table. | [`python-script-reviewer`](agents/README.md#python-script-reviewer) (one per script) |
 | [`/review-themes`](commands/review-themes.md) | _(none)_ | Cross-source parity audit of the acss-kit theme references — role catalogue, palette algorithm, theme schema, bundled brand presets — against the Python scripts. | [`theme-reference-reviewer`](agents/README.md#theme-reference-reviewer) |

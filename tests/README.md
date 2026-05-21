@@ -23,7 +23,7 @@ tests/run.sh
 
 What it does, in order:
 1. Wipes `tests/.tmp/`.
-2. Extracts TSX/SCSS code blocks from every `plugins/acss-kit/skills/components/references/components/*.md`. Syntax-checks the extracted TSX with TypeScript's parser API. Asserts no banned imports (`@fpkit/acss`).
+2. Extracts TSX/SCSS code blocks from every `plugins/acss-kit/skills/component-*/reference.md` plus `kit-core/references/foundation.md`. Syntax-checks the extracted TSX with TypeScript's parser API. Asserts no banned imports (`@fpkit/acss`).
 3. Validates the SCSS contract: every `var(--color-*)`, `var(--font-*)`, `var(--space-*)` reference must include a fallback.
 4. Runs the existing WCAG 2.2 AA contrast validator over any `plugins/acss-kit/assets/themes/*.css` (skipped silently if no theme files are present yet).
 5. Replicates the `verify-plugins` skill's manifest checks: required `plugin.json` fields, no `version` key in marketplace entries, required files present.
@@ -73,7 +73,7 @@ tests/e2e.sh
 
 What it does, in order:
 1. **Self-test the a11y harness.** Runs `run_axe.mjs --self-test` against `tests/fixtures/known-bad-a11y/violation.html`. If axe-core ever stops flagging the deliberate violations, the run fails fast — preventing a misleading green on real output.
-2. **Resolve dependencies and extract components.** A small dependency walker (`tests/lib/resolve_deps.mjs`) mirrors Step B3 in `skills/components/SKILL.md` so compound components like Dialog/IconButton pull their leaf dependencies. Each resolved component is extracted from its reference doc via the shared `extract.mjs` and written into the fixture at `src/components/fpkit/<name>/`.
+2. **Resolve dependencies and extract components.** A small dependency walker (`tests/lib/resolve_deps.mjs`) mirrors Step B3 in `skills/kit-core/SKILL.md` so compound components like Dialog/IconButton pull their leaf dependencies. Each resolved component is extracted from its reference doc via the shared `extract.mjs` and written into the fixture at `src/components/fpkit/<name>/`.
 3. **Generate a theme.** Runs the same Python pipeline `/theme-create` runs (`generate_palette.py | tokens_to_css.py`) against a known seed color, producing `light.css` and `dark.css`.
 4. **Validate theme contrast.** Runs `validate_theme.py` against the generated files (same WCAG 2.2 AA pairs as `tests/run.sh`).
 5. **Type-check.** `tsc --noEmit` against the fixture's `tsconfig.json`, with React + types resolved via the symlinked `tests/node_modules`. The fixture includes an ambient `declare module '*.scss';` so component imports of stylesheet modules type-check.
