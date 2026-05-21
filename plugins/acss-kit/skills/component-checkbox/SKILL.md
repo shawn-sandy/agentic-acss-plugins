@@ -1,6 +1,12 @@
 ---
 name: component-checkbox
 description: Use when the user asks to generate, create, or scaffold a Checkbox — accessible checkbox with indeterminate state, aria-checked, custom indicator, and Input dependency.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add checkbox`, `/kit-create` (then ask for a
+  checkbox), or call the `component-checkbox` skill by name. Describe the
+  label, the initial state (checked/unchecked/indeterminate),
+  controlled vs uncontrolled, and any error/required state.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

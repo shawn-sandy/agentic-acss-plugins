@@ -1,6 +1,12 @@
 ---
 name: component-dialog
 description: Use when the user asks to generate, create, or scaffold a Dialog — accessible modal dialog with focus trap, aria-modal, return-focus on close, and Button dependency.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add dialog`, `/kit-create` (then ask for a
+  dialog), or call the `component-dialog` skill by name. Describe the
+  title, modal vs non-modal, the trigger element, the body content, and
+  any footer action buttons (confirm/cancel).
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

@@ -1,6 +1,12 @@
 ---
 name: component-popover
 description: Use when the user asks to generate, create, or scaffold a Popover — accessible tooltip/popover using the Popover API with focus trap, aria-expanded, and light-dismiss.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add popover`, `/kit-create` (then ask for a
+  popover), or call the `component-popover` skill by name. Describe the
+  trigger element, the popover content, anchor/positioning, and whether
+  light-dismiss and focus-trap behaviour are required.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

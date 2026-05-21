@@ -6,7 +6,7 @@ A Claude Code plugin for building accessible React applications with the [fpkit/
 
 Fifteen per-component skills, a `kit-core` orchestrator, a `styles` skill, a `setup` skill, and a `style-tune` pilot:
 
-- **`component-<name>`** (15 skills) — one dedicated skill per component (alert, button, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table). `/kit-add <component>` routes to the matching per-component skill, which reads its own `reference.md` for templates and writes self-contained TSX + SCSS into your project.
+- **`component-<name>`** (15 skills) — one dedicated skill per component (alert, button, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table). `/kit-add <component>` routes to the matching per-component skill, which reads its own `reference.md` for templates and writes self-contained TSX + SCSS into your project. Each per-component skill sets `disable-model-invocation: true` to keep them out of session auto-context — invoke them explicitly via `/kit-add <component>`, `/kit-create`, `/kit-list`, or by calling `component-<name>` by name and describing the variant/state you want.
 - **`kit-core`** — orchestrator for `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, and Form/HTML/Style-Tune modes. Does not auto-trigger for per-component requests.
 - **`styles`** — CSS theme generation. `/theme-create`, `/theme-brand`, `/theme-update`, `/theme-extract` for OKLCH palettes with WCAG 2.2 AA validation.
 - **`setup`** — cross-domain first-run skill backing `/setup`. Runs the sass check, copies `ui.tsx`, and seeds light/dark theme. Idempotent.

@@ -1,6 +1,12 @@
 ---
 name: component-nav
 description: Use when the user asks to generate, create, or scaffold a Nav — accessible navigation landmark with aria-label, current-page link marking, and horizontal/vertical layout.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add nav`, `/kit-create` (then ask for a
+  nav), or call the `component-nav` skill by name. Describe the
+  aria-label for the landmark, the link items (label + href), the
+  current-page link, and horizontal vs vertical orientation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

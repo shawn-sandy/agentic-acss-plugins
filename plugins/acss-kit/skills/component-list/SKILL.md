@@ -1,6 +1,12 @@
 ---
 name: component-list
 description: Use when the user asks to generate, create, or scaffold a List — accessible ordered/unordered list with role="list" reset, item slots, and inline/stacked layout variants.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add list`, `/kit-create` (then ask for a
+  list), or call the `component-list` skill by name. Describe ordered
+  vs unordered, the item content/shape, inline vs stacked layout, and
+  whether the list needs a marker reset (role="list").
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

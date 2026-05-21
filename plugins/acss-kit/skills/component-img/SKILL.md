@@ -1,6 +1,12 @@
 ---
 name: component-img
 description: Use when the user asks to generate, create, or scaffold an Img — accessible image component with required alt, lazy-loading, aspect-ratio containment, and decorative mode.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add img`, `/kit-create` (then ask for an
+  image), or call the `component-img` skill by name. Describe the src,
+  the alt text (or mark decorative), the aspect ratio, lazy vs eager
+  loading, and any srcset/sizes for responsive variants.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

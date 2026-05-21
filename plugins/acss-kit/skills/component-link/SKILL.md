@@ -1,6 +1,12 @@
 ---
 name: component-link
 description: Use when the user asks to generate, create, or scaffold a Link — accessible anchor with external/new-tab detection, aria-label injection, and current-page indication.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add link`, `/kit-create` (then ask for a
+  link), or call the `component-link` skill by name. Describe the href,
+  the link text, whether it opens in a new tab/external (so rel and
+  aria-label can be set), and any current-page state.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

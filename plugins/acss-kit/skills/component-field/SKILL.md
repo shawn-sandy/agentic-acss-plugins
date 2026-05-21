@@ -1,6 +1,12 @@
 ---
 name: component-field
 description: Use when the user asks to generate, create, or scaffold a Field — accessible form field wrapper with label, hint, and error message association via aria-describedby.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add field`, `/kit-create` (then ask for a
+  field), or call the `component-field` skill by name. Describe the
+  label, hint text, error message, required flag, and which child input
+  control (input/checkbox/select) the field wraps.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 

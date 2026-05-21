@@ -44,7 +44,19 @@ source.
    `plugins/acss-kit/skills/component-<component-name>/` and write two files:
 
    a. **`SKILL.md`** — mirror the shape of `plugins/acss-kit/skills/component-button/SKILL.md`:
-      - frontmatter: `name: component-<component-name>`, `description:` (one line, under 160 chars, "Use when the user asks to generate, create, or scaffold a <PascalCaseName>…"), `allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion`
+      - frontmatter (in this order):
+        - `name: component-<component-name>`
+        - `description:` (one line, under 160 chars, "Use when the user asks to generate, create, or scaffold a <PascalCaseName>…")
+        - `disable-model-invocation: true` (component-tier skills are hidden from auto-context; dispatched by exact name from the orchestrator — see `.claude/rules/skill-front-matter.md`)
+        - `hint: >-` (folded scalar describing invocation surfaces and component-specific details). Template:
+          ```yaml
+          hint: >-
+            Invoke explicitly via `/kit-add <component-name>`, `/kit-create`
+            (then ask for a <component-name>), or call the
+            `component-<component-name>` skill by name. Describe
+            <component-specific details — variant, size, state, slots>.
+          ```
+        - `allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion`
       - Workflow: 5-step workflow (Read reference.md → init check → dep resolution → generate → verify)
       - Reference section linking to `reference.md` and `kit-core/references/`
 

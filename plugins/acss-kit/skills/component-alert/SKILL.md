@@ -1,6 +1,12 @@
 ---
 name: component-alert
 description: Use when the user asks to generate, create, or scaffold an Alert — accessible status/error/info/warning notification with ARIA live regions and icon support.
+disable-model-invocation: true
+hint: >-
+  Invoke explicitly via `/kit-add alert`, `/kit-create` (then ask for an
+  alert), or call the `component-alert` skill by name. Describe the
+  severity (info/success/warning/error), whether it is dismissible, the
+  ARIA live politeness (polite/assertive), and any leading icon.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 
