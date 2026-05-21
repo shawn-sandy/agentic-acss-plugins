@@ -24,8 +24,8 @@ agentic-acss-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json    # catalog listing both plugins
 ├── plugins/
-│   ├── acss-kit/           # components, themes, /setup, /style-tune, /kit-create, form + creator pilots
-│   └── acss-utilities/     # atomic CSS utilities + token-bridge
+│   ├── acss-kit/           # components, themes, utilities, /setup, /style-tune, /kit-create, form + creator pilots
+│   └── style-agent/        # framework-agnostic CSS authoring skills
 ├── tests/                  # tests/run.sh and tests/e2e.sh validation harness
 ├── README.md
 ├── CONTRIBUTING.md

@@ -10,8 +10,8 @@ A Claude Code **plugin marketplace** - not a Node.js or Python package. There ar
 
 The repo contains two plugins:
 
-- `plugins/acss-kit` - accessible React components and CSS themes for fpkit/acss projects.
-- `plugins/acss-utilities` - Tailwind-style atomic CSS utility classes paired with `acss-kit`'s OKLCH theme tokens via a bridge file.
+- `plugins/acss-kit` - accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects.
+- `plugins/style-agent` - framework-agnostic CSS authoring skills for any web project.
 
 Maintainer tooling for working on this repo lives at `.claude/` (review agents, authoring/release skills, validation commands, advisory rules, hooks) — see [`.claude/README.md`](./.claude/README.md) for the index.
 
@@ -19,7 +19,7 @@ Install from a Claude Code session:
 ```
 /plugin marketplace add shawn-sandy/agentic-acss-plugins
 /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
-/plugin install acss-utilities@shawn-sandy-agentic-acss-plugins
+/plugin install style-agent@shawn-sandy-agentic-acss-plugins
 ```
 
 ## Plugin structure

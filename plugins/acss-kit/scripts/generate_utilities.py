@@ -318,7 +318,7 @@ def emit_family(family: str, tokens: dict) -> str:
 def emit_bundle_header(tokens: dict) -> str:
     return (
         "/*\n"
-        f" * acss-utilities v{tokens['version']}\n"
+        f" * acss-kit utilities v{tokens['version']}\n"
         f" * Generated from utilities.tokens.json\n"
         f" * Mirrors fpkit upstream: {tokens['fpkitUpstream']}\n"
         " *\n"

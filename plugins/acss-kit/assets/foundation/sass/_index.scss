@@ -10,7 +10,7 @@
  *   P2  _globals.scss h1–h6 patched with color: var(--color-text, #212529)
  *
  * Excluded upstream sections (not part of this barrel):
- *   - sass/utilities   — covered by the acss-utilities plugin
+ *   - sass/utilities   — covered by the /utility-add command and assets/utilities/
  *   - components/**    — generated per-component by /kit-add
  *
  * To regenerate foundation.css from these sources:

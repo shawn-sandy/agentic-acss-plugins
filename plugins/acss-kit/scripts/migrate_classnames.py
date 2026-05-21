@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Migrate acss-utilities class names from 0.1.x colon form to 0.2.0 hyphen form.
+Migrate utility class names from the 0.1.x colon form to the 0.2.0 hyphen form (legacy acss-utilities → acss-kit utilities).
 
 Rewrites `sm:hide` → `sm-hide`, `md:p-6` → `md-p-6`, etc. in source files.
 By default performs a dry run and prints a unified diff per modified file.

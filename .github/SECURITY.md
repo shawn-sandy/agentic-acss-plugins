@@ -6,7 +6,7 @@ Only the latest published version of each plugin in this marketplace is supporte
 
 ## Reporting a vulnerability
 
-If you believe you have found a security issue in `acss-kit`, `acss-utilities`, or any of the maintainer scripts in this repository, **do not open a public issue or pull request**.
+If you believe you have found a security issue in `acss-kit`, `style-agent`, or any of the maintainer scripts in this repository, **do not open a public issue or pull request**.
 
 Instead, report it privately via [GitHub's private vulnerability reporting](https://github.com/shawn-sandy/agentic-acss-plugins/security/advisories/new). Include:
 

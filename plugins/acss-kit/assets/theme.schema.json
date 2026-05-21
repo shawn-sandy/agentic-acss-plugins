@@ -2,7 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "acss-kit theme tokens",
   "description": "Internal-only contract for tokens_to_css.py / css_to_tokens.py. The user-facing authoring format is the CSS Token Convention documented in skills/styles/SKILL.md — users edit CSS theme files (light.css, dark.css, brand-*.css) directly. Not a user-facing contract; see references/theme-schema.md.",
-  "deprecated": true,
   "type": "object",
   "additionalProperties": false,
   "properties": {

@@ -59,4 +59,4 @@ Project-local Claude Code definitions for working on the `acss-kit` plugin. Cont
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — sibling-clone workflow, pre-PR checklist
 - [AGENTS.md](../AGENTS.md) — coding-agent guidance for working in this repo
-- [Root README](../README.md) — marketplace overview, install, and command index for `acss-kit` and `acss-utilities`
+- [Root README](../README.md) — marketplace overview, install, and command index for `acss-kit` and `style-agent`

@@ -212,7 +212,7 @@ export default Dialog
 
 ## HTML Template
 
-`/kit-add-html dialog` writes the markup below into `dialog.html` — the dialog fragment only, mirroring the TSX component's render output. The opener button is documented separately further down as a usage hint, **not** part of the generated file (the user owns where and how to invoke the dialog).
+`/kit-add --target=html dialog` writes the markup below into `dialog.html` — the dialog fragment only, mirroring the TSX component's render output. The opener button is documented separately further down as a usage hint, **not** part of the generated file (the user owns where and how to invoke the dialog).
 
 ```html
 <!-- variant: full dialog (header + body + footer) -->
