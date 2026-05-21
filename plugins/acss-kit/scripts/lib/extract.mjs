@@ -28,7 +28,7 @@
 //     placeholders; substitution is forward-compatible scaffolding.
 
 import { readFileSync } from 'node:fs'
-import { basename } from 'node:path'
+import { basename, dirname } from 'node:path'
 
 const TSX_SECTION_HEADINGS = [
   /^Props Interfaces?\b/i,
@@ -130,6 +130,10 @@ export function extractFromMarkdown(content, vars) {
 export function extractFromFile(path, vars) {
   const content = readFileSync(path, 'utf8')
   const result = extractFromMarkdown(content, vars)
-  result.name = basename(path, '.md')
+  // Per-component skill layout: component-<name>/reference.md → derive name from dir.
+  const fname = basename(path, '.md')
+  result.name = fname === 'reference'
+    ? basename(dirname(path)).replace(/^component-/, '')
+    : fname
   return result
 }

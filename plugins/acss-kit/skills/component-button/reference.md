@@ -19,6 +19,16 @@ dependencies: []   (useDisabledState is inlined, not a separate file)
 ## Props Interface
 
 ```tsx
+/**
+ * Props for the Button component.
+ *
+ * Uses `aria-disabled` instead of the native `disabled` attribute so the
+ * element stays in the tab order and remains reachable by keyboard users
+ * (WCAG 2.1.1 — Keyboard). Style, size, and color variants are applied via
+ * HTML data attributes; see the SCSS template for the corresponding selectors.
+ *
+ * @see Button
+ */
 export type ButtonProps = {
   /** Required — prevents implicit submit in forms */
   type: 'button' | 'submit' | 'reset'
@@ -68,6 +78,15 @@ Note: `Omit<..., 'disabled'>` removes the native disabled from button props sinc
 Inline this condensed version (read `references/accessibility.md` for the full ~50-line version):
 
 ```tsx
+/**
+ * Manages accessible disabled state for interactive elements.
+ *
+ * Blocks click/keydown/pointerdown handlers when `disabled` is true while
+ * keeping the element focusable and announcing its state via `aria-disabled`.
+ * Do not use native `disabled` on elements where keyboard reach matters.
+ *
+ * @internal - inlined into button.tsx; do not extract to a shared module.
+ */
 // Inline in button.tsx — do not create a separate file
 function useDisabledState<T extends HTMLElement = HTMLButtonElement>(
   disabled: boolean | undefined,
@@ -100,6 +119,12 @@ function useDisabledState<T extends HTMLElement = HTMLButtonElement>(
 ## Key Pattern: resolveDisabledState
 
 ```tsx
+/**
+ * Resolves the active disabled state from `disabled` and legacy `isDisabled`
+ * props. `disabled` takes precedence; both default to `false` if absent.
+ *
+ * @internal - inlined into button.tsx; do not extract to a shared module.
+ */
 // One-liner helper — inline in button.tsx
 const resolveDisabledState = (d?: boolean, id?: boolean) => d ?? id ?? false
 ```
@@ -121,6 +146,27 @@ import React from 'react'
 
 // [inline resolveDisabledState and useDisabledState here]
 
+/**
+ * Accessible button with size, style, and color variants.
+ *
+ * Replaces the native `disabled` attribute with `aria-disabled` so the button
+ * stays keyboard-reachable even when functionally inactive (WCAG 2.1.1).
+ * Variants are driven by data attributes (`data-btn`, `data-style`,
+ * `data-color`) and styled entirely via CSS custom properties — no inline
+ * styles required for theming.
+ *
+ * @param props - {@link ButtonProps}
+ *
+ * @example
+ * // Primary submit button
+ * <Button type="submit" color="primary">Save changes</Button>
+ *
+ * @example
+ * // Large outline button, accessible disabled
+ * <Button type="button" variant="outline" size="lg" disabled>
+ *   Unavailable
+ * </Button>
+ */
 export const Button = ({
   type = 'button',
   children,

@@ -15,10 +15,13 @@
 //
 // or `dependencies: []` for leaf components.
 
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 
-const REFS_DIR_REL = 'plugins/acss-kit/skills/components/references/components'
+// Transitional: kit-core holds docs not yet migrated to per-component skills;
+// component-<name>/reference.md holds migrated docs.
+const KIT_CORE_REFS_REL = 'plugins/acss-kit/skills/kit-core/references/components'
+const SKILLS_REL = 'plugins/acss-kit/skills'
 
 function readContractDeps(refPath) {
   const content = readFileSync(refPath, 'utf8')
@@ -62,14 +65,23 @@ function readContractDeps(refPath) {
  * @returns {string[]}
  */
 export function resolveDeps(repoRoot, seedNames) {
-  const refsDir = join(repoRoot, REFS_DIR_REL)
+  const kitCoreRefsDir = join(repoRoot, KIT_CORE_REFS_REL)
+  const skillsDir = join(repoRoot, SKILLS_REL)
   const visited = new Set()
   const order = []
+
+  // Locate the reference file for a component name.
+  // Checks per-component skill first, then kit-core legacy path.
+  function refPathFor(name) {
+    const perComponentPath = join(skillsDir, `component-${name}`, 'reference.md')
+    if (existsSync(perComponentPath)) return perComponentPath
+    return join(kitCoreRefsDir, `${name}.md`)
+  }
 
   function visit(name) {
     if (visited.has(name)) return
     visited.add(name)
-    const refPath = join(refsDir, `${name}.md`)
+    const refPath = refPathFor(name)
     let deps
     try {
       deps = readContractDeps(refPath)
