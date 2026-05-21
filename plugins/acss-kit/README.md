@@ -4,14 +4,13 @@ A Claude Code plugin for building accessible React applications with the [fpkit/
 
 ## What you get
 
-Two top-level skills, one cross-domain setup skill, and three pilot skills:
+Fifteen per-component skills, a `kit-core` orchestrator, a `styles` skill, a `setup` skill, and a `style-tune` pilot:
 
-- **`components`** — accessible React components from markdown specs. `/kit-add <component>` walks the dependency tree and writes self-contained TSX + SCSS into your project.
+- **`component-<name>`** (15 skills) — one dedicated skill per component (alert, button, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table). `/kit-add <component>` routes to the matching per-component skill, which reads its own `reference.md` for templates and writes self-contained TSX + SCSS into your project.
+- **`kit-core`** — orchestrator for `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, and Form/HTML/Style-Tune modes. Does not auto-trigger for per-component requests.
 - **`styles`** — CSS theme generation. `/theme-create`, `/theme-brand`, `/theme-update`, `/theme-extract` for OKLCH palettes with WCAG 2.2 AA validation.
 - **`setup`** — cross-domain first-run skill backing `/setup`. Runs the sass check, copies `ui.tsx`, and seeds light/dark theme. Idempotent.
-- **`component-form`** — pilot per-component skill that auto-triggers on phrases like "create a signup form", "add a contact form".
-- **`component-creator`** — pilot creator-mode skill that auto-triggers on phrases like "create a primary pill button that says 'Add to cart'", "make me a soft warning alert titled 'Heads up'", "build a card with a heading 'Plan'". `/kit-create` is the explicit fallback. Loads the matched component's reference doc at runtime, resolves the user's phrases against its Props Interface (colour/size synonyms map onto whichever colour-family / size-family prop the component declares), and emits a paste-ready TSX snippet or a standalone component file. Works with any component that has a dedicated `references/components/<name>.md` reference doc (Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav); components that exist only as inline `catalog.md` entries (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are deferred to v0.2.
-- **`style-tune`** — pilot per-feel skill that auto-triggers on phrases like "warmer button", "softer card", "tone down the primary", "more spacious cards", "more elevated dialog". `/style-tune` is the explicit fallback. Routes between theme-role and component-SCSS edits with atomic WCAG pre-validation.
+- **`style-tune`** — pilot per-feel skill that auto-triggers on phrases like "warmer button", "softer card", "tone down the primary". `/style-tune` is the explicit fallback. Routes between theme-role and component-SCSS edits with atomic WCAG pre-validation.
 
 ## Why
 
@@ -142,7 +141,7 @@ Generate **static HTML** versions of components for projects that don't use Reac
 
 On first run, prompts for the target directory (default `components/html`), persists the choice to `.acss-html-target.json`, and copies the foundation helper `_stateful.js` into the target. After generation, runs `scripts/verify_integration.py --target=html` and reports any pages missing `<link rel="stylesheet">` / `<script src>` references.
 
-The first batch of reference docs supporting `--target=html` is **Button**, **Card**, **Alert**, and **Dialog**. Remaining components fall through to a "not yet" warning until backfilled — see the `HTML Output Status` table in [`references/components/catalog.md`](skills/components/references/components/catalog.md).
+The first batch of reference docs supporting `--target=html` is **Button**, **Card**, **Alert**, and **Dialog**. Remaining components fall through to a "not yet" warning until their `reference.md` is augmented with `## HTML Template` and `## Vanilla JS` sections.
 
 ### `/kit-create <description>`
 
@@ -155,7 +154,7 @@ Creator mode — generate any acss-kit component from a natural-language descrip
 /kit-create small outline icon-button with aria-label "Close"
 ```
 
-Loads the matched component's reference doc at runtime, parses its `## Props Interface`, resolves the user's phrases against the declared prop set, and emits a paste-ready TSX snippet (default) or a standalone component file. Works with any component that has a dedicated `references/components/<name>.md` doc — Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav. Refinement turns ("make it larger", "swap to secondary", "change the title to 'Save'") merge into the in-memory spec and re-emit. Full reference in [`docs/prompt-book.md`](docs/prompt-book.md).
+Loads the matched component's reference doc at runtime, parses its `## Props Interface`, resolves the user's phrases against the declared prop set, and emits a paste-ready TSX snippet (default) or a standalone component file. Works with any component that has a dedicated per-component skill — Button, Alert, Card, Dialog, Link, Input, Field, Checkbox, IconButton, Img, Icon, List, Table, Popover, Nav. Refinement turns ("make it larger", "swap to secondary", "change the title to 'Save'") merge into the in-memory spec and re-emit. Full reference in [`docs/prompt-book.md`](docs/prompt-book.md).
 
 ### Auto-trigger: form generation
 
@@ -182,7 +181,7 @@ Bulk-install **every** shipped acss-kit component, the `ui.tsx` foundation, and 
 **What happens:**
 
 1. **Preflight** — `detect_target.py` for project root, `detect_stack.py` for sass, `manifest_read.py` to detect re-sync.
-2. **Enumerate + dedupe** — every component in `references/components/catalog.md`, with `dependencies:` resolved recursively.
+2. **Enumerate + dedupe** — every component from `skills/component-*/SKILL.md` plus inline entries from `kit-core/references/inline-components.md`, with `dependencies:` resolved recursively.
 3. **Plan** — shows the full file tree (foundation + components + styles + manifest) and waits for confirmation. `--dry-run` stops here.
 4. **Generate** — components written bottom-up; foundation copied verbatim; theme generated from the seed hex (skipped under `--skip-styles`).
 5. **Manifest** — every written file's normalized sha256 is recorded in `.acss-kit/manifest.json`.
@@ -288,7 +287,7 @@ With no argument it prints the full book. With a section number it prints only t
 | **Complex** | alert, dialog, popover, table | Varies (e.g. dialog needs button + icon-button + icon) |
 | **Form (skill)** | `component-form` | Auto-triggers on form-related natural-language prompts |
 
-The full catalog with verification status against the upstream `@fpkit/acss` source is in [`skills/components/references/components/catalog.md`](skills/components/references/components/catalog.md).
+Verification status against the upstream `@fpkit/acss` source is documented in the verification banner of each component's `reference.md` (e.g. `skills/component-button/reference.md`).
 
 ## Theme structure
 
@@ -361,7 +360,7 @@ When adding or updating a component reference doc, follow the canonical embedded
 
 ### 2. Author the canonical sections
 
-Create `skills/components/references/components/<name>.md` with these sections in order:
+Run `/acss-kit-component-author <name>` to scaffold `skills/component-<name>/SKILL.md` and `skills/component-<name>/reference.md`. Or create them manually. The `reference.md` must have these sections in order:
 
 - **Verification banner** — top-of-file blockquote starting `**Verified against fpkit source:** \`@fpkit/acss@<version>\``. Document any intentional divergence.
 - **`## Overview`** — one-paragraph summary.
@@ -375,18 +374,20 @@ Create `skills/components/references/components/<name>.md` with these sections i
 
 The required `## Accessibility` section is load-bearing — don't strip a11y patterns from the TSX/SCSS. Reviewers reject reference docs without it.
 
-### 3. Reference vs Skill
+### 3. Per-component skill structure
 
-Most components live as reference docs. Composable, complex, or high-iteration components can be promoted to their own skill at `skills/component-<name>/SKILL.md` with discovery-friendly trigger phrases in the frontmatter `description`.
+Every component ships as a `skills/component-<name>/` skill directory containing:
+- `SKILL.md` — frontmatter description, 5-step workflow, reference to `reference.md`
+- `reference.md` — nine canonical sections (see above)
 
-Currently, the only component promoted to a skill is `Form` (see `skills/component-form/SKILL.md`). It serves as a pilot — adopt the per-component skill pattern for additional components only after observing trigger reliability in real usage.
+This structure allows `/kit-add <name>` to route directly to the component's skill without going through the monolithic kit-core orchestrator.
 
 ### 4. Log verification status
 
-Add an entry to the verification status table in [`catalog.md`](skills/components/references/components/catalog.md):
+Document verification status in the reference doc's verification banner at the top of `reference.md`:
 
 ```md
-| Foo | [`foo.md`](foo.md) | `@fpkit/acss@<version>` | New / Verified — <intentional divergences if any> |
+> **Verified against fpkit source:** `@fpkit/acss@<version>`. Intentional divergences: <none or description>.
 ```
 
 This table is the single source of truth for which components have been migrated to the canonical shape.
@@ -442,7 +443,9 @@ For end-to-end smoke testing — confirming `/kit-add <component>` actually writ
         architecture.md                    # UI internals, polymorphic pattern
         composition.md                     # Compound patterns, decision tree
         css-variables.md                   # Naming + fallback strategy
-        components/                        # 16 component reference docs + catalog.md + foundation.md
+        inline-components.md               # Badge, Tag, Heading, Text, Details, Progress
+        form.md                            # Form composition reference (legacy)
+        foundation.md                      # UI polymorphic base documentation
     styles/
       SKILL.md                             # Styles skill workflow
       references/

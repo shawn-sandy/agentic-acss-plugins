@@ -9,7 +9,7 @@ Each skill has a slash command of the same name. Skills prefixed `acss-kit-` are
 | Skill | What it does |
 |---|---|
 | [`/add-command`](add-command/SKILL.md) | Scaffold a new slash command for a plugin — creates `commands/<name>.md` with front-matter and adds a stub section to the relevant `SKILL.md`. |
-| [`/acss-kit-component-author`](acss-kit-component-author/SKILL.md) | Scaffold a new component reference doc under `plugins/acss-kit/skills/components/references/components/<name>.md` in the canonical embedded-markdown shape, and add a placeholder row to the catalog. |
+| [`/acss-kit-component-author`](acss-kit-component-author/SKILL.md) | Scaffold a new per-component skill at `plugins/acss-kit/skills/component-<name>/` with `SKILL.md` and `reference.md` in the canonical embedded-markdown shape. |
 | [`/acss-kit-style-author`](acss-kit-style-author/SKILL.md) | Scaffold a bundled brand preset, palette role, or theme-schema field for `acss-kit`. Three sub-flows; ends with a WCAG 2.2 AA contrast re-validation. |
 
 ## Updating — refresh existing artifacts

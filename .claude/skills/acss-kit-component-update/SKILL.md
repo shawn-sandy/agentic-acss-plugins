@@ -22,7 +22,7 @@ that.
 
 1. **Confirm the reference doc exists.**
    - Resolve `<component-name>` to
-     `plugins/acss-kit/skills/components/references/components/<component-name>.md`.
+     `plugins/acss-kit/skills/component-<component-name>/reference.md`.
    - If the file does not exist, halt and suggest
      `/acss-kit-component-author <component-name>` instead.
 
@@ -77,7 +77,7 @@ that.
    - Use Edit to update the verification banner if `<divergences>` changed or
      the maintainer wants to bump `<ref>` to a newer tag.
    - Use Edit to update the catalog row in
-     `plugins/acss-kit/skills/components/references/components/catalog.md` if
+     `plugins/acss-kit/skills/kit-core/references/inline-components.md` if
      the Status changed.
 
 7. **Warn about export_name changes.** If the maintainer's edits changed
@@ -88,8 +88,9 @@ that.
    > downstream imports will break on regenerate. Confirm this is intentional
    > before committing.
 
-   Use Grep to scan `plugins/acss-kit/skills/components/SKILL.md` and the
-   catalog for any other references to the old export_name and surface them.
+   Use Grep to scan `plugins/acss-kit/skills/kit-core/SKILL.md` and the
+   per-component skill dirs for any other references to the old export_name and
+   surface them.
 
 8. **Run the reviewer agent.** Invoke `component-reference-reviewer` against the
    file. Surface its report inline.

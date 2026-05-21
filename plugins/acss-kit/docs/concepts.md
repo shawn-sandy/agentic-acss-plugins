@@ -17,7 +17,7 @@ Every generated component imports a single shared file: `ui.tsx`. This is the on
 
 `ui.tsx` is copied to your target directory on the first `/kit-add` run. All generated components import it with a local relative path (`import UI from '../ui'`). Never import it from an npm package.
 
-See [`references/architecture.md`](../skills/components/references/architecture.md) for the full polymorphic type chain.
+See [`references/architecture.md`](../skills/kit-core/references/architecture.md) for the full polymorphic type chain.
 
 ## data-\* attribute variants (not BEM)
 
@@ -49,7 +49,7 @@ Variable naming follows the pattern `--{component}-{element?}-{variant?}-{proper
 
 All sizes use **rem** (never px). Conversion: `px / 16 = rem`.
 
-See [`references/css-variables.md`](../skills/components/references/css-variables.md) for the full naming convention, approved abbreviations, and logical-property rules.
+See [`references/css-variables.md`](../skills/kit-core/references/css-variables.md) for the full naming convention, approved abbreviations, and logical-property rules.
 
 ## aria-disabled and useDisabledState
 
@@ -57,7 +57,7 @@ Interactive components (Button, any component with a clickable surface) use `ari
 
 The plugin inlines a condensed `useDisabledState<T>` hook (~50 lines) directly into each interactive component file. It is never a shared import — each component that needs it carries its own copy. This keeps generated files self-contained.
 
-See [`references/accessibility.md`](../skills/components/references/accessibility.md) for the full hook source, the `resolveDisabledState` one-liner, focus management guidelines, and the WCAG checklist per component category.
+See [`references/accessibility.md`](../skills/kit-core/references/accessibility.md) for the full hook source, the `resolveDisabledState` one-liner, focus management guidelines, and the WCAG checklist per component category.
 
 ## Types inline, imports local-only
 

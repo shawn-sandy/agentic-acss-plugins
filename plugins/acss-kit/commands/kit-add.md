@@ -25,17 +25,12 @@ Generate fpkit-style React components without installing `@fpkit/acss`. Componen
 
 ## Workflow
 
-When this command is invoked, use the following routing logic:
-
-1. **Per-component skill** — if `${CLAUDE_PLUGIN_ROOT}/skills/component-<name>/SKILL.md` exists for the requested component, follow the workflow in that skill file. It reads its own `reference.md` for templates and delegates to `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/SKILL.md` for shared generation steps (Steps C–G) and `verify_integration.py`.
-2. **kit-core fallback** — if no per-component skill exists yet, follow the full generation workflow in `${CLAUDE_PLUGIN_ROOT}/skills/kit-core/SKILL.md` (looks up `references/components/<name>.md` directly).
-
-Currently, `component-button` is the only component with a dedicated skill. All other components route through kit-core.
+When this command is invoked, follow the workflow in `${CLAUDE_PLUGIN_ROOT}/skills/component-<name>/SKILL.md` for the requested component. Every component has its own dedicated skill. Normalize the component name to lowercase before resolving the path.
 
 ### Quick Reference
 
 1. **Init check** — Verify sass is in devDependencies and `ui.tsx` exists in target dir
-2. **Lookup** — Find the component in `references/components/catalog.md` or its dedicated reference doc
+2. **Lookup** — Find the component skill at `skills/component-<name>/SKILL.md`
 3. **Dependency tree** — Read the Generation Contract to identify all dependencies
 4. **Show tree** — Display what will be generated before proceeding
 5. **Generate bottom-up** — Generate leaf dependencies first, then the requested component

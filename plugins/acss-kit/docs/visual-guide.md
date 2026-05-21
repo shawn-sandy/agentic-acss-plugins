@@ -61,7 +61,7 @@ sequenceDiagram
         Plugin->>Project: Write .acss-target.json
         Plugin->>Project: Copy ui.tsx foundation
     end
-    Plugin->>Plugin: Read references/components/button.md
+    Plugin->>Plugin: Read component-button/reference.md
     Plugin->>Plugin: Resolve dependency tree (Button has none)
     Plugin->>Dev: Show plan — "Generating button/button.tsx + .scss"
     Dev->>Plugin: Confirm
@@ -135,7 +135,7 @@ Import and usage:
 
 ## 4. The component anatomy
 
-Every component the plugin can generate is described by a single markdown file in `skills/components/references/components/`. They all share the same nine-section shape, which keeps `/kit-add` parsing predictable and gives both audiences (users browsing, maintainers authoring) a consistent map.
+Every component the plugin can generate is described by a `reference.md` in its own `skills/component-<name>/` skill directory. They all share the same nine-section shape, which keeps `/kit-add` parsing predictable and gives both audiences (users browsing, maintainers authoring) a consistent map.
 
 ```mermaid
 classDiagram
@@ -159,7 +159,7 @@ classDiagram
 
 The **Generation Contract** is the only machine-readable section — `/kit-add` parses `export_name`, `file`, `scss`, `imports`, and `dependencies` to figure out which files to write and which dependencies to resolve. The other eight sections are read by Claude (and you) to make correct code-generation decisions.
 
-> **Read the prose:** [`button.md`](../skills/components/references/components/button.md) for the canonical example, or [architecture.md — How to add a new component reference](architecture.md#how-to-add-a-new-component-reference) for the maintainer view.
+> **Read the prose:** [`reference.md`](../skills/component-button/reference.md) for the canonical example, or [architecture.md — How to add a new component reference](architecture.md#how-to-add-a-new-component-reference) for the maintainer view.
 
 ---
 
@@ -212,7 +212,7 @@ src/components/fpkit/
 
 If you previously generated `Button` and now run `/kit-add form`, the existing `button/` directory is untouched.
 
-> **Read the prose:** [recipes.md](recipes.md) for first-run init, multi-component runs, and regeneration — and the [`form.md` reference](../skills/components/references/components/form.md) for the full props matrix and accessibility notes.
+> **Read the prose:** [recipes.md](recipes.md) for first-run init, multi-component runs, and regeneration — and the [`form.md` reference](../skills/kit-core/references/form.md) for the full props matrix and accessibility notes.
 
 ---
 
@@ -272,12 +272,12 @@ Adding a new component to the plugin means writing a new reference doc that foll
 flowchart TD
     Start["maintainer wants to add a new component"]
     Author["/component-author &lt;name&gt;"]
-    Validate["Validate kebab-case name<br/>not already in catalog"]
-    Scaffold["Scaffold references/components/&lt;name&gt;.md<br/>(9 canonical sections + TODO markers)"]
+    Validate["Validate kebab-case name<br/>no skills/component-&lt;name&gt;/ exists"]
+    Scaffold["Scaffold skills/component-&lt;name&gt;/SKILL.md<br/>+ reference.md (9 sections + TODO markers)"]
     Fetch["Fetch upstream source from<br/>github.com/shawn-sandy/acss/blob/&lt;tag&gt;/<br/>packages/fpkit/src/&lt;name&gt;"]
     Fill["Fill TSX Template, SCSS Template,<br/>CSS Variables, Accessibility"]
     Tests["Run tests/run.sh"]
-    Catalog["Update catalog.md<br/>Status: New → Verified"]
+    Catalog["Update reference.md verification banner<br/>Status: New → Verified"]
     PR["Open PR"]
 
     Start --> Author
@@ -326,7 +326,7 @@ All checks passed (≈ 28s).
 | Look up a slash command flag | [prompt-book.md](prompt-book.md) |
 | Diagnose a failure | [troubleshooting.md](troubleshooting.md) |
 | Author a new component or theme inside the plugin | [architecture.md](architecture.md) and [CONTRIBUTING.md](../../../CONTRIBUTING.md) |
-| Browse the canonical reference docs | [`skills/components/references/components/`](../skills/components/references/components/) |
+| Browse the canonical reference docs | [`skills/component-<name>/reference.md`](../skills/) |
 
 ---
 

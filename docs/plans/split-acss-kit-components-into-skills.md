@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: completed
 type: refactor
 created: 2026-05-21
 repo-name: acss-plugins
