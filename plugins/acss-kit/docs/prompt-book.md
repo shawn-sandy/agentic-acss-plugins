@@ -1,6 +1,6 @@
 # Prompt Book
 
-A catalogue of copy-paste prompts for using `acss-kit` inside Claude Code. As of v1.0.0, utility-class commands (`/utility-*`) are part of acss-kit — no separate `acss-utilities` install required.
+A catalogue of copy-paste prompts for using `acss-kit` inside Claude Code.
 
 Each entry has:
 
@@ -16,8 +16,6 @@ Prompts are written as natural language for Claude Code to interpret; most resol
 > /plugin install acss-kit@shawn-sandy-agentic-acss-plugins
 > ```
 >
-> Upgrading from v0.x with acss-utilities installed? See [`docs/migration-v1.md`](migration-v1.md).
-
 ---
 
 ## When to use what
@@ -80,7 +78,7 @@ acss-kit — no React, just markup + SCSS + a tiny vanilla-JS file for
 behavior.
 ```
 
-**What you get:** `<name>.html` (fragment markup with the same classes / `data-*` attributes / ARIA as the React version), `<name>.scss` (byte-identical to `/kit-add`'s SCSS — compile with Sass before linking), and `<name>.js` for components with runtime behavior (Button, Card-interactive, Alert, Dialog). On first run, prompts for the target directory (default `components/html`) and copies a `_stateful.js` foundation helper. Backed by `/kit-add --target=html` (the older `/kit-add-html` alias still works but is deprecated).
+**What you get:** `<name>.html` (fragment markup with the same classes / `data-*` attributes / ARIA as the React version), `<name>.scss` (byte-identical to `/kit-add`'s SCSS — compile with Sass before linking), and `<name>.js` for components with runtime behavior (Button, Card-interactive, Alert, Dialog). On first run, prompts for the target directory (default `components/html`) and copies a `_stateful.js` foundation helper. Backed by `/kit-add --target=html`.
 
 ---
 

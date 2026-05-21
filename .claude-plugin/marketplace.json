@@ -10,7 +10,7 @@
     {
       "name": "acss-kit",
       "source": "./plugins/acss-kit",
-      "description": "Accessible React components, static HTML snippets, CSS themes, and Tailwind-style utility classes for fpkit/acss projects. OKLCH themes with WCAG 2.2 AA validation. Use /kit-add, /kit-create, /kit-sync, /theme-create, /theme-update, /style-tune, /utility-add, /utility-bridge, /utility-list, /utility-tune. Replaces acss-utilities — see migration-v1.md.",
+      "description": "Accessible React components, static HTML snippets, CSS themes, and Tailwind-style utility classes for fpkit/acss projects. OKLCH themes with WCAG 2.2 AA validation. Use /kit-add, /kit-create, /kit-sync, /theme-create, /theme-update, /style-tune, /utility-add, /utility-bridge, /utility-list, /utility-tune.",
       "category": "development",
       "tags": [
         "fpkit",
@@ -40,22 +40,6 @@
         "scss",
         "tailwind",
         "web"
-      ]
-    },
-    {
-      "name": "acss-utilities",
-      "source": "./plugins/acss-utilities",
-      "description": "DEPRECATED. All utility-class commands have moved to acss-kit v1.0.0. Uninstall this plugin and run /plugin update acss-kit@shawn-sandy-agentic-acss-plugins. See migration-v1.md for details.",
-      "category": "development",
-      "tags": [
-        "utility-classes",
-        "atomic-css",
-        "tailwind-style",
-        "fpkit",
-        "acss",
-        "css",
-        "responsive",
-        "css-variables"
       ]
     }
   ]

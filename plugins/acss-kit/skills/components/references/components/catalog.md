@@ -33,7 +33,7 @@ Components not yet listed have not been verified against fpkit source under the 
 
 ## HTML Output Status
 
-Tracks each component reference doc's static-HTML augmentation. A reference is "Verified" once it carries a `## HTML Template` section (and `## Vanilla JS` for stateful components) so `/kit-add-html` can generate framework-agnostic output. Components not listed here have not been augmented yet — `/kit-add-html` falls back to a warning + a hand-authored markup prompt.
+Tracks each component reference doc's static-HTML augmentation. A reference is "Verified" once it carries a `## HTML Template` section (and `## Vanilla JS` for stateful components) so `/kit-add --target=html` can generate framework-agnostic output. Components not listed here have not been augmented yet — the command falls back to a warning + a hand-authored markup prompt.
 
 | Component | Reference | Stateful? | HTML Status |
 |-----------|-----------|-----------|-------------|
