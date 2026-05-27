@@ -74,7 +74,7 @@ Every concrete value in the migrated declarations is replaced with a CSS variabl
 
 Run this alongside Stylesheet discovery so the class can be tokenized.
 
-1. **Collect existing variables.** Across the same glob set (same excludes), grep every custom-property declaration with `^\s*(--[a-z0-9-]+)\s*:\s*([^;]+);`. Build a **reverse map** of *normalised value → variable name* (see normalisation under Value tokenizing rules). This map drives reuse — when a migrated value matches, reference the existing variable instead of creating one.
+1. **Collect existing variables.** Across the same glob set (same excludes), grep every custom-property declaration with `^\s*(--[A-Za-z0-9_-]+)\s*:\s*([^;\n]+);?` — the identifier class allows uppercase and underscores (custom-property names are case-sensitive), and the trailing `;` is optional so semicolon-less `.sass` declarations and a block's last unterminated declaration are still captured. Build a **reverse map** of *normalised value → variable name* (see normalisation under Value tokenizing rules). This map drives reuse — when a migrated value matches, reference the existing variable instead of creating one.
 2. **Detect the naming convention per value category.** Inspect the discovered names to infer the project's prefix for each category — e.g. colors as `--color-*` vs `--clr-*` vs `--c-*`; spacing as `--space-*` vs `--spacing-*` vs `--size-*`. Use the detected prefix when creating new variables of that category. If a category has no precedent, fall back to the default semantic prefix listed below.
 3. **Locate the declaration target** for new variables, in priority order:
    - A dedicated tokens/variables file already in the project: `tokens.{css,scss,sass}`, `variables.{css,scss,sass}`, or `_variables.{scss,sass}`.
@@ -94,9 +94,9 @@ Every concrete value is replaced with a variable. Reuse always wins over creatio
    - **radius / font-size / shadow / z-index** — recognised from the property name (`border-radius`, `font-size`, `box-shadow`, `z-index`).
    - **keyword** — a bare identifier such as `flex`, `block`, `none`, `auto`, `center`.
    - **other** — anything else concrete (e.g. multi-value shorthands); tokenize the whole value as one unit.
-2. **Normalise for matching:** lowercase the value; expand 3-digit hex to 6-digit; collapse internal whitespace to single spaces. Matching is **exact on the normalised form only** — values are never converted across color formats (no hex↔rgb↔hsl) and units are never converted (`16px` ≠ `1rem`). Note this limitation in the summary when relevant.
+2. **Normalise for matching:** for hex colors, lowercase and expand 3-digit to 6-digit; for every value, collapse internal whitespace to single spaces. Do **not** lowercase the value as a whole — preserve case for `url(...)` paths, quoted strings, and any case-sensitive identifier, so a value never matches a variable that points at a different resource. Matching is **exact on the normalised form only** — values are never converted across color formats (no hex↔rgb↔hsl) and units are never converted (`16px` ≠ `1rem`). Note this limitation in the summary when relevant.
 3. **Skip (do not tokenize):**
-   - Values that are already a `var(...)` reference (matched by `var\(\s*(--[a-z0-9-]+)\s*(?:,\s*([^)]+))?\)`) — pass through unchanged.
+   - Values that are already a `var(...)` reference — i.e. the trimmed value begins with `var(` — pass through unchanged. Use this prefix check rather than a full regex, so references whose fallback contains nested parens (e.g. `var(--x, calc(...))` or `var(--x, color-mix(...))`) are still recognised.
    - Unresolved JSX expressions — keep the existing `/* unresolved */` placeholder behavior.
 4. **Dedupe within a run:** the same normalised value resolves to one variable. A variable created earlier in the same run is reused for later occurrences rather than created twice.
 
