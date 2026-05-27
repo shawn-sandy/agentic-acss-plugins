@@ -16,7 +16,7 @@
 | Command | What it does |
 |---|---|
 | `/css-to-class [name]` | Extract utility classes from an HTML element or class string into a single named CSS class |
-| `/inline-style-to-class [name]` | Convert an inline style attribute, JSX style object, or `<style>` block into a named CSS class and append it to the project stylesheet |
+| `/inline-style-to-class [name]` | Convert an inline style attribute, JSX style object, or `<style>` block into a named CSS class and append it to the project stylesheet, replacing hard-coded values with CSS variables (reuse-or-create) |
 | `/create-utilities [description]` | Generate a utility class string from a plain-language visual description |
 
 ## Skills

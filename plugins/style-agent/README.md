@@ -45,25 +45,25 @@ testimonial flex-grid py-8 items-center
 
 ### `/inline-style-to-class [name]`
 
-Convert an inline `style` attribute, JSX `style={{ ... }}` object, or `<style>` block into a single, semantically named CSS class and append it to the project stylesheet.
+Convert an inline `style` attribute, JSX `style={{ ... }}` object, or `<style>` block into a single, semantically named CSS class and append it to the project stylesheet. Hard-coded colors, units, and values are replaced with CSS variables — reusing an existing variable when one already holds that value, and creating a new one (declared in your tokens file or a `:root` block) when none does. Values already written as `var(...)` pass through untouched, and the original literal is kept as the `var()` fallback.
 
 **Input** — paste an HTML element, JSX markup, or a `<style>` block:
 
 ```html
-<div style="background: var(--surface-1); padding: 1rem">
+<div style="background: #2563eb; padding: 1rem">
 ```
 
 ```jsx
 <Button style={{ backgroundColor: theme.primary, padding: 8 }}>
 ```
 
-**Output** — a ready-to-use CSS class appended to your project stylesheet, plus refactored source:
+**Output** — a ready-to-use CSS class appended to your project stylesheet, plus refactored source. Hard-coded values are tokenized (here `#2563eb` matched an existing `--color-primary`; `1rem` had no match, so `--space-1rem` was created):
 
 ```css
 /* from: style attr on <div> */
 .div-bg {
-  background: var(--surface-1);
-  padding: 1rem;
+  background: var(--color-primary, #2563eb);
+  padding: var(--space-1rem, 1rem);
 }
 ```
 
