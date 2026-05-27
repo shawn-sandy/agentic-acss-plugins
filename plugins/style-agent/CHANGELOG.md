@@ -4,6 +4,11 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-27
+
+### Changed
+- `/inline-style-to-class` — now replaces hard-coded colors, units, and values in the migrated declarations with CSS variables. Reuses a project variable when one already holds the value; otherwise creates a new variable (named to match the project's convention, or a generic semantic scheme) and declares it in an existing tokens file or `:root` block, falling back to a new `:root` block at the top of the target stylesheet. Values already written as `var(...)` pass through untouched, and the original literal is kept as the `var()` fallback.
+
 ## [0.3.0] - 2026-05-14
 
 ### Added
