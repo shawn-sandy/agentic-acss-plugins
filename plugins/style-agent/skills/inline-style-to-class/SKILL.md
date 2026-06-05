@@ -16,9 +16,23 @@ Every concrete value in the migrated declarations is replaced with a CSS variabl
 
 | Form | Example |
 |---|---|
+| IDE selection | Select an element or style block in your editor, then run `/inline-style-to-class` |
 | HTML inline attribute | `<div style="background: var(--surface-1); padding: 1rem">` |
 | JSX style object | `<Button style={{ backgroundColor: theme.primary, padding: 8 }}>` |
 | `<style>` block | `<style>.hero { color: red; padding: 2rem; }</style>` |
+
+### IDE selection detection
+
+When invoked from an IDE (VS Code, JetBrains), Claude Code includes the selected text along with the source file path and line range. The skill detects this by checking for file-context metadata attached to the user's prompt (a file path with a line range and the selected content).
+
+When IDE selection context is present:
+
+1. **Source file** and **line range** are captured for in-place editing in Step 7.
+2. The selected text is used as the input — no pasting or prompt content needed.
+3. If the selection is a full element (e.g. `<div style="..." class="existing">`), the element tag and existing classes are preserved during refactoring.
+4. If the selection is only a `style` attribute value (e.g. `background: red; padding: 1rem`), it is treated as an HTML inline attribute without element context.
+
+When no IDE selection context is detected, the skill falls back to parsing the input from the user's prompt text (the existing behavior).
 
 ---
 
@@ -121,7 +135,8 @@ When no existing variable matches, create one:
 
 ## Workflow
 
-1. **Parse input.** Detect the form of the input:
+1. **Parse input.** Check for IDE selection context first, then fall back to prompt text:
+   - **IDE selection** — if the user's prompt includes file-context metadata (source path + line range + selected text), use the selected text as input and record the source file path and line range for in-place editing in step 7. Determine the form (HTML attribute, JSX object, or `<style>` block) from the selected content using the same detection rules below.
    - **HTML inline attribute** — match `style="..."` or `style='...'`; split on `;`; trim; parse `property: value` pairs. Extract the surrounding element tag if present.
    - **JSX style object** — match `style={{...}}`; extract the object literal body; split key/value pairs. Convert each camelCase key to kebab-case (insert `-` before each uppercase letter, then lowercase the whole key). For numeric literal values, emit a coercion warning: "numeric value — verify unit". For any value that is a JS expression (not a string or number literal), emit a `/* unresolved: <expr> */` placeholder.
    - **`<style>` block** — extract content between `<style>` and `</style>`; parse rules. If one rule, use its declarations. If multiple rules, ask via `AskUserQuestion`: merge all declarations or pick a specific rule.
@@ -146,10 +161,12 @@ When no existing variable matches, create one:
    - **HTML** — remove the `style="..."` attribute entirely if all declarations migrated; if some were unresolved, keep only unmigrated declarations in the attribute. Add the new class to any existing `class` attribute (append to the list); if none exists, add `class="<name>"`. Preserve all other attributes unchanged (`data-*`, `id`, `aria-*`).
    - **JSX** — same logic using `className`. For partially-migrated objects, preserve remaining key/value pairs in the style prop.
    - **`<style>` block** — emit a comment noting the rule was extracted: `/* rule moved to .<name> in <stylesheet path> */`; do not rewrite the `<style>` block automatically.
+   - **In-place editing (IDE selection).** When the source file path and line range were captured in step 1, use `Edit` to replace the original selected text in the source file with the refactored version. This removes the inline style and adds the class reference directly in the user's file — no manual copy-paste needed. If the edit would be ambiguous (the selected text appears more than once in the file), fall back to emitting the refactored source in chat and note which file and line to update.
 
 8. **Print a summary:**
    - Class name chosen, whether it was provided or auto-generated, and any coercion warnings.
    - Target stylesheet path and confirmation that the class was appended (or a note if no file was found).
+   - Source file edited in-place (if IDE selection was used) — show the file path and confirmation, or note that the refactored source was emitted to chat instead.
    - Number of declarations migrated.
    - Variables reused: each `value → --name` that matched an existing variable.
    - Variables created: each `--name: value` and the file it was declared in.
