@@ -29,8 +29,8 @@ When IDE selection context is present:
 
 1. **Source file** and **line range** are captured for in-place editing in Step 7.
 2. The selected text is used as the input — no pasting or prompt content needed.
-3. If the selection is a full element (e.g. `<div style="..." class="existing">`), the element tag and existing classes are preserved during refactoring.
-4. If the selection is only a `style` attribute value (e.g. `background: red; padding: 1rem`), it is treated as an HTML inline attribute without element context.
+3. If the selection is a full element (e.g. `<div style="..." class="existing">`), the element tag and existing classes are preserved during refactoring. In-place editing is enabled — the skill can safely remove the `style` attribute and add the `class` reference.
+4. If the selection is only a `style` attribute value (e.g. `background: red; padding: 1rem`) without the enclosing element tag, the skill uses `Read` to load the surrounding lines from the source file and expand context to the full containing element. If expansion succeeds, the full element is used for in-place editing. If the element boundary cannot be determined (e.g. the tag spans many lines or is ambiguous), in-place editing is disabled for this invocation — the refactored source is emitted to chat instead, and the summary notes which file and line to update manually.
 
 When no IDE selection context is detected, the skill falls back to parsing the input from the user's prompt text (the existing behavior).
 
