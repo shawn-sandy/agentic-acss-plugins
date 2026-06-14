@@ -103,6 +103,7 @@ Then bootstrap and add your first component + theme:
 | [`/theme-update <file> <--color-role=#hex> ...`](./plugins/acss-kit/commands/theme-update.md) | Edit role values in an existing theme file and re-validate contrast. |
 | [`/theme-extract <image\|figma-url>`](./plugins/acss-kit/commands/theme-extract.md) | Pull a primary brand color from a design input and run the theme generation flow. |
 | [`/theme-from-design <DESIGN.md>`](./plugins/acss-kit/commands/theme-from-design.md) | Generate a full theme (colors + spacing + rounded + typography) from a Google DESIGN.md. Requires Node/`npx`. |
+| [`/theme-from-figma <figma-url>`](./plugins/acss-kit/commands/theme-from-figma.md) | Generate a theme from a Figma file's variables via the Figma MCP server. Pure Python after the MCP call. |
 | [`/design-export [--format=design-md\|dtcg\|tailwind]`](./plugins/acss-kit/commands/design-export.md) | Publish the project's theme as a DESIGN.md (default, pure Python) or DTCG/Tailwind (`npx`). The outbound half of the DESIGN.md bridge. |
 | [`/color-scale <color> [--name=<name>] [--format=css\|json\|both]`](./plugins/acss-kit/commands/color-scale.md) | Generate a 10-step OKLCH color scale (steps 50–900) from any hex, CSS named color, or theme role. |
 

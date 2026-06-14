@@ -4,6 +4,16 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-06-14
+
+### Added
+
+- **`/theme-from-figma <figma-url>` — generate a theme from a Figma file's variables (Workstream C PR 6).** Pulls design tokens via the Figma MCP server's `get_variable_defs`, then runs the **pure-Python** pipeline (no Node/`npx` after the MCP call) to `light.css` / `dark.css` + `space-radius.css` + `typography.css`, gated by WCAG contrast. The standards-based evolution of the `/theme-extract` Figma path; the inbound half of the Figma ⇄ DESIGN.md ⇄ theme bridge (Appendix B).
+- **`scripts/figma_to_tokens.py`** (generator/validator) — normalizes Figma's freeform `category/name` variables (`color/primary`, `spacing/md`, `radius/md`, `fontSize/body-md`, …) into the css-tailwind `@theme` form and **reuses `design_md_to_tokens.build_tokens`** — the same Appendix A color mapping, OKLCH gap synthesis, and spacing/rounded/typography lift as `/theme-from-design`. One Figma-specific table (`FIGMA_CATEGORIES`) is the only reconciliation point; no second mapping, no drift. Bare numeric dimensions are coerced to `px`. 18 self-tests.
+- **`tests/run.sh` step 7f** now self-tests `figma_to_tokens.py` and runs a Figma bridge end-to-end check (`get_variable_defs` fixture → tokens → `tokens_to_css.py` → `validate_theme.py` contrast gate).
+
+> **Code Connect (outbound):** the `/theme-from-figma` flow documents the optional code→design push (`add_code_connect_map`) to bind `component-<name>` ↔ Figma nodes, and a Figma → DESIGN.md path (`figma_to_tokens.py | tokens_to_design_md.py`). Both are MCP-driven, performed only with user confirmation.
+
 ## [1.7.0] - 2026-06-14
 
 ### Added
