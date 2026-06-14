@@ -355,6 +355,9 @@ fig = importlib.util.module_from_spec(
 importlib.util.spec_from_file_location("fig", str(scripts / "figma_to_tokens.py")).loader.exec_module(fig)
 ftokens, freasons = fig.figma_to_tokens(fig._FIXTURE)
 assert ftokens.get("modes", {}).get("light", {}).get("--color-primary"), f"figma bridge lost primary: {freasons}"
+vtok = subprocess.run([sys.executable, str(scripts / "validate_tokens.py"), "--stdin"],
+                      input=json.dumps(ftokens), capture_output=True, text=True)
+assert vtok.returncode == 0, f"figma tokens failed validate_tokens: {vtok.stdout}{vtok.stderr}"
 with tempfile.TemporaryDirectory() as fd:
     subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={fd}"],
                    input=json.dumps(ftokens), check=True, text=True, stdout=subprocess.DEVNULL)

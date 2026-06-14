@@ -74,17 +74,23 @@ FIGMA_CATEGORIES: dict[str, str] = {
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 
+# Prefixes whose bare numeric values are pixel dimensions in Figma. Font-weight
+# (a unitless integer like 400) and line-height (a unitless ratio) must NOT get a
+# `px` suffix — that would make an invalid font-weight/line-height downstream.
+_PX_PREFIXES = ("--spacing-", "--radius-", "--text-", "--tracking-")
+
 
 def _slug(text: str) -> str:
     return _SLUG_RE.sub("-", text.strip().lower()).strip("-")
 
 
-def _coerce_value(value) -> str:
-    """Figma values may be numbers (e.g. spacing 24) or strings ('24px', '#855300')."""
+def _coerce_value(value, prefix: str) -> str:
+    """Figma values may be numbers (e.g. spacing 24, fontWeight 400) or strings
+    ('24px', '#855300'). Bare numbers become `px` only for dimension prefixes."""
     if isinstance(value, bool):
         return str(value)
     if isinstance(value, (int, float)):
-        return f"{value:g}px"            # bare numeric dimensions are px in Figma
+        return f"{value:g}px" if prefix in _PX_PREFIXES else f"{value:g}"
     return str(value).strip()
 
 
@@ -100,7 +106,7 @@ def figma_to_css_tailwind(figma: dict) -> str:
         prefix = FIGMA_CATEGORIES.get(_slug(category), f"--{_slug(category)}-")
         suffix = _slug(rest) if rest else _slug(category)
         prop = prefix + suffix
-        value = _coerce_value(raw_value)
+        value = _coerce_value(raw_value, prefix)
         if not value:
             continue
         lines.append(f"  {prop}: {value};")
@@ -134,7 +140,7 @@ _FIXTURE = {
     "radius/full": "9999px",       # pill sentinel preserved
     "fontFamily/body-md": "Public Sans",
     "fontSize/body-md": "16px",    # → 1rem
-    "fontWeight/body-md": "400",
+    "fontWeight/body-md": 400,     # bare number → must stay 400 (not 400px)
 }
 
 
@@ -155,7 +161,8 @@ def self_test() -> int:
     check("radius/md → --radius-md", "  --radius-md: 8px;" in css)
     check("bare numeric spacing coerced to px", "  --spacing-xl: 32px;" in css)
     check("fontSize → --text-", "  --text-body-md: 16px;" in css)
-    check("fontWeight → --font-weight-", "  --font-weight-body-md: 400;" in css)
+    check("numeric fontWeight stays unitless (not 400px)",
+          "  --font-weight-body-md: 400;" in css and "400px" not in css)
     check("fontFamily → --font-", "  --font-body-md: Public Sans;" in css)
 
     tokens, reasons = figma_to_tokens(_FIXTURE)
