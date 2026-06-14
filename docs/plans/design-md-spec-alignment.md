@@ -333,6 +333,13 @@ say so.
 
 ## Workstream B — publish a sibling spec for our component markdown
 
+> **Neutral-first (decided 2026-06-14):** `COMPONENT.md` is **framework-agnostic**
+> — a semantic-HTML source of truth with React/HTML/Astro/Angular/Vue/Svelte/
+> web-component as agent-projected targets (React = the first `## Target:`
+> adapter). See the investigation
+> [`../proposals/component-md-framework-agnostic.md`](../proposals/component-md-framework-agnostic.md)
+> and the re-scoped plan [`component-md-spec.md`](component-md-spec.md).
+
 `DESIGN.md`'s value is partly that it is *written up as a portable, versioned
 standard*. Our `reference.md` shape is equally rigorous but only encoded
 implicitly inside the `acss-kit-component-author` maintainer skill and

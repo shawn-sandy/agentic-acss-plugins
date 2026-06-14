@@ -179,21 +179,23 @@ This is a larger reshape than the Workstream-B plan currently assumes (which
 inherited the React-shaped 9 sections). The spec should be authored
 **neutral-first** from the start to avoid a second migration.
 
-## Decisions to resolve
+## Resolved decisions (2026-06-14 review)
 
-1. **Projection strategy** — agent-projected (Strategy 1) only, or also ship a
-   `web-component` universal target (Strategy 2)?
-2. **Neutral source of truth** — semantic-HTML template (pragmatic, agent-
-   friendly) vs. an abstract structure AST (precise, heavier). Recommendation:
-   semantic HTML.
-3. **Per-target adapter blocks** — ship `## Target: <framework>` hints/templates,
-   or rely purely on agent projection from the neutral contract? (Likely: hints
-   only where projection is non-obvious — stateful/compound components.)
-4. **Officially supported targets** — which frameworks the spec *claims*
-   conformance for vs. "best-effort agent projection."
-5. **Spec authoring order** — author `COMPONENT.md` neutral-first now (re-scoping
-   the Workstream-B plan), or ship the React-shaped spec first and neutralize
-   later (a second migration)?
+1. **Projection strategy: agent-projected + web-component target.** The agent
+   projects the neutral contract idiomatically per framework (default), and
+   `web-component` is offered as one selectable universal target.
+2. **Neutral source of truth: semantic HTML template** (element tree + `data-*` +
+   ARIA + slot comments) — pragmatic, agent-friendly, already present in 4
+   components. (Not an abstract AST.)
+3. **Per-target adapter blocks: hints only where projection is non-obvious** —
+   stateful/compound components carry `## Target: <framework>` hints; purely
+   presentational components rely on agent projection from the neutral contract.
+4. **Officially supported targets: the broad set** — `react`, `html`, `astro`,
+   `angular`, `vue`, `svelte`, `web-component`.
+5. **Authoring order: neutral-first now.** Author `COMPONENT.md` neutral-first
+   from the start; React becomes the first `## Target:` adapter. This re-scopes
+   the Workstream-B plan ([`component-md-spec.md`](../plans/component-md-spec.md))
+   — done in this pass.
 
 ## Next step
 
