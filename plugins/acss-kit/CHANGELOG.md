@@ -9,7 +9,7 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 ### Changed
 
 - **Bulk spacing/radius token sweep (Workstream A PR 3).** Twelve components now consume the `--space-*` / `--radius-*` token homes via nested fallbacks (`var(--comp-x, var(--space-md, <literal>))`): **alert, card, checkbox, dialog, field, icon-button, img, input, list, nav, popover, table** (button landed in 1.3.1). Mapping is deterministic (nearest scale step by value; the original literal stays as the innermost fallback), so generated output is **pixel-identical when no token files are loaded** and responds to a DESIGN.md/`/theme-*` scale when present. Intentional skips per the button-pilot discipline: `calc()` values, component-local size ladders, fixed dimensions, multi-value padding shorthands, `0` resets, and structural literals (`%`, `999px`, `1px` borders, focus outlines).
-- **Golden guard generalized to all components.** `tests/run.sh` step 2a now extracts every component via `extract_full.mjs` (mirrors `/kit-add`) and diffs against per-component fixtures under `tests/fixtures/golden/component-*/`, locking the swept output against silent regression (nav excluded — it has no `## TSX Template`).
+- **SCSS golden guard generalized to all components.** `tests/run.sh` step 2a now extracts each component's SCSS via `extract_full.mjs` (mirrors `/kit-add`) and diffs against per-component fixtures under `tests/fixtures/golden/component-*/`, locking the swept SCSS against silent regression. Scoped to SCSS (the sweep only changed SCSS); TSX goldens are deferred — see `docs/plans/component-tsx-followups.md`. nav has no golden (no `## TSX Template`).
 
 ### Deferred (design-sensitive — tracked for a follow-up)
 

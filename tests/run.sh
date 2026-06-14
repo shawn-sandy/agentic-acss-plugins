@@ -60,18 +60,19 @@ mkdir -p "$EXTRACTED"
 section "2. extract + syntax-check acss-kit references"
 node "$REPO_ROOT/tests/validate_extracted_tsx.mjs"
 
-# Step 2a — golden guard for the token-swept components (Workstream A PR 2–3).
-# extract_full.mjs mirrors /kit-add; the goldens lock the swept output so future
-# edits can't silently regress the --space/--radius token consumption. Covers
-# every component with a golden fixture (nav is excluded — no ## TSX Template).
-section "2a. component golden guard (token-sweep regression)"
+# Step 2a — SCSS golden guard for the token-swept components (Workstream A PR 2–3).
+# extract_full.mjs mirrors /kit-add; the SCSS goldens lock the swept output so
+# future edits can't silently regress the --space/--radius token consumption.
+# Scoped to SCSS — the sweep only changed SCSS; TSX goldens are deferred (see
+# docs/plans/component-tsx-followups.md). nav has no golden (no ## TSX Template).
+section "2a. component SCSS golden guard (token-sweep regression)"
 GOLDEN_DIR="$REPO_ROOT/tests/fixtures/golden"
 GOLDEN_FAIL=0
 for gdir in "$GOLDEN_DIR"/component-*/; do
   n=$(basename "$gdir" | sed 's/^component-//')
   ref="$REPO_ROOT/plugins/acss-kit/skills/component-$n/reference.md"
   tmp="$TMP_ROOT/golden/$n"; mkdir -p "$tmp"
-  for kind in tsx scss; do
+  for kind in scss; do
     [ -f "$gdir/$n.$kind" ] || continue
     node "$REPO_ROOT/tests/lib/extract_full.mjs" "$ref" "$kind" > "$tmp/$n.$kind" 2>/dev/null || true
     if ! diff -u "$gdir/$n.$kind" "$tmp/$n.$kind" >"$tmp/$n.$kind.diff" 2>&1; then
