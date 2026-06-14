@@ -66,6 +66,21 @@ questions, and "let's build it":
 7. **Converge to execution.** When the proposal is decision-complete, offer to
    split it into execution plans using the repo's `Why`/`Verify` step format.
 
+## Right-sizing triage (the scale-down gate)
+
+Step 0 first picks a **tier**, so a small idea never gets a 10-section doc. The
+skill scales the loop and the artifact to match:
+
+| Tier | Signal | Response |
+|---|---|---|
+| **0 — Answer** | Single fact, known answer, or a well-specified task | Answer directly; **do not invoke the loop**. (e.g. "what version is style-agent?") |
+| **1 — Lightweight** | A small, well-scoped idea touching one surface | One research pass; a short proposal (Context · finding · recommendation · open questions); skip appendices/roadmap. Often a single round. |
+| **2 — Full** | Broad/ambiguous idea, external + internal surface, real decisions to make | The full 8-step loop and canonical artifact shape, deepened over multiple rounds. (This session was Tier 2.) |
+
+The tier is a starting estimate, not a cage — escalate Tier 1 → 2 if research
+reveals more surface, and stop early if a Tier 2 idea collapses to a clear answer.
+Naming the tier out loud also sets the human's expectations for depth and pace.
+
 ## The proposal-artifact shape
 
 The structure this session converged on, worth making canonical:
@@ -99,7 +114,31 @@ Each maps to a real moment in this session:
 | **Commit the artifact each round.** | Eight commits pushed to the branch; the doc, not the chat, is the record. |
 | **Signal convergence explicitly.** | Stated when "remaining unknowns are decisions, not missing facts." |
 
+## Relationship to existing capabilities (why this isn't redundant)
+
+`flesh-out` is the **upstream, human-in-the-loop, idea→proposal** layer. It sits
+between "raw idea" and "implementation plan," and it *composes with* existing
+tools rather than replacing them:
+
+| Capability | What it does | How `flesh-out` differs / composes |
+|---|---|---|
+| **`deep-research` skill** | One-shot, web-centric, adversarially-verified **cited report** on a topic | `flesh-out` adds **codebase grounding**, a **human decision cadence**, and a **living proposal artifact** that converges on something buildable. It can **delegate its web-research phase to `deep-research`**, then layer on the rest. deep-research answers "what's true about X"; flesh-out answers "should we, and what exactly." |
+| **`Plan` agent / execution-plan format** | Produces an **implementation plan** (steps, critical files, trade-offs) assuming the *what* is decided | `flesh-out` is **upstream** — it decides the *what/whether* and produces the proposal, then **hands the decided proposal to** the Plan agent or the repo's `Why`/`Verify` plan format for the *how*. Clear seam: flesh-out = "should we + what"; Plan = "how." |
+| **Plan mode (`EnterPlanMode`)** | A harness gate for proposing a code change before acting | Different axis — that gates *edits*; `flesh-out` develops *ideas*. They can co-exist (flesh-out may run, then later work enters plan mode). |
+| **`AskUserQuestion`** | Asks the user a structured question | A **tool `flesh-out` orchestrates** at step 4, not a competitor. |
+
+The unique value is the **combination**: codebase + web grounding, an explicit
+facts-vs-decisions discipline with the human in the loop, and a committed
+artifact that deepens and converges — none of the above do all three.
+
 ## Proposed skill definition (draft)
+
+Aligned with this repo's existing project-skill convention (`add-command`,
+`release-plugin`): a slash-invocable, discoverable skill with `name` /
+`description` / `disable-model-invocation: false` front-matter and a step-oriented
+body. The repo's project skills omit `allowed-tools`, so this one does too (the
+tools it leans on — `WebFetch`/`WebSearch`, `Agent`, `Read`/`Grep`/`Glob`,
+`Write`/`Edit`, `Bash`, `AskUserQuestion` — are named in the body instead).
 
 ```yaml
 ---
@@ -110,20 +149,21 @@ description: >-
   alignment. Researches across web + codebase in parallel, grounds every claim
   in real sources, separates facts from decisions, drives the decision cadence,
   and produces a decision-complete proposal doc under docs/plans/.
-allowed-tools: WebFetch, WebSearch, Agent, Read, Grep, Glob, Write, Edit, Bash, AskUserQuestion
+disable-model-invocation: false
 ---
 ```
 
-Orchestrator-tier (discoverable, no `disable-model-invocation`/`hint`). The body
-is the 8-step workflow above plus the artifact shape and principles, written as
-operating instructions.
+Invocation: `/flesh-out <idea>` (or auto-triggers on a matching idea-shaped
+prompt). The body is the right-sizing triage, the 8-step workflow, the
+artifact-shape template, and the principles table — written as operating
+instructions.
 
 **When to use:** a vague-but-promising idea; a "compare and align" request;
 anything needing research → comparison → a decision-complete proposal *before*
 building.
 
 **When not to use:** a concrete bug fix, a well-specified implementation task, or
-a single factual lookup — those don't need the loop.
+a single factual lookup — those are Tier 0 below (answer directly, no loop).
 
 ## Where it lives
 
@@ -136,9 +176,12 @@ Three options:
    session/repo, which matches how general this workflow is. Con: not shared.
 3. **A new framework-agnostic plugin** — overkill for one skill today.
 
-**Recommendation:** start as a **project skill** here (it's the repo where the
-worked example lives and where it'll be iterated), with an explicit note that it
-is domain-general and a candidate to promote to a global skill once proven.
+**Recommendation:** start as a **project skill** here. The precedent is exact —
+`.claude/skills/` already holds nine slash-invocable, discoverable workflow
+skills (`add-command`, `release-plugin`, `validate-plugins`, …) with the same
+`disable-model-invocation: false` shape, so `flesh-out` drops in with zero new
+machinery. Add an explicit note that it is domain-general and a candidate to
+promote to a global skill (`~/.claude/skills/`) once proven.
 
 ## Risks & tensions
 
@@ -166,9 +209,25 @@ is domain-general and a candidate to promote to a global skill once proven.
    plan(s), or stop at "decision-complete proposal" and hand to a separate
    planning skill?
 
+## Dogfooding / self-test
+
+This proposal was itself produced by the workflow it describes — which gives the
+implementation a built-in test corpus. The five docs this session generated are
+the regression set:
+
+- `design-md-spec-alignment.md` — the Tier 2 exemplar (multi-round deepening,
+  four resolved decisions, seven appendices).
+- `component-md-spec.md` — the convergence handoff (proposal → execution plan).
+- `plugins-refactoring.md` — research surfacing incidental findings (16 drift
+  items, a verified architectural constraint).
+- this file — the recursive case (the skill proposing itself).
+
+Authoring `flesh-out/SKILL.md` should reproduce shapes like these; if it can't,
+the skill body is underspecified.
+
 ## Next step
 
 On approval, convert this into an execution plan and author
-`.claude/skills/flesh-out/SKILL.md` with the 8-step workflow, the artifact-shape
-template, and the principles table — using this very document as the skill's
-canonical worked example.
+`.claude/skills/flesh-out/SKILL.md` with the right-sizing triage, the 8-step
+workflow, the artifact-shape template, and the principles table — using this very
+document (and the four siblings above) as the skill's canonical worked examples.
