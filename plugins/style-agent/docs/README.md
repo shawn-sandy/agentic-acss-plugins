@@ -27,6 +27,18 @@ The plugin ships three skills. Command logic delegates to each skill file.
 - `skills/inline-style-to-class/SKILL.md`
 - `skills/create-utilities/SKILL.md`
 
+## Specifications
+
+`style-agent` publishes the **COMPONENT.md** spec — a framework-neutral format
+for describing a component's structure, props, behavior, and accessibility that
+an agent projects into any framework (React, HTML, Astro, Angular, Vue, Svelte,
+web-component), themed by a sibling [DESIGN.md](https://github.com/google-labs-code/design.md).
+Together they form a two-file design system: DESIGN.md owns tokens, COMPONENT.md
+owns components.
+
+- [`docs/component-md/spec.md`](component-md/spec.md) — the specification.
+- [`docs/component-md/examples/button.component.md`](component-md/examples/button.component.md) — a complete, conformant example.
+
 ## Adding new skills
 
 Follow the same pattern — create `skills/<skill-name>/SKILL.md` with `name:` and `description:` front-matter, add a matching command in `commands/<name>.md` that delegates to it.
