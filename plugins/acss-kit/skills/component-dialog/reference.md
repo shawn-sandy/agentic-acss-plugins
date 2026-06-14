@@ -325,28 +325,28 @@ function wireDialog(dialog, root) {
 ```scss
 --dialog-bg: var(--color-surface, #fff);
 --dialog-color: var(--color-text, inherit);
---dialog-padding: 0;
---dialog-radius: 0.5rem;
+--dialog-padding: var(--space-xs, 0);
+--dialog-radius: var(--radius-md, 0.5rem);
 --dialog-width: 32rem;
 --dialog-max-width: 90vw;
 --dialog-max-height: 85vh;
 --dialog-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
 --dialog-border: none;
 
---dialog-header-padding: 1.5rem;
+--dialog-header-padding: var(--space-lg, 1.5rem);
 --dialog-header-border-bottom: 1px solid var(--color-border, #e0e0e0);
 
 --dialog-title-fs: 1.25rem;
 --dialog-title-fw: 600;
 --dialog-title-color: var(--color-text, inherit);
 
---dialog-body-padding: 1.5rem;
+--dialog-body-padding: var(--space-lg, 1.5rem);
 --dialog-body-overflow: auto;
 
 --dialog-footer-padding: 1rem 1.5rem;
 --dialog-footer-bg: var(--color-surface-subtle, #f9f9f9);
 --dialog-footer-border-top: 1px solid var(--color-border, #e0e0e0);
---dialog-footer-gap: 0.75rem;
+--dialog-footer-gap: var(--space-md, 0.75rem);
 --dialog-footer-justify: flex-end;
 
 --dialog-close-size: 2rem;
@@ -362,8 +362,8 @@ function wireDialog(dialog, root) {
 .dialog {
   background: var(--dialog-bg, #fff);
   color: var(--dialog-color, inherit);
-  padding: var(--dialog-padding, 0);
-  border-radius: var(--dialog-radius, 0.5rem);
+  padding: var(--dialog-padding, var(--space-xs, 0));
+  border-radius: var(--dialog-radius, var(--radius-md, 0.5rem));
   border: var(--dialog-border, none);
   width: var(--dialog-width, 32rem);
   max-width: var(--dialog-max-width, 90vw);
@@ -382,8 +382,8 @@ function wireDialog(dialog, root) {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-  padding: var(--dialog-header-padding, 1.5rem);
+  gap: var(--space-md, 1rem);
+  padding: var(--dialog-header-padding, var(--space-lg, 1.5rem));
   border-bottom: var(--dialog-header-border-bottom, 1px solid #e0e0e0);
   flex-shrink: 0;
 }
@@ -397,7 +397,7 @@ function wireDialog(dialog, root) {
 }
 
 .dialog-description {
-  margin-block-start: 0.25rem;
+  margin-block-start: var(--space-xs, 0.25rem);
   font-size: 0.875rem;
   color: var(--color-text-subtle, #555);
 }
@@ -406,14 +406,14 @@ function wireDialog(dialog, root) {
   font-size: 1.25rem;
   line-height: 1;
   color: var(--dialog-close-color, #555);
-  padding: 0.25rem;
+  padding: var(--space-xs, 0.25rem);
   width: var(--dialog-close-size, 2rem);
   height: var(--dialog-close-size, 2rem);
   flex-shrink: 0;
 }
 
 .dialog-body {
-  padding: var(--dialog-body-padding, 1.5rem);
+  padding: var(--dialog-body-padding, var(--space-lg, 1.5rem));
   overflow-y: var(--dialog-body-overflow, auto);
   flex: 1;
 }
@@ -421,7 +421,7 @@ function wireDialog(dialog, root) {
 .dialog-footer {
   display: flex;
   justify-content: var(--dialog-footer-justify, flex-end);
-  gap: var(--dialog-footer-gap, 0.75rem);
+  gap: var(--dialog-footer-gap, var(--space-md, 0.75rem));
   padding: var(--dialog-footer-padding, 1rem 1.5rem);
   background: var(--dialog-footer-bg, #f9f9f9);
   border-top: var(--dialog-footer-border-top, 1px solid #e0e0e0);

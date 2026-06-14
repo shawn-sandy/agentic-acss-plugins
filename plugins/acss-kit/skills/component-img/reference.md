@@ -151,7 +151,7 @@ export default Img
 --img-max-width: 100%;
 --img-height: auto;
 --img-object-fit: cover;
---img-radius: 0;
+--img-radius: var(--radius-none, 0);
 ```
 
 ## SCSS Template
@@ -163,7 +163,7 @@ img {
   max-width: var(--img-max-width, 100%);
   height: var(--img-height, auto);
   object-fit: var(--img-object-fit, cover);
-  border-radius: var(--img-radius, 0);
+  border-radius: var(--img-radius, var(--radius-none, 0));
 }
 ```
 

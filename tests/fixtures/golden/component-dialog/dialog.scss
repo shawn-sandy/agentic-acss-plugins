@@ -1,0 +1,69 @@
+// dialog.scss
+.dialog {
+  background: var(--dialog-bg, #fff);
+  color: var(--dialog-color, inherit);
+  padding: var(--dialog-padding, var(--space-xs, 0));
+  border-radius: var(--dialog-radius, var(--radius-md, 0.5rem));
+  border: var(--dialog-border, none);
+  width: var(--dialog-width, 32rem);
+  max-width: var(--dialog-max-width, 90vw);
+  max-height: var(--dialog-max-height, 85vh);
+  box-shadow: var(--dialog-shadow, 0 20px 25px rgba(0, 0, 0, 0.15));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &::backdrop {
+    background: var(--dialog-backdrop-bg, rgba(0, 0, 0, 0.5));
+  }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md, 1rem);
+  padding: var(--dialog-header-padding, var(--space-lg, 1.5rem));
+  border-bottom: var(--dialog-header-border-bottom, 1px solid #e0e0e0);
+  flex-shrink: 0;
+}
+
+.dialog-header-content { flex: 1; }
+
+.dialog-title {
+  font-size: var(--dialog-title-fs, 1.25rem);
+  font-weight: var(--dialog-title-fw, 600);
+  margin: 0;
+}
+
+.dialog-description {
+  margin-block-start: var(--space-xs, 0.25rem);
+  font-size: 0.875rem;
+  color: var(--color-text-subtle, #555);
+}
+
+.dialog-close {
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--dialog-close-color, #555);
+  padding: var(--space-xs, 0.25rem);
+  width: var(--dialog-close-size, 2rem);
+  height: var(--dialog-close-size, 2rem);
+  flex-shrink: 0;
+}
+
+.dialog-body {
+  padding: var(--dialog-body-padding, var(--space-lg, 1.5rem));
+  overflow-y: var(--dialog-body-overflow, auto);
+  flex: 1;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: var(--dialog-footer-justify, flex-end);
+  gap: var(--dialog-footer-gap, var(--space-md, 0.75rem));
+  padding: var(--dialog-footer-padding, 1rem 1.5rem);
+  background: var(--dialog-footer-bg, #f9f9f9);
+  border-top: var(--dialog-footer-border-top, 1px solid #e0e0e0);
+  flex-shrink: 0;
+}

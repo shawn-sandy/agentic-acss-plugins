@@ -1,0 +1,60 @@
+// popover.scss
+.popover {
+  // Native popover element resets — re-establish basic block
+  margin: 0;
+  border: var(--popover-border, 1px solid #e0e0e0);
+  border-radius: var(--popover-radius, var(--radius-md, 0.375rem));
+  background: var(--popover-bg, #fff);
+  color: var(--popover-color, inherit);
+  box-shadow: var(--popover-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
+  max-width: var(--popover-max-width, 20rem);
+  z-index: var(--popover-z, 10);
+  inset: unset;
+
+  &:popover-open {
+    display: block;
+  }
+}
+
+.popover-content {
+  padding: var(--popover-padding, var(--space-md, 0.75rem) var(--space-md, 1rem));
+  position: relative;
+}
+
+.popover-arrow {
+  position: absolute;
+  width: var(--popover-arrow-size, 0.5rem);
+  height: var(--popover-arrow-size, 0.5rem);
+  background: inherit;
+  border: inherit;
+  transform: rotate(45deg);
+
+  &[data-placement="bottom"] { top: calc(var(--popover-arrow-size, 0.5rem) * -0.5); left: 50%; border-bottom: none; border-right: none; }
+  &[data-placement="top"]    { bottom: calc(var(--popover-arrow-size, 0.5rem) * -0.5); left: 50%; border-top: none; border-left: none; }
+  &[data-placement="left"]   { right: calc(var(--popover-arrow-size, 0.5rem) * -0.5); top: 50%; border-left: none; border-bottom: none; }
+  &[data-placement="right"]  { left: calc(var(--popover-arrow-size, 0.5rem) * -0.5); top: 50%; border-right: none; border-top: none; }
+}
+
+.popover-close {
+  position: absolute;
+  top: var(--space-xs, 0.25rem);
+  right: var(--space-sm, 0.5rem);
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--space-xs, 0.125rem) var(--space-xs, 0.25rem);
+  color: currentColor;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.popover-trigger {
+  // The default trigger when no `trigger` prop is passed —
+  // intentionally minimal so it inherits the parent's button styling
+  cursor: pointer;
+}

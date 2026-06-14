@@ -166,14 +166,14 @@ export default Checkbox
 --checkbox-size-lg: 1.5rem;
 
 --checkbox-size: var(--checkbox-size-md);
---checkbox-radius: 0.25rem;
+--checkbox-radius: var(--radius-sm, 0.25rem);
 --checkbox-border-color: var(--color-border, #d0d0d0);
 --checkbox-bg: var(--color-surface, #fff);
 --checkbox-checked-bg: var(--color-primary, #0066cc);
 --checkbox-checked-border: var(--color-primary, #0066cc);
 --checkbox-check-color: #fff;
 
---checkbox-gap: 0.5rem;
+--checkbox-gap: var(--space-sm, 0.5rem);
 --checkbox-label-fs: 1rem;
 --checkbox-label-color: var(--color-text, inherit);
 
@@ -195,7 +195,7 @@ export default Checkbox
   width: var(--checkbox-size, 1.25rem);
   height: var(--checkbox-size, 1.25rem);
   border: 2px solid var(--checkbox-border-color, #d0d0d0);
-  border-radius: var(--checkbox-radius, 0.25rem);
+  border-radius: var(--checkbox-radius, var(--radius-sm, 0.25rem));
   background: var(--checkbox-bg, #fff);
   cursor: pointer;
   flex-shrink: 0;
@@ -230,7 +230,7 @@ export default Checkbox
 [data-checkbox-size] {
   display: inline-flex;
   align-items: center;
-  gap: var(--checkbox-gap, 0.5rem);
+  gap: var(--checkbox-gap, var(--space-sm, 0.5rem));
 
   // Size presets — set the --checkbox-size CSS variable based on the data attr
   &[data-checkbox-size="xs"] { --checkbox-size: var(--checkbox-size-xs, 0.875rem); }
@@ -248,7 +248,7 @@ export default Checkbox
 
 .checkbox-required {
   color: var(--checkbox-required-color, #dc3545);
-  margin-inline-start: 0.125rem;
+  margin-inline-start: var(--space-xs, 0.125rem);
 }
 ```
 

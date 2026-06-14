@@ -368,11 +368,11 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
 
 ```scss
 --alert-display: flex;
---alert-gap: 0.75rem;
+--alert-gap: var(--space-md, 0.75rem);
 --alert-align: flex-start;
---alert-padding: 1rem;
---alert-margin-block-end: 1rem;
---alert-radius: 0.375rem;
+--alert-padding: var(--space-md, 1rem);
+--alert-margin-block-end: var(--space-md, 1rem);
+--alert-radius: var(--radius-md, 0.375rem);
 --alert-border: 1px solid;
 --alert-bg: var(--color-surface, #f0f0f0);
 --alert-color: inherit;
@@ -390,11 +390,11 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
 // Title
 --alert-title-fs: 1rem;
 --alert-title-fw: 600;
---alert-title-margin-block-end: 0.25rem;
+--alert-title-margin-block-end: var(--space-xs, 0.25rem);
 
 // Actions
---alert-actions-gap: 0.5rem;
---alert-actions-margin-block-start: 0.75rem;
+--alert-actions-gap: var(--space-sm, 0.5rem);
+--alert-actions-margin-block-start: var(--space-md, 0.75rem);
 
 // Severity variants — outlined (default)
 --alert-info-bg: #d1ecf1;
@@ -420,11 +420,11 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
 // alert.scss
 .alert {
   display: var(--alert-display, flex);
-  gap: var(--alert-gap, 0.75rem);
+  gap: var(--alert-gap, var(--space-md, 0.75rem));
   align-items: var(--alert-align, flex-start);
-  padding: var(--alert-padding, 1rem);
-  margin-block-end: var(--alert-margin-block-end, 1rem);
-  border-radius: var(--alert-radius, 0.375rem);
+  padding: var(--alert-padding, var(--space-md, 1rem));
+  margin-block-end: var(--alert-margin-block-end, var(--space-md, 1rem));
+  border-radius: var(--alert-radius, var(--radius-md, 0.375rem));
   border: var(--alert-border, 1px solid);
   background: var(--alert-bg, #f0f0f0);
   color: var(--alert-color, inherit);
@@ -494,7 +494,7 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
 .alert-title {
   font-size: var(--alert-title-fs, 1rem);
   font-weight: var(--alert-title-fw, 600);
-  margin-block-end: var(--alert-title-margin-block-end, 0.25rem);
+  margin-block-end: var(--alert-title-margin-block-end, var(--space-xs, 0.25rem));
   display: block;
 }
 
@@ -503,8 +503,8 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
 
 .alert-actions {
   display: flex;
-  gap: var(--alert-actions-gap, 0.5rem);
-  margin-block-start: var(--alert-actions-margin-block-start, 0.75rem);
+  gap: var(--alert-actions-gap, var(--space-sm, 0.5rem));
+  margin-block-start: var(--alert-actions-margin-block-start, var(--space-md, 0.75rem));
 }
 
 .alert-dismiss {
@@ -513,7 +513,7 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.125rem 0.25rem;
+  padding: var(--space-xs, 0.125rem) var(--space-xs, 0.25rem);
   color: currentColor;
   flex-shrink: 0;
 

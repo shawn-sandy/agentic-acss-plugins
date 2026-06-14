@@ -270,8 +270,8 @@ The custom-event pattern lets the user wire whatever logic they want without mod
 ```scss
 --card-bg: var(--color-surface, #fff);
 --card-color: var(--color-text, inherit);
---card-padding: 0;
---card-radius: 0.5rem;
+--card-padding: var(--space-xs, 0);
+--card-radius: var(--radius-md, 0.5rem);
 --card-border: 1px solid var(--color-border, #e0e0e0);
 --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 --card-display: flex;
@@ -282,17 +282,17 @@ The custom-event pattern lets the user wire whatever logic they want without mod
 --card-title-fw: 600;
 --card-title-color: var(--color-text, inherit);
 --card-title-padding: 1.5rem 1.5rem 0;
---card-title-margin-block-end: 0;
+--card-title-margin-block-end: var(--space-xs, 0);
 
 // Content
---card-content-padding: 1.5rem;
+--card-content-padding: var(--space-lg, 1.5rem);
 --card-content-flex: 1;
 
 // Footer
 --card-footer-padding: 1rem 1.5rem;
 --card-footer-bg: var(--color-surface-subtle, #f9f9f9);
 --card-footer-border-top: 1px solid var(--color-border, #e0e0e0);
---card-footer-gap: 0.75rem;
+--card-footer-gap: var(--space-md, 0.75rem);
 --card-footer-display: flex;
 --card-footer-align: center;
 
@@ -313,8 +313,8 @@ The custom-event pattern lets the user wire whatever logic they want without mod
   flex-direction: var(--card-direction, column);
   background: var(--card-bg, #fff);
   color: var(--card-color, inherit);
-  padding: var(--card-padding, 0);
-  border-radius: var(--card-radius, 0.5rem);
+  padding: var(--card-padding, var(--space-xs, 0));
+  border-radius: var(--card-radius, var(--radius-md, 0.5rem));
   border: var(--card-border, 1px solid #e0e0e0);
   box-shadow: var(--card-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
   overflow: hidden;
@@ -338,18 +338,18 @@ The custom-event pattern lets the user wire whatever logic they want without mod
   font-weight: var(--card-title-fw, 600);
   color: var(--card-title-color, inherit);
   padding: var(--card-title-padding, 1.5rem 1.5rem 0);
-  margin: 0 0 var(--card-title-margin-block-end, 0);
+  margin: 0 0 var(--card-title-margin-block-end, var(--space-xs, 0));
 }
 
 .card-content {
-  padding: var(--card-content-padding, 1.5rem);
+  padding: var(--card-content-padding, var(--space-lg, 1.5rem));
   flex: var(--card-content-flex, 1);
 }
 
 .card-footer {
   display: var(--card-footer-display, flex);
   align-items: var(--card-footer-align, center);
-  gap: var(--card-footer-gap, 0.75rem);
+  gap: var(--card-footer-gap, var(--space-md, 0.75rem));
   padding: var(--card-footer-padding, 1rem 1.5rem);
   background: var(--card-footer-bg, #f9f9f9);
   border-top: var(--card-footer-border-top, 1px solid #e0e0e0);

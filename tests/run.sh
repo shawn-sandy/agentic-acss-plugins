@@ -60,21 +60,32 @@ mkdir -p "$EXTRACTED"
 section "2. extract + syntax-check acss-kit references"
 node "$REPO_ROOT/tests/validate_extracted_tsx.mjs"
 
-# Step 2a — golden guard for the token-swept component-button (Workstream A PR 2).
-# extract_full.mjs mirrors /kit-add; the golden locks the swept output so future
-# edits can't silently regress the --space/--radius/--font token consumption.
-section "2a. component-button golden (token-sweep regression guard)"
-BTN_REF="$REPO_ROOT/plugins/acss-kit/skills/component-button/reference.md"
-GOLDEN="$REPO_ROOT/tests/fixtures/golden/component-button"
-BTN_TMP="$TMP_ROOT/component-button"
-mkdir -p "$BTN_TMP"
-node "$REPO_ROOT/tests/lib/extract_full.mjs" "$BTN_REF" tsx > "$BTN_TMP/button.tsx"
-node "$REPO_ROOT/tests/lib/extract_full.mjs" "$BTN_REF" scss > "$BTN_TMP/button.scss"
-if diff -u "$GOLDEN/button.tsx" "$BTN_TMP/button.tsx" && diff -u "$GOLDEN/button.scss" "$BTN_TMP/button.scss"; then
-  green "component-button golden OK"
+# Step 2a — golden guard for the token-swept components (Workstream A PR 2–3).
+# extract_full.mjs mirrors /kit-add; the goldens lock the swept output so future
+# edits can't silently regress the --space/--radius token consumption. Covers
+# every component with a golden fixture (nav is excluded — no ## TSX Template).
+section "2a. component golden guard (token-sweep regression)"
+GOLDEN_DIR="$REPO_ROOT/tests/fixtures/golden"
+GOLDEN_FAIL=0
+for gdir in "$GOLDEN_DIR"/component-*/; do
+  n=$(basename "$gdir" | sed 's/^component-//')
+  ref="$REPO_ROOT/plugins/acss-kit/skills/component-$n/reference.md"
+  tmp="$TMP_ROOT/golden/$n"; mkdir -p "$tmp"
+  for kind in tsx scss; do
+    [ -f "$gdir/$n.$kind" ] || continue
+    node "$REPO_ROOT/tests/lib/extract_full.mjs" "$ref" "$kind" > "$tmp/$n.$kind" 2>/dev/null || true
+    if ! diff -u "$gdir/$n.$kind" "$tmp/$n.$kind" >"$tmp/$n.$kind.diff" 2>&1; then
+      red "golden DRIFT: component-$n.$kind"
+      head -20 "$tmp/$n.$kind.diff"
+      GOLDEN_FAIL=1
+    fi
+  done
+done
+if [ "$GOLDEN_FAIL" = 0 ]; then
+  green "component golden guard OK"
 else
-  red "component-button golden DRIFT — extracted output differs from tests/fixtures/golden/component-button/"
-  red "If the change is intentional, regenerate: node tests/lib/extract_full.mjs <ref> tsx|scss > tests/fixtures/golden/component-button/button.<ext>"
+  red "Golden drift above. If intentional, regenerate the fixture:"
+  red "  node tests/lib/extract_full.mjs <ref> tsx|scss > tests/fixtures/golden/component-<name>/<name>.<ext>"
   exit 1
 fi
 
