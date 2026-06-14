@@ -303,10 +303,10 @@ The `wireDisabled` helper lives in `_stateful.js` (copied once per project at fi
 --btn-display: inline-flex;
 --btn-align: center;
 --btn-justify: center;
---btn-gap: 0.5rem;
+--btn-gap: var(--space-sm, 0.5rem);
 --btn-fs: var(--btn-size-md, 0.9375rem);
---btn-fw: 500;
---btn-radius: 0.375rem;
+--btn-fw: var(--font-label-md-weight, 500);
+--btn-radius: var(--radius-md, 0.375rem);
 --btn-padding-block: calc(var(--btn-fs, 0.9375rem) * 0.5);
 --btn-padding-inline: calc(var(--btn-fs, 0.9375rem) * 1.5);
 --btn-bg: transparent;
@@ -321,7 +321,7 @@ The `wireDisabled` helper lives in `_stateful.js` (copied once per project at fi
 --btn-primary-bg: var(--color-primary, #0066cc);
 --btn-primary-color: var(--color-text-inverse, #fff);
 --btn-primary-border: none;
---btn-primary-hover-bg: var(--color-primary-dark, #0052a3);
+--btn-primary-hover-bg: var(--color-primary-hover, #0052a3);
 
 // Color: danger
 --btn-danger-bg: var(--color-danger, #dc3545);
@@ -348,10 +348,10 @@ The `wireDisabled` helper lives in `_stateful.js` (copied once per project at fi
   display: var(--btn-display, inline-flex);
   align-items: var(--btn-align, center);
   justify-content: var(--btn-justify, center);
-  gap: var(--btn-gap, 0.5rem);
+  gap: var(--btn-gap, var(--space-sm, 0.5rem));
   font-size: var(--btn-fs, 0.9375rem);
-  font-weight: var(--btn-fw, 500);
-  border-radius: var(--btn-radius, 0.375rem);
+  font-weight: var(--btn-fw, var(--font-label-md-weight, 500));
+  border-radius: var(--btn-radius, var(--radius-md, 0.375rem));
   padding-block: var(--btn-padding-block, 0.46875rem);
   padding-inline: var(--btn-padding-inline, 1.40625rem);
   background: var(--btn-bg, transparent);
@@ -420,7 +420,7 @@ The `wireDisabled` helper lives in `_stateful.js` (copied once per project at fi
     background: var(--btn-primary-bg, var(--color-primary, #0066cc));
     color: var(--btn-primary-color, var(--color-text-inverse, #fff));
     border: var(--btn-primary-border, none);
-    &:hover { background: var(--btn-primary-hover-bg, var(--color-primary-dark, #0052a3)); }
+    &:hover { background: var(--btn-primary-hover-bg, var(--color-primary-hover, #0052a3)); }
   }
 
   &[data-color="danger"] {

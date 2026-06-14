@@ -138,7 +138,7 @@ A developer can later add a global tokens file to replace all defaults:
 --btn-primary-border: none;
 
 // States
---btn-hover-bg: var(--color-primary-dark, #0052a3);
+--btn-hover-bg: var(--color-primary-hover, #0052a3);
 --btn-hover-transform: translateY(-1px);
 --btn-focus-outline: 2px solid currentColor;
 --btn-focus-outline-offset: 2px;
