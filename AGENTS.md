@@ -31,12 +31,14 @@ plugins/acss-kit/
 ├── .claude-plugin/plugin.json   # manifest, authoritative version source
 ├── README.md                    # user-facing docs
 ├── commands/*.md                # slash command definitions
-├── skills/components/SKILL.md         # component generation workflow
+├── skills/component-<name>/           # 15 per-component skills (SKILL.md + reference.md)
+├── skills/kit-core/SKILL.md           # orchestrator (/kit-create, /kit-list, /kit-sync, /kit-update, modes)
 ├── skills/styles/SKILL.md             # theme generation workflow
+├── skills/utilities/SKILL.md          # atomic-CSS bundle management
 ├── skills/setup/SKILL.md              # cross-domain bootstrap (/setup)
-├── skills/component-form/SKILL.md     # form pilot — natural-language form requests
-├── skills/component-creator/SKILL.md  # creator-mode pilot — natural-language single-component requests (/kit-create)
 ├── skills/style-tune/SKILL.md         # style-feel pilot (/style-tune)
+├── skills/kit-sync/SKILL.md           # bulk install (/kit-sync)
+├── skills/prompt-book/SKILL.md        # prompt catalogue (/prompt-book)
 ├── scripts/*.py                       # Python 3 stdlib helpers
 └── assets/                      # templates and code snippets
 ```

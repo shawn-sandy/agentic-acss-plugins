@@ -4,6 +4,11 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-14
+
+### Added
+- **COMPONENT.md spec** — a framework-neutral format for describing a component's structure, props, behavior, and accessibility that an agent projects into any framework (React, HTML, Astro, Angular, Vue, Svelte, web-component), themed by a sibling DESIGN.md. Ships the spec (`docs/component-md/spec.md`), a complete worked example (`docs/component-md/examples/button.component.md`), and an advisory rule (`.claude/rules/component-md.md`). Docs-only — no command or skill behavior changes. Companion to DESIGN.md: DESIGN.md owns tokens, COMPONENT.md owns components, coupled via `{token.path}` references.
+
 ## [0.4.0] - 2026-05-27
 
 ### Changed

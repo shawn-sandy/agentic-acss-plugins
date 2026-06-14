@@ -88,6 +88,26 @@ The validator's full pair list (10 pairs at default thresholds) is in `scripts/v
 3. **Round-trip scripts (`tokens_to_css.py`, `css_to_tokens.py`) remain internal.** They use the JSON schema to translate between the OKLCH palette generator's output and CSS, but the JSON shape is not a user-facing contract.
 4. **Validation runs automatically** at the end of every theme command (no separate step). Failures are surfaced inline.
 
+### Dimension & typography tokens (DESIGN.md parity)
+
+Beyond the 18 `--color-*` roles, the token layer carries three optional,
+**mode-independent** kinds — **spacing**, **rounded**, and **typography** — that
+bring it to parity with [DESIGN.md](https://github.com/google-labs-code/design.md):
+
+- Emitted to **`space-radius.css`** (`--space-*`, `--radius-*`) and
+  **`typography.css`** (`--font-<role>-{family,size,weight,line,tracking}`),
+  each a single `:root` block (no light/dark split).
+- The prefixes mirror the Tailwind v4 `@theme` namespaces so a DESIGN.md
+  `css-tailwind` export remaps mechanically.
+- `tokens_to_css.py` emits these files **only when** the input JSON carries
+  `spacing` / `rounded` / `typography` (additive — colors-only input is
+  unchanged). `css_to_tokens.py` round-trips them. Structural validation
+  (units, scale completeness, typography sub-props) is in
+  `${CLAUDE_PLUGIN_ROOT}/scripts/validate_tokens.py`.
+- Default scales ship at `${CLAUDE_PLUGIN_ROOT}/assets/tokens/space-radius.css`
+  and `typography.css` for projects with no DESIGN.md. Full schema:
+  [`references/theme-schema.md`](references/theme-schema.md).
+
 ---
 
 ## CSS layer ordering

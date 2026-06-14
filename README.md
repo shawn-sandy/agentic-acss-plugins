@@ -13,8 +13,8 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 1.1.0 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. WCAG 2.2 AA validation built-in. |
-| [`style-agent`](./plugins/style-agent) | 0.2.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. |
+| [`acss-kit`](./plugins/acss-kit) | 1.2.1 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. WCAG 2.2 AA validation built-in. |
+| [`style-agent`](./plugins/style-agent) | 0.4.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet; `/create-utilities` generates a utility-class string from a plain-language description. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. |
 
 The two plugins are **decoupled** — install either or both independently.
 
@@ -90,7 +90,7 @@ Then bootstrap and add your first component + theme:
 |---|---|
 | [`/kit-list [component]`](./plugins/acss-kit/commands/kit-list.md) | List available component references or inspect one in detail (read-only). |
 | [`/kit-add <component> ...`](./plugins/acss-kit/commands/kit-add.md) | Generate accessible React components using local imports only. No `@fpkit/acss` package. Pass `--target=html` to generate static HTML + SCSS + vanilla JS instead, for non-React projects (server-rendered apps, static sites, email templates). |
-| [`/kit-create <description>`](./plugins/acss-kit/commands/kit-create.md) | Creator mode — generate a paste-ready TSX snippet (or standalone component file) from a natural-language description (`"primary pill button that says 'Add to cart'"`). The underlying `component-creator` skill also auto-triggers on the same phrasing. |
+| [`/kit-create <description>`](./plugins/acss-kit/commands/kit-create.md) | Creator mode — generate a paste-ready TSX snippet (or standalone component file) from a natural-language description (`"primary pill button that says 'Add to cart'"`). Creator mode is handled by the `kit-core` skill. |
 | [`/kit-sync`](./plugins/acss-kit/commands/kit-sync.md) | Bulk-install every shipped component, the `ui.tsx` foundation, and a starter theme in one command. Records each file in `.acss-kit/manifest.json` for safe re-syncs. |
 | [`/kit-update [<component> ...]`](./plugins/acss-kit/commands/kit-update.md) | Safely re-copy unmodified generated files after a plugin upgrade. Drift detection via normalized sha256 — files you've edited are skipped by default. |
 
@@ -125,14 +125,16 @@ Then bootstrap and add your first component + theme:
 | [`/utility-bridge`](./plugins/acss-kit/commands/utility-bridge.md) | Regenerate `token-bridge.css` against the active acss-kit theme. |
 | [`/utility-tune <description>`](./plugins/acss-kit/commands/utility-tune.md) | Adjust `utilities.tokens.json` from natural language and regenerate. |
 
-**Skills:**
+**Skills** (22 total — 15 per-component + 7 named):
 
-- **`components`** — markdown-as-source TSX/SCSS templates with embedded accessibility patterns. 16 component references plus a `catalog` index and a shared `foundation` doc.
+- **15 `component-<name>` skills** (`component-alert` … `component-table`) — each ships a `SKILL.md` workflow plus a `reference.md` with markdown-as-source TSX/SCSS templates and embedded accessibility patterns.
+- **`kit-core`** — orchestrator behind `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, and the Form/HTML/Style-Tune modes; holds the shared references (architecture, accessibility, css-variables, composition, foundation).
 - **`styles`** — OKLCH theme generation, role catalogue, palette algorithm, brand presets, WCAG 2.2 AA validation.
-- **`component-form`** — pilot per-component skill that auto-triggers on natural-language form requests (e.g. *"Create a signup form with email and password"*) and vendors form dependencies via `/kit-add`.
-- **`component-creator`** — pilot creator-mode skill backing `/kit-create`. Auto-triggers on phrases like *"create a primary pill button that says 'Add to cart'"* / *"make me a soft warning alert titled 'Heads up'"*. Loads the matched component's reference doc at runtime, parses its Props Interface, resolves user phrases against the declared prop set, and emits a paste-ready TSX snippet (or a standalone component file). Works with any component that has a dedicated `references/components/<name>.md` doc.
+- **`utilities`** — atomic-CSS bundle management (`utilities.css`, `token-bridge.css`).
 - **`setup`** — cross-domain init skill backing `/setup`.
-- **`style-tune`** — pilot per-feel skill backing `/style-tune`.
+- **`style-tune`** — feel-tuning skill backing `/style-tune`.
+- **`kit-sync`** — bulk-install skill backing `/kit-sync`.
+- **`prompt-book`** — prompt-catalogue skill backing `/prompt-book`.
 
 ## Repository layout
 
@@ -143,7 +145,8 @@ agentic-acss-plugins/
 │   ├── acss-kit/
 │   │   ├── .claude-plugin/plugin.json     # version source of truth
 │   │   ├── commands/*.md                  # slash commands
-│   │   ├── skills/{components,styles,setup,kit-sync,prompt-book,component-form,component-creator,style-tune,utilities}/SKILL.md
+│   │   ├── skills/component-<name>/          # 15 per-component skills (SKILL.md + reference.md)
+│   │   ├── skills/{kit-core,styles,utilities,setup,style-tune,kit-sync,prompt-book}/SKILL.md
 │   │   ├── scripts/                       # Python 3 stdlib (palette, validate, detect_target, …)
 │   │   ├── assets/                        # ui.tsx foundation, brand template, theme schema, utilities bundle
 │   │   └── docs/                          # architecture, recipes, troubleshooting, tutorial

@@ -99,6 +99,20 @@ flex items-center gap-4 bg-primary focus-visible:ring
 
 For interactive elements (button, link, input), focus styling is handled automatically — `focus-visible:ring` for Tailwind/fallback projects, `focus-ring` for Bootstrap. For acss-kit, the skill warns in the summary that no focus utility exists in the bundle and suggests adding `:focus-visible` CSS to your project or using an acss-kit component class. Run `/css-to-class [name]` on the output to consolidate into a single named CSS class.
 
+## Specifications
+
+### COMPONENT.md
+
+A framework-neutral format for describing a component's structure, props,
+behavior, and accessibility that an agent projects into **any** framework
+(React, HTML, Astro, Angular, Vue, Svelte, web-component), themed by a sibling
+[DESIGN.md](https://github.com/google-labs-code/design.md). Together they form a
+two-file design system — DESIGN.md owns tokens, COMPONENT.md owns components,
+coupled through `{token.path}` references.
+
+- Spec: [`docs/component-md/spec.md`](docs/component-md/spec.md)
+- Example: [`docs/component-md/examples/button.component.md`](docs/component-md/examples/button.component.md)
+
 ## Developer guide
 
 See [`docs/README.md`](docs/README.md).

@@ -22,11 +22,15 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(__file__))
 from _tokens import (  # noqa: E402
     BRAND_ROLES,
+    RADIUS_PREFIX,
+    SPACE_PREFIX,
     extract_selector_blocks,
     parse_palette_from_block,
+    parse_scale_from_block,
+    parse_typography_from_block,
 )
 
-PALETTE_FILE_RE = re.compile(r"^(light|dark|brand-[\w-]+)\.css$")
+PALETTE_FILE_RE = re.compile(r"^(light|dark|brand-[\w-]+|space-radius|typography)\.css$")
 
 
 def _process_file(path: Path) -> tuple[str, dict]:
@@ -50,6 +54,15 @@ def _process_file(path: Path) -> tuple[str, dict]:
             if filtered:
                 overrides[mode_key] = filtered
         return f"brand-{name}", overrides
+
+    if stem == "space-radius":
+        return "space-radius", {
+            "spacing": parse_scale_from_block(text, SPACE_PREFIX),
+            "rounded": parse_scale_from_block(text, RADIUS_PREFIX),
+        }
+
+    if stem == "typography":
+        return "typography", parse_typography_from_block(text)
 
     return stem, parse_palette_from_block(text)
 
@@ -147,6 +160,34 @@ def self_test() -> int:
         {"light.css": light_css},
         ['"#4f46e5"'],
     )
+    space_radius_css = """\
+:root {
+
+  /* Spacing */
+  --space-md: var(--space-md, 1rem);
+
+  /* Radius */
+  --radius-full: var(--radius-full, 9999px);
+}
+"""
+    typography_css = """\
+:root {
+
+  /* body-md */
+  --font-body-md-size: var(--font-body-md-size, 1rem);
+  --font-body-md-weight: var(--font-body-md-weight, 400);
+}
+"""
+    run(
+        "space-radius.css — spacing and rounded extracted",
+        {"space-radius.css": space_radius_css},
+        ['"spacing"', '"md": "1rem"', '"rounded"', '"full": "9999px"'],
+    )
+    run(
+        "typography.css — composite sub-props extracted",
+        {"typography.css": typography_css},
+        ['"typography"', '"body-md"', '"size": "1rem"', '"weight": "400"'],
+    )
 
     total = passed + failed
     if failed:
@@ -193,6 +234,14 @@ def main() -> int:
         elif file_type.startswith("brand-"):
             name = file_type[len("brand-"):]
             tokens["brands"][name] = data
+        elif file_type == "space-radius":
+            if data.get("spacing"):
+                tokens["spacing"] = data["spacing"]
+            if data.get("rounded"):
+                tokens["rounded"] = data["rounded"]
+        elif file_type == "typography":
+            if data:
+                tokens["typography"] = data
 
     if not tokens["brands"]:
         del tokens["brands"]

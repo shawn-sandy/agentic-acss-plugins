@@ -18,9 +18,44 @@
       "type": "object",
       "description": "Optional named brand color overrides. Keys are brand slugs (e.g. 'forest'). Values override only primary/accent roles.",
       "additionalProperties": { "$ref": "#/$defs/brand-overrides" }
+    },
+    "spacing": {
+      "$ref": "#/$defs/dimension-scale",
+      "description": "Mode-independent spacing scale. Emitted as --space-<name>."
+    },
+    "rounded": {
+      "$ref": "#/$defs/dimension-scale",
+      "description": "Mode-independent corner-radius scale. Emitted as --radius-<name>."
+    },
+    "typography": {
+      "type": "object",
+      "description": "Mode-independent typography composites. Emitted as --font-<role>-<sub>.",
+      "additionalProperties": { "$ref": "#/$defs/typography-token" }
     }
   },
   "$defs": {
+    "dimension": {
+      "type": "string",
+      "pattern": "^(0|[0-9]*\\.?[0-9]+(px|em|rem))$",
+      "description": "A length: 0, or a number with a px/em/rem unit (e.g. 0.5rem, 16px)."
+    },
+    "dimension-scale": {
+      "type": "object",
+      "description": "Map of scale-step name (xs, sm, md, …, full) to a dimension.",
+      "additionalProperties": { "$ref": "#/$defs/dimension" }
+    },
+    "typography-token": {
+      "type": "object",
+      "description": "A typography composite. All sub-properties optional; size is a dimension.",
+      "additionalProperties": false,
+      "properties": {
+        "family":   { "type": "string" },
+        "size":     { "$ref": "#/$defs/dimension" },
+        "weight":   { "type": "string", "description": "Numeric weight as a string, e.g. \"400\"." },
+        "line":     { "type": "string", "description": "Unitless multiplier or a dimension, e.g. \"1.5\" or \"24px\"." },
+        "tracking": { "type": "string", "description": "Letter-spacing, e.g. \"0.01em\"." }
+      }
+    },
     "hex-color": {
       "type": "string",
       "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",

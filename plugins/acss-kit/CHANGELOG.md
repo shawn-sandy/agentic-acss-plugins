@@ -4,6 +4,16 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-14
+
+### Added
+
+- **Token homes for typography, spacing, and rounded (DESIGN.md parity).** The token layer is no longer colors-only. `_tokens.py` gains `SPACE_SCALE` / `RADIUS_SCALE` / `DEFAULT_TYPOGRAPHY` plus `format_scales()` / `format_typography()` writers and matching parsers. `tokens_to_css.py` now emits **`space-radius.css`** (`--space-*`, `--radius-*`) and **`typography.css`** (`--font-<role>-{family,size,weight,line,tracking}`) — each a single mode-independent `:root` block — **only when** the input JSON carries `spacing` / `rounded` / `typography` (additive; colors-only input is byte-identical). `css_to_tokens.py` round-trips the new sections. The CSS prefixes mirror the Tailwind v4 `@theme` namespaces so a DESIGN.md `css-tailwind` export remaps mechanically.
+- **`scripts/validate_tokens.py`** — structural validator for the new token kinds (dimension-unit validity, recommended scale-step completeness, typography sub-property correctness); the dimension/typography counterpart to `validate_theme.py`'s contrast gate. Generator/validator contract with `--self-test`.
+- **Default token assets** at `assets/tokens/space-radius.css` and `assets/tokens/typography.css` so projects with no DESIGN.md still get a sane scale.
+- **`theme.schema.json`** extended with optional `spacing` / `rounded` / `typography` sections (additive; colors block unchanged). Documented in `skills/styles/references/theme-schema.md` and the `styles` SKILL.
+- **`tests/run.sh` step 7f** runs the token-script self-tests plus a byte-stable round-trip of the default scales.
+
 ## [1.2.1] - 2026-05-21
 
 ### Added

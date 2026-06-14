@@ -10,8 +10,8 @@ A Claude Code **plugin marketplace** — not a Node.js or Python package. There 
 
 The repo contains two plugins:
 
-- `plugins/acss-kit` — accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects. Fifteen per-component skills (`component-alert`, `component-button`, …), an orchestrator skill (`kit-core`), a `styles` skill, a `utilities` skill, a cross-domain `setup` skill, and two pilot skills (`style-tune`, `kit-sync`).
-- `plugins/style-agent` — framework-agnostic CSS authoring skills for any web project. First skill: `/css-to-class` (extract utility-class lists into a single named CSS class). See [`plugins/style-agent/docs/`](plugins/style-agent/docs/README.md).
+- `plugins/acss-kit` — accessible React components, CSS themes, and Tailwind-style atomic CSS utility classes for fpkit/acss projects. Fifteen per-component skills (`component-alert`, `component-button`, …), an orchestrator skill (`kit-core`), a `styles` skill, a `utilities` skill, a cross-domain `setup` skill, two pilot skills (`style-tune`, `kit-sync`), and a `prompt-book` skill — 22 skills total.
+- `plugins/style-agent` — framework-agnostic CSS authoring skills for any web project. Three commands/skills: `/css-to-class` (extract utility-class lists into a single named CSS class), `/inline-style-to-class` (convert inline styles or JSX style objects into a named class), and `/create-utilities` (generate a utility-class string from a plain-language description). See [`plugins/style-agent/docs/`](plugins/style-agent/docs/README.md).
 
 Install from a Claude Code session:
 
@@ -43,7 +43,7 @@ plugins/acss-kit/
 └── docs/                          # developer guides (architecture, recipes, troubleshooting, tutorial)
 ```
 
-`plugins/style-agent/` — lighter shape (`.claude-plugin/`, `commands/`, `skills/`, `docs/`, no scripts or assets yet). One skill (`css-to-class`) and one command (`/css-to-class`). See [`plugins/style-agent/docs/README.md`](plugins/style-agent/docs/README.md).
+`plugins/style-agent/` — lighter shape (`.claude-plugin/`, `commands/`, `skills/`, `docs/`, no scripts or assets yet). Three skills and three commands (`/css-to-class`, `/inline-style-to-class`, `/create-utilities`). See [`plugins/style-agent/docs/README.md`](plugins/style-agent/docs/README.md).
 
 ### Command authoring conventions
 
@@ -95,8 +95,8 @@ Claude Code on the web sessions develop on `claude/<slug>` branches assigned per
 
 | Plugin | Commands |
 |---|---|
-| `acss-kit` | `/kit-add`, `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, `/prompt-book`, `/setup`, `/style-tune`, `/theme-brand`, `/theme-create`, `/theme-extract`, `/theme-update`, `/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune` |
-| `style-agent` | `/css-to-class` |
+| `acss-kit` | `/color-scale`, `/kit-add`, `/kit-create`, `/kit-list`, `/kit-sync`, `/kit-update`, `/prompt-book`, `/setup`, `/style-tune`, `/theme-brand`, `/theme-create`, `/theme-extract`, `/theme-update`, `/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune` |
+| `style-agent` | `/css-to-class`, `/inline-style-to-class`, `/create-utilities` |
 
 Each command's body is in `plugins/<plugin>/commands/<name>.md`; logic lives in the corresponding SKILL.md.
 
