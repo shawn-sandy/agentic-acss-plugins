@@ -300,9 +300,23 @@ sys.path.insert(0, str(scripts))
 from _tokens import SPACE_SCALE, RADIUS_SCALE, DEFAULT_TYPOGRAPHY  # noqa: E402
 
 # 1. each script's own self-test
-for s in ("tokens_to_css.py", "css_to_tokens.py", "validate_tokens.py"):
+for s in ("tokens_to_css.py", "css_to_tokens.py", "validate_tokens.py",
+          "design_md_to_tokens.py", "validate_design_md.py"):
     r = subprocess.run([sys.executable, str(scripts / s), "--self-test"], capture_output=True, text=True)
     assert r.returncode == 0, f"{s} self-test failed:\n{r.stdout}{r.stderr}"
+
+# 1b. DESIGN.md adapter end-to-end: fixture css-tailwind -> tokens -> CSS -> contrast gate
+import importlib.util
+spec = importlib.util.spec_from_file_location("dmt", str(scripts / "design_md_to_tokens.py"))
+dmt = importlib.util.module_from_spec(spec); sys.path.insert(0, str(scripts)); spec.loader.exec_module(dmt)
+adapter = subprocess.run([sys.executable, str(scripts / "design_md_to_tokens.py"), "--stdin"],
+                         input=dmt._FIXTURE, capture_output=True, text=True)
+assert adapter.returncode == 0, f"adapter failed: {adapter.stderr}"
+with tempfile.TemporaryDirectory() as ad:
+    subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={ad}"],
+                   input=adapter.stdout, check=True, text=True, stdout=subprocess.DEVNULL)
+    vt = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), ad], capture_output=True, text=True)
+    assert vt.returncode == 0, f"adapter output failed contrast: {vt.stdout}"
 
 # 2. byte-stable round-trip of the default scales
 src = {"spacing": SPACE_SCALE, "rounded": RADIUS_SCALE, "typography": DEFAULT_TYPOGRAPHY}

@@ -223,6 +223,38 @@ files hold the only source of truth for every `--color-*` variable.
 
 ---
 
+## `/theme-from-design <DESIGN.md> [--out-dir=<dir>]`
+
+**Purpose:** Generate a full theme — colors (`light.css`/`dark.css`) **plus**
+`space-radius.css` and `typography.css` — from a
+[DESIGN.md](https://github.com/google-labs-code/design.md). This is the inbound
+half of the DESIGN.md ↔ acss-kit bridge (Workstream A; see
+`docs/plans/design-md-token-parity.md` and the proposal's Appendix A mapping).
+
+**Requires Node/`npx`** (Route 1, decided): the scripts shell
+`npx @google/design.md export --format css-tailwind` and `… lint`. If `npx` is
+absent, halt with: `"/theme-from-design needs Node/npx — install Node, or author the theme with /theme-create."`
+
+### Workflow
+
+1. **Validate the DESIGN.md.** Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/validate_design_md.py <DESIGN.md>`. Parse the JSON (`{ok, reasons, warnings}`).
+   - `ok: false` (exit 1) → print `reasons` and halt. **A missing primary is a hard error** (it seeds the OKLCH palette) — by decision, stricter than the upstream linter's warning.
+   - Surface any `warnings` (contrast, orphaned tokens, …) but continue.
+2. **Determine the output directory** (same rule as `/theme-create`: prefer `src/styles/theme/`, else ask).
+3. **Generate tokens.** Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/design_md_to_tokens.py <DESIGN.md>` (it shells the `css-tailwind` export, maps Material-3 names → our 18 roles per Appendix A, **synthesizes** the roles M3 omits — success/warning/info/focus-ring — via the OKLCH generator, and lifts spacing/rounded/typography). Capture JSON stdout; the `note:` lines on stderr report which roles were synthesized. Exit 1 → print the reason and halt.
+4. **Write the CSS.** Pipe the tokens JSON to `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_css.py --stdin --out-dir=<dir>` → writes `light.css`, `dark.css`, `space-radius.css`, `typography.css`.
+5. **Validate the output.** Run `validate_theme.py <dir>` (WCAG contrast) and `validate_tokens.py` on the tokens JSON (dimension units / scale completeness / typography sub-props). Report failures as warnings — generation is complete; the developer adjusts the source DESIGN.md or tunes via `/theme-update`.
+6. **Regenerate the bridge** — if `assets/utilities/token-bridge.css` exists, run `generate_bridge.py` exactly as `/theme-create` step 6.
+7. **Verify integration** — run `verify_integration.py <project_root>` (the "Integration verification" section below).
+8. **Summary** — files written, **which roles were mapped vs synthesized**, top contrast ratios, and a reminder that dark mode is OKLCH-mirrored (DESIGN.md is mode-thin).
+
+### References to load
+
+- The proposal's **Appendix A** (Material-3 → our-roles table) — the mapping `design_md_to_tokens.py` implements.
+- `references/role-catalogue.md`, `references/palette-algorithm.md` (synthesis), `references/theme-schema.md` (the token JSON shape).
+
+---
+
 ## `/color-scale <color> [--name=<name>] [--format=css|json|both]`
 
 **Purpose:** Generate a 10-step OKLCH color scale (steps 50–900) from any seed color — a hex value, a CSS named color, or a theme role from the project's existing theme.
