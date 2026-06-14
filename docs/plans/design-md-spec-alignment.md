@@ -472,9 +472,14 @@ plans under `docs/plans/`, in roadmap order:
 
 1. **Workstream B — `COMPONENT.md` spec** (roadmap PR 0), authored in
    `style-agent`. Lowest-risk, docs-only, and it defines the `{token.path}`
-   contract the adapter consumes.
+   contract the adapter consumes. → execution plan:
+   [`component-md-spec.md`](component-md-spec.md).
 2. **Workstream A token homes + adapter** (roadmap PRs 1 → 4), `css-tailwind`
-   input, then the phased component sweep (PRs 2 → 3).
+   input, then the phased component sweep (PRs 2 → 3). → execution plan:
+   [`design-md-token-parity.md`](design-md-token-parity.md).
+
+Both workstreams now have execution plans; the remaining roadmap PRs (5 export-out,
+6 Figma bridge/hooks/tests) are scoped inside those plans' "out of scope" notes.
 
 ---
 
