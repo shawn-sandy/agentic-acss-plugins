@@ -290,6 +290,32 @@ Node/`npx`**; halt with `"--format=dtcg|tailwind needs Node/npx — use --format
 
 ---
 
+## `/theme-from-figma <figma-url|fileKey> [--node=<nodeId>] [--out-dir=<dir>]`
+
+**Purpose:** Generate a theme directly from a Figma file's **variables** (design
+tokens), via the Figma MCP server — the standards-based evolution of the
+`/theme-extract` Figma path. This is the inbound half of the Figma ⇄ DESIGN.md ⇄
+theme bridge (Workstream C; see `docs/plans/design-md-spec-alignment.md`
+Appendix B). After the MCP call, the pipeline is **pure Python — no Node/`npx`**.
+
+### Workflow
+
+1. **Resolve the file.** Parse the `fileKey` (and optional `nodeId`) from the Figma URL (`figma.com/design/:fileKey/...?node-id=:nodeId`, converting `-`→`:` in the node id). If no URL/key is given, ask.
+2. **Pull variables.** Call the Figma MCP `get_variable_defs` (`fileKey`, `nodeId`) → a flat map like `{ "color/primary": "#855300", "spacing/md": "24px", … }`. If the server returns nothing, fall back to `/theme-extract` (image color extraction) and say so.
+3. **Map to tokens.** Pipe that JSON to `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/figma_to_tokens.py --stdin` — it normalizes Figma's `category/name` variables into the css-tailwind form and reuses the **same Appendix A adapter** as `/theme-from-design` (Material-3/Figma color names → our 18 roles, OKLCH gap synthesis, spacing/rounded/typography lift). Capture JSON stdout; `note:` lines on stderr report synthesized roles. Exit 1 (no resolvable `color/primary`) → print the reason and halt.
+4. **Write + gate the CSS.** Pipe the tokens JSON to `tokens_to_css.py --stdin --out-dir=<dir>`, then run `validate_theme.py <dir>` (WCAG) and `validate_tokens.py` — same as `/theme-from-design` steps 4–5.
+5. **Regenerate the bridge / verify integration** — as `/theme-create` steps 6–7.
+6. **(Optional) DESIGN.md artifact.** To also publish a DESIGN.md from the Figma tokens, pipe the tokens JSON through `tokens_to_design_md.py --stdin` (Figma → DESIGN.md, per Appendix B).
+7. **(Optional) Code Connect out.** To push our component ↔ Figma-node bindings back so designers see which code implements each design node, use the Figma MCP `get_code_connect_map` to inspect existing links and `add_code_connect_map` to add `component-<name>` ↔ node mappings (code→design direction). Confirm with the user before writing to their Figma file.
+8. **Summary** — files written, **mapped vs synthesized** roles, top contrast ratios, and whether a DESIGN.md / Code Connect push was performed.
+
+### References to load
+
+- **Appendix A** (the shared color mapping) and **Appendix B** (the Figma MCP I/O contract) in `docs/plans/design-md-spec-alignment.md`.
+- `references/role-catalogue.md`, `references/palette-algorithm.md` (synthesis).
+
+---
+
 ## `/color-scale <color> [--name=<name>] [--format=css|json|both]`
 
 **Purpose:** Generate a 10-step OKLCH color scale (steps 50–900) from any seed color — a hex value, a CSS named color, or a theme role from the project's existing theme.

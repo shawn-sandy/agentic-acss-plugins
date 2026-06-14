@@ -10,6 +10,7 @@ Advisory text auto-loaded into Claude's context whenever it touches a file match
 | [`fpkit-references.md`](fpkit-references.md) | `plugins/*/skills/*/references/**` | Active — full GitHub URL requirement, local verification setup. |
 | [`skill-front-matter.md`](skill-front-matter.md) | `plugins/*/skills/**/SKILL.md` | Active — component-tier skills require `disable-model-invocation: true` and a `hint:` field; orchestrator-tier skills do not. |
 | [`component-md.md`](component-md.md) | `**/*.component.md`, `plugins/style-agent/docs/component-md/**` | Active — neutral-first COMPONENT.md format: required sections, `{token.path}` primitive-only refs, `## Target:` adapters. |
+| [`design-md.md`](design-md.md) | `**/DESIGN.md` | Active — DESIGN.md front-matter shape, required primary, section order, Appendix A role-name translation. |
 
 ## Rules vs. hooks vs. skills
 

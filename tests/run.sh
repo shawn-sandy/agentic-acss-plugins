@@ -301,7 +301,8 @@ from _tokens import SPACE_SCALE, RADIUS_SCALE, DEFAULT_TYPOGRAPHY  # noqa: E402
 
 # 1. each script's own self-test
 for s in ("tokens_to_css.py", "css_to_tokens.py", "validate_tokens.py",
-          "design_md_to_tokens.py", "validate_design_md.py", "tokens_to_design_md.py"):
+          "design_md_to_tokens.py", "validate_design_md.py", "tokens_to_design_md.py",
+          "figma_to_tokens.py"):
     r = subprocess.run([sys.executable, str(scripts / s), "--self-test"], capture_output=True, text=True)
     assert r.returncode == 0, f"{s} self-test failed:\n{r.stdout}{r.stderr}"
 
@@ -347,6 +348,21 @@ with tempfile.TemporaryDirectory() as td:
         vt2 = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), rd],
                              capture_output=True, text=True)
         assert vt2.returncode == 0, f"export round-trip failed contrast: {vt2.stdout}"
+
+# 1d. Figma bridge end-to-end: get_variable_defs fixture -> tokens -> CSS -> contrast
+fig = importlib.util.module_from_spec(
+    importlib.util.spec_from_file_location("fig", str(scripts / "figma_to_tokens.py")))
+importlib.util.spec_from_file_location("fig", str(scripts / "figma_to_tokens.py")).loader.exec_module(fig)
+ftokens, freasons = fig.figma_to_tokens(fig._FIXTURE)
+assert ftokens.get("modes", {}).get("light", {}).get("--color-primary"), f"figma bridge lost primary: {freasons}"
+vtok = subprocess.run([sys.executable, str(scripts / "validate_tokens.py"), "--stdin"],
+                      input=json.dumps(ftokens), capture_output=True, text=True)
+assert vtok.returncode == 0, f"figma tokens failed validate_tokens: {vtok.stdout}{vtok.stderr}"
+with tempfile.TemporaryDirectory() as fd:
+    subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={fd}"],
+                   input=json.dumps(ftokens), check=True, text=True, stdout=subprocess.DEVNULL)
+    vtf = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), fd], capture_output=True, text=True)
+    assert vtf.returncode == 0, f"figma bridge output failed contrast: {vtf.stdout}"
 
 # 2. byte-stable round-trip of the default scales
 src = {"spacing": SPACE_SCALE, "rounded": RADIUS_SCALE, "typography": DEFAULT_TYPOGRAPHY}

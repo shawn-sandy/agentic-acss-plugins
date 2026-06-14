@@ -67,6 +67,17 @@
             "statusMessage": "Checking SKILL.md front-matter..."
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; case \"$f\" in */DESIGN.md|DESIGN.md) if command -v npx >/dev/null 2>&1; then python3 plugins/acss-kit/scripts/validate_design_md.py \"$f\" 2>&1 || true; else echo \"[DESIGN.md hook] skipped lint — npx unavailable (Route 1 needs Node/npx).\"; fi ;; esac; }",
+            "timeout": 30,
+            "statusMessage": "Linting DESIGN.md..."
+          }
+        ]
       }
     ],
     "PreToolUse": [
