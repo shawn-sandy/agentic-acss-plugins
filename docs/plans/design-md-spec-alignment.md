@@ -828,9 +828,19 @@ split was staged (pilot → bulk, golden tests throughout):
 | **4** | `design_md_to_tokens.py` (consume `css-tailwind`) + `validate_design_md.py` + `/theme-from-design` | A (core) | L | 1, parse-route decision |
 | **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) | A | M | 4 |
 | **6** | Figma bridge (`get_variable_defs` → DESIGN.md; Code Connect out) + PostToolUse hook + `tests/run.sh` round-trip step | C | M | 4 |
+| **7** | Spec-driven generation: evolve `/kit-add` to read COMPONENT.md + resolve DESIGN.md tokens, **and invert the 15 `reference.md` → neutral COMPONENT.md** (extract neutral layers; demote TSX to `## Target: react`) | A+B+C | L | 2–4 |
 
 Critical path is **0 → 1 → 4**; the component sweep (2, 3) is parallelizable
 once token homes (1) land and is the only *large* user-visible churn.
+
+**Sequencing — the inversion is gated on the generator refactor.** `/kit-add`
+reads `reference.md` today, so inverting those docs to `COMPONENT.md` *before*
+the generator consumes COMPONENT.md would break generation. Therefore the token
+**sweep (PR 2–3) edits `reference.md` in place**, and the **`reference.md` →
+`COMPONENT.md` inversion ships with the generator refactor (PR 7)** — at which
+point the already-token-driven SCSS is *relocated* into COMPONENT.md `## Styles`
+(a move, not a re-edit). See
+[`../proposals/spec-driven-component-generation.md`](../proposals/spec-driven-component-generation.md).
 
 ## Why DESIGN.md (vs. raw DTCG / Style Dictionary / Tailwind config)
 

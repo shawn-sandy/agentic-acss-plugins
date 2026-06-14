@@ -198,9 +198,12 @@ the `alert` state-color fix; (4) the `design_md_to_tokens.py` adapter +
   DTCG / Tailwind) — roadmap PR 5.
 - **Figma bridge** (`get_variable_defs` → DESIGN.md), **PostToolUse hook** on
   `DESIGN.md`, and the **`tests/run.sh` round-trip step** — roadmap PR 6.
-- **`COMPONENT.md` conformance** of the 15 reference docs — tracked in the
-  Workstream B follow-on; this plan only adds the `{token.path}` *targets* they
-  will reference.
+- **`reference.md` → `COMPONENT.md` inversion** of the 15 docs — this plan's
+  sweep (PR 2–3) edits the **`reference.md` SCSS in place** (swapping literals for
+  `var(--space/radius/font-*)`), keeping `/kit-add` working. The inversion to
+  neutral COMPONENT.md is **gated on the generator refactor** (`/kit-add` reading
+  COMPONENT.md) and ships with it (spec-driven generation, roadmap PR 7), which
+  *relocates* the already-token-driven SCSS into COMPONENT.md `## Styles`.
 
 ## Pre-submit checklist (per PR)
 

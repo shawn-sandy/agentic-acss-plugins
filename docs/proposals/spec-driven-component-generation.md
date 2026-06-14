@@ -145,11 +145,17 @@ This skill is **downstream of both workstreams** and must land after them:
 
 | Needs | From |
 |---|---|
-| COMPONENT.md spec + the 15 reference docs inverted to neutral COMPONENT.md | Workstream B ([`component-md-spec.md`](../plans/component-md-spec.md)) + the sweep |
-| `design_md_to_tokens.py` + token homes + `/theme-from-design` | Workstream A ([`design-md-token-parity.md`](../plans/design-md-token-parity.md)) |
-| `## Target:` adapters for stateful/compound components | the neutral-first authoring (per the framework-agnostic decisions) |
+| The COMPONENT.md spec | Workstream B ([`component-md-spec.md`](../plans/component-md-spec.md)) |
+| Token-driven `reference.md` (SCSS swept to `var(--space/radius/font-*)`) | Workstream A sweep ([`design-md-token-parity.md`](../plans/design-md-token-parity.md), PR 2–3) |
+| `design_md_to_tokens.py` + token homes + `/theme-from-design` | Workstream A (PR 1, 4) |
 
-So it slots in as roadmap **PR 7+** (after A's adapter and B's spec + inversion).
+**This effort owns the `reference.md` → `COMPONENT.md` inversion.** Because
+`/kit-add` reads `reference.md` today, the docs can only be inverted once the
+generator here learns to read COMPONENT.md — so the inversion (extract neutral
+layers, demote TSX to `## Target: react`) ships *with* this refactor, relocating
+the already-token-driven SCSS (from the Workstream A sweep) into COMPONENT.md
+`## Styles`. It slots in as roadmap **PR 7+** (after A's sweep + adapter and B's
+spec).
 
 ## Risks & tensions
 

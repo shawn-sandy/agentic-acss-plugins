@@ -99,7 +99,14 @@ Run `grep -rn "reference.md\|embedded-markdown\|Generation Contract" .claude/ pl
 ## Out of scope (deferred to later roadmap PRs)
 
 - **No `validate_component_md.py`** and no `/component-md` command — the spec is docs-only here. A validator + hook is a follow-on (parallels `validate_design_md.py`).
-- **No changes to `acss-kit`'s `reference.md` files** — conforming the 15 existing docs to the spec (the neutral-first **inversion**: extracting/normalizing the neutral layers for all 15, adding abstract props + behavior specs, and demoting TSX to a `## Target: react` block) rides with the Workstream A sweep PRs (where the `{token.path}` targets also land). This plan only authors the spec + one example.
+- **No changes to `acss-kit`'s `reference.md` files** — the neutral-first
+  **inversion** (extracting/normalizing the neutral layers for all 15, adding
+  abstract props + behavior specs, demoting TSX to a `## Target: react` block) is
+  **gated on the generator refactor** (`/kit-add` reading COMPONENT.md) and ships
+  with it (spec-driven generation, roadmap PR 7) — **not** with the Workstream A
+  token sweep, which edits `reference.md` in place (PR 2–3). Inverting before the
+  generator consumes COMPONENT.md would break generation. This plan only authors
+  the spec + one example.
 - **No DESIGN.md tooling** — that is Workstream A (PRs 1, 4).
 
 ## Pre-submit checklist (from CLAUDE.md)
