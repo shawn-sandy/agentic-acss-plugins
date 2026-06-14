@@ -4,6 +4,16 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-06-14
+
+### Added
+
+- **`/design-export [--format=design-md|dtcg|tailwind]` — publish the project's theme as a [DESIGN.md](https://github.com/google-labs-code/design.md) (Workstream A PR 5).** The **outbound** half of the bridge and the import-*into*-DESIGN.md path the upstream CLI lacks, turning the generator into a DESIGN.md *producer*. `--format=design-md` (default) is **pure Python — no Node required**; `--format=dtcg|tailwind` shells `npx @google/design.md export` and **requires Node/`npx`**.
+- **`scripts/tokens_to_design_md.py`** (generator/validator) — the inverse of `design_md_to_tokens.py`. Reads the tokens JSON (`css_to_tokens.py` over `light.css` + `space-radius.css` + `typography.css`), applies the **inverse of Appendix A** (our 18 `--color-*` roles → DESIGN.md token names), and emits deterministic YAML front-matter (`colors`/`spacing`/`rounded`/`typography`, hex values quoted for YAML `#` safety) plus a prose skeleton with the canonical `##` sections and `TODO` rationale placeholders. Accepts `<tokens.json>` / `--stdin` / `--dir=<dir>`.
+- **`tests/run.sh` step 7f** now self-tests `tokens_to_design_md.py` and runs an **export round-trip** (theme → DESIGN.md → re-import through `design_md_to_tokens.py` → `tokens_to_css.py` → `validate_theme.py` contrast gate), proving the closed loop still gates.
+
+> **Semantic round-trip, not lossless:** the 18 `--color-*` roles are emitted under DESIGN.md names; M3 ladder tokens we do not model (`surface-tint`, the `*-container` pairs, `*-fixed*`) are not reproduced, and roles with no M3 slot (`success`, `warning`, `focus-ring`, `text-subtle`) keep our names and are re-synthesized on re-import. Only `light` mode is exported (standard DESIGN.md front-matter is mode-thin). The exact front-matter group/sub-keys are isolated in the `ROLE_TO_DMD` / `DMD_GROUPS` / `TYPO_KEYS` tables — the single reconciliation point against the spec. See `docs/plans/design-md-spec-alignment.md` (§Round-trip & export).
+
 ## [1.6.0] - 2026-06-14
 
 ### Added
