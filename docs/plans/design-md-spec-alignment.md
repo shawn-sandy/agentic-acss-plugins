@@ -826,7 +826,7 @@ split was staged (pilot → bulk, golden tests throughout):
 | **2** | Sweep **pilot (button)**: literals → `var(--space/radius/font-*)`; fix `--color-primary-dark` debt; golden-output test | A | M | 1 |
 | **3** | Bulk sweep remaining 14 (~150 sites) + wire `alert` state colors to roles | A | L | 2 |
 | **4** | `design_md_to_tokens.py` (consume `css-tailwind`) + `validate_design_md.py` + `/theme-from-design` | A (core) | L | 1, parse-route decision |
-| **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) | A | M | 4 |
+| **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) *(done)* | A | M | 4 |
 | **6** | Figma bridge (`get_variable_defs` → DESIGN.md; Code Connect out) + PostToolUse hook + `tests/run.sh` round-trip step | C | M | 4 |
 | **7** | Spec-driven generation: evolve `/kit-add` to read COMPONENT.md + resolve DESIGN.md tokens, **and invert the 15 `reference.md` → neutral COMPONENT.md** (extract neutral layers; demote TSX to `## Target: react`) | A+B+C | L | 2–4 |
 

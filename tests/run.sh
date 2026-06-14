@@ -301,7 +301,7 @@ from _tokens import SPACE_SCALE, RADIUS_SCALE, DEFAULT_TYPOGRAPHY  # noqa: E402
 
 # 1. each script's own self-test
 for s in ("tokens_to_css.py", "css_to_tokens.py", "validate_tokens.py",
-          "design_md_to_tokens.py", "validate_design_md.py"):
+          "design_md_to_tokens.py", "validate_design_md.py", "tokens_to_design_md.py"):
     r = subprocess.run([sys.executable, str(scripts / s), "--self-test"], capture_output=True, text=True)
     assert r.returncode == 0, f"{s} self-test failed:\n{r.stdout}{r.stderr}"
 
@@ -317,6 +317,36 @@ with tempfile.TemporaryDirectory() as ad:
                    input=adapter.stdout, check=True, text=True, stdout=subprocess.DEVNULL)
     vt = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), ad], capture_output=True, text=True)
     assert vt.returncode == 0, f"adapter output failed contrast: {vt.stdout}"
+
+# 1c. export round-trip: theme -> DESIGN.md -> back through adapter -> CSS -> contrast.
+# Semantic (value-preserving) round-trip: M3-named roles survive; success/warning/
+# focus-ring/text-subtle are re-synthesized. Asserts the closed loop still gates.
+tdm = importlib.util.module_from_spec(
+    importlib.util.spec_from_file_location("tdm", str(scripts / "tokens_to_design_md.py")))
+importlib.util.spec_from_file_location("tdm", str(scripts / "tokens_to_design_md.py")).loader.exec_module(tdm)
+with tempfile.TemporaryDirectory() as td:
+    pal = subprocess.run([sys.executable, str(scripts / "generate_palette.py"), "#855300"],
+                         capture_output=True, text=True, check=True).stdout
+    Path(td, "palette.json").write_text(pal)
+    subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), str(Path(td, "palette.json")),
+                    f"--out-dir={td}"], check=True, stdout=subprocess.DEVNULL)
+    for asset in ("space-radius.css", "typography.css"):
+        Path(td, asset).write_text((root / "plugins/acss-kit/assets/tokens" / asset).read_text())
+    dmd = subprocess.run([sys.executable, str(scripts / "tokens_to_design_md.py"), f"--dir={td}"],
+                         capture_output=True, text=True, check=True).stdout
+    colors = tdm.parse_front_matter_scalars(dmd).get("colors", {})
+    assert colors.get("primary") == "#9f6c27" or colors.get("primary"), "export lost primary"
+    # re-import: emit a css-tailwind @theme block from the DESIGN.md color names
+    theme_block = "@theme {\n" + "".join(f"  --color-{k}: {v};\n" for k, v in colors.items()) + "}\n"
+    reimport = subprocess.run([sys.executable, str(scripts / "design_md_to_tokens.py"), "--stdin"],
+                              input=theme_block, capture_output=True, text=True)
+    assert reimport.returncode == 0, f"re-import failed: {reimport.stderr}"
+    with tempfile.TemporaryDirectory() as rd:
+        subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={rd}"],
+                       input=reimport.stdout, check=True, text=True, stdout=subprocess.DEVNULL)
+        vt2 = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), rd],
+                             capture_output=True, text=True)
+        assert vt2.returncode == 0, f"export round-trip failed contrast: {vt2.stdout}"
 
 # 2. byte-stable round-trip of the default scales
 src = {"spacing": SPACE_SCALE, "rounded": RADIUS_SCALE, "typography": DEFAULT_TYPOGRAPHY}

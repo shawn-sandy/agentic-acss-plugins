@@ -49,6 +49,9 @@ from generate_palette import _generate_dark, _generate_light  # noqa: E402
 
 # our role  →  ordered candidate Tailwind/M3 color custom-property names.
 # First candidate present (resolving to a hex) wins; absent roles are synthesized.
+# Roles M3 has no slot for carry our own name as a candidate so a DESIGN.md we
+# *exported* (tokens_to_design_md.py) round-trips back; an external M3 DESIGN.md
+# omits them and they fall through to OKLCH synthesis.
 COLOR_SOURCES: dict[str, list[str]] = {
     "--color-background":     ["--color-background", "--color-surface"],
     "--color-surface":        ["--color-surface", "--color-surface-container-lowest"],
@@ -56,6 +59,7 @@ COLOR_SOURCES: dict[str, list[str]] = {
     "--color-surface-subtle": ["--color-surface-container-low", "--color-surface-dim"],
     "--color-text":           ["--color-on-surface", "--color-on-background"],
     "--color-text-muted":     ["--color-on-surface-variant"],
+    "--color-text-subtle":    ["--color-text-subtle"],   # no M3 source → our name only
     "--color-text-inverse":   ["--color-on-primary"],
     "--color-border":         ["--color-outline-variant"],
     "--color-border-strong":  ["--color-outline"],
@@ -64,7 +68,9 @@ COLOR_SOURCES: dict[str, list[str]] = {
     "--color-danger":         ["--color-error"],
     "--color-brand-accent":   ["--color-secondary"],
     "--color-info":           ["--color-tertiary"],
-    # --color-success / --color-warning / --color-focus-ring: no M3 source → OKLCH-synthesized.
+    "--color-success":        ["--color-success"],        # no M3 source → our name, else synthesized
+    "--color-warning":        ["--color-warning"],        # no M3 source → our name, else synthesized
+    "--color-focus-ring":     ["--color-focus-ring"],     # no M3 source → our name, else synthesized
 }
 
 TW_SPACE = "--spacing-"     # → our spacing.<name>
@@ -287,6 +293,17 @@ def self_test() -> int:
     check("opaque 4-digit alpha (F) flattened", _hex("#abcf") == "#aabbcc")
     check("translucent 8-digit alpha rejected", _hex("#00000080") is None)
     check("translucent 4-digit alpha rejected", _hex("#0008") is None)
+
+    # no-M3 roles round-trip when present (exported-by-us DESIGN.md), else synthesize
+    rt, _ = build_tokens(
+        "@theme {\n  --color-primary: #855300;\n  --color-success: #2e7d32;\n"
+        "  --color-warning: #9a6700;\n  --color-focus-ring: #abcdef;\n"
+        "  --color-text-subtle: #6b5d4f;\n}\n")
+    rtl = rt.get("modes", {}).get("light", {})
+    check("provided success preserved (not synthesized)", rtl.get("--color-success") == "#2e7d32")
+    check("provided warning preserved", rtl.get("--color-warning") == "#9a6700")
+    check("provided focus-ring preserved", rtl.get("--color-focus-ring") == "#abcdef")
+    check("provided text-subtle preserved", rtl.get("--color-text-subtle") == "#6b5d4f")
 
     # missing-primary path
     empty, reasons2 = build_tokens("@theme { --color-on-surface: #111111; }")
