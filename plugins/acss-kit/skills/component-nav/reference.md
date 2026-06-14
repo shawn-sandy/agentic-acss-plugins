@@ -114,16 +114,16 @@ export default Nav
 --nav-align: center;
 --nav-justify: space-between;
 --nav-bg: transparent;
---nav-padding-inline: 1rem;
---nav-padding-block: 0.5rem;
---nav-gap: 1rem;
+--nav-padding-inline: var(--space-md, 1rem);
+--nav-padding-block: var(--space-sm, 0.5rem);
+--nav-gap: var(--space-md, 1rem);
 --nav-fs: 0.9rem;
 --nav-flex-wrap: wrap;
 
 // Nav list
 --nav-list-display: flex;
 --nav-list-direction: row;
---nav-list-gap: 0.5rem;
+--nav-list-gap: var(--space-sm, 0.5rem);
 --nav-list-padding: 0;
 --nav-list-margin: 0;
 --nav-list-list-style: none;
@@ -131,7 +131,7 @@ export default Nav
 // Nav list — vertical
 --nav-list-block-direction: column;
 --nav-list-block-align: flex-start;
---nav-list-block-gap: 0.25rem;
+--nav-list-block-gap: var(--space-xs, 0.25rem);
 --nav-list-block-width: 100%;
 
 // Nav item
@@ -140,10 +140,10 @@ export default Nav
 // Link styling inside nav items
 --nav-link-color: var(--color-text, currentColor);
 --nav-link-hover-color: var(--color-primary, #0066cc);
---nav-link-padding-inline: 0.5rem;
---nav-link-padding-block: 0.375rem;
+--nav-link-padding-inline: var(--space-sm, 0.5rem);
+--nav-link-padding-block: var(--space-sm, 0.375rem);
 --nav-link-text-decoration: none;
---nav-link-radius: 0.25rem;
+--nav-link-radius: var(--radius-sm, 0.25rem);
 --nav-link-fw: 400;
 --nav-link-current-color: var(--color-primary, #0066cc);
 --nav-link-current-fw: 600;
@@ -160,9 +160,9 @@ export default Nav
   align-items: var(--nav-align, center);
   justify-content: var(--nav-justify, space-between);
   background: var(--nav-bg, transparent);
-  padding-inline: var(--nav-padding-inline, 1rem);
-  padding-block: var(--nav-padding-block, 0.5rem);
-  gap: var(--nav-gap, 1rem);
+  padding-inline: var(--nav-padding-inline, var(--space-md, 1rem));
+  padding-block: var(--nav-padding-block, var(--space-sm, 0.5rem));
+  gap: var(--nav-gap, var(--space-md, 1rem));
   font-size: var(--nav-fs, 0.9rem);
   flex-wrap: var(--nav-flex-wrap, wrap);
 }
@@ -170,7 +170,7 @@ export default Nav
 .nav-list {
   display: var(--nav-list-display, flex);
   flex-direction: var(--nav-list-direction, row);
-  gap: var(--nav-list-gap, 0.5rem);
+  gap: var(--nav-list-gap, var(--space-sm, 0.5rem));
   list-style: none;
   padding: 0;
   margin: 0;
@@ -179,7 +179,7 @@ export default Nav
   &[data-list~="block"] {
     flex-direction: var(--nav-list-block-direction, column);
     align-items: var(--nav-list-block-align, flex-start);
-    gap: var(--nav-list-block-gap, 0.25rem);
+    gap: var(--nav-list-block-gap, var(--space-xs, 0.25rem));
     width: var(--nav-list-block-width, 100%);
   }
 }
@@ -191,9 +191,9 @@ export default Nav
   a {
     color: var(--nav-link-color, currentColor);
     text-decoration: var(--nav-link-text-decoration, none);
-    padding-inline: var(--nav-link-padding-inline, 0.5rem);
-    padding-block: var(--nav-link-padding-block, 0.375rem);
-    border-radius: var(--nav-link-radius, 0.25rem);
+    padding-inline: var(--nav-link-padding-inline, var(--space-sm, 0.5rem));
+    padding-block: var(--nav-link-padding-block, var(--space-sm, 0.375rem));
+    border-radius: var(--nav-link-radius, var(--radius-sm, 0.25rem));
     font-weight: var(--nav-link-fw, 400);
     display: block;
     transition: color 0.15s ease, background 0.15s ease;

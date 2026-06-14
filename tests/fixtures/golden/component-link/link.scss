@@ -1,0 +1,28 @@
+// link.scss
+a {
+  color: var(--link-color, #0066cc);
+  text-decoration: var(--link-text-decoration, underline);
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+  transition: color 0.15s ease, text-decoration-thickness 0.15s ease;
+
+  &:hover {
+    color: var(--link-hover-color, #0052a3);
+    text-decoration: var(--link-hover-text-decoration, none);
+  }
+
+  &:visited {
+    color: var(--link-visited-color, #551a8b);
+  }
+
+  &:focus-visible {
+    outline: var(--link-focus-outline, 2px solid currentColor);
+    outline-offset: var(--link-focus-outline-offset, 2px);
+    text-decoration-thickness: 2px;
+  }
+
+  &[data-btn] {
+    // Button-style link inherits button styling — see button.scss
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,63 @@
+// checkbox.scss
+.checkbox-input {
+  // Hide native rendering but keep the input itself accessible
+  appearance: none;
+  -webkit-appearance: none;
+  width: var(--checkbox-size, 1.25rem);
+  height: var(--checkbox-size, 1.25rem);
+  border: 2px solid var(--checkbox-border-color, #d0d0d0);
+  border-radius: var(--checkbox-radius, var(--radius-sm, 0.25rem));
+  background: var(--checkbox-bg, #fff);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+
+  &:checked {
+    background: var(--checkbox-checked-bg, #0066cc);
+    border-color: var(--checkbox-checked-border, #0066cc);
+
+    &::after {
+      content: '';
+      width: 60%;
+      height: 30%;
+      border-bottom: 2px solid var(--checkbox-check-color, #fff);
+      border-left: 2px solid var(--checkbox-check-color, #fff);
+      transform: rotate(-45deg) translateY(-15%);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--checkbox-focus-ring, 0 0 0 3px rgba(0, 102, 204, 0.4));
+  }
+
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--checkbox-disabled-opacity, 0.6);
+  }
+}
+
+[data-checkbox-size] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--checkbox-gap, var(--space-sm, 0.5rem));
+
+  // Size presets — set the --checkbox-size CSS variable based on the data attr
+  &[data-checkbox-size="xs"] { --checkbox-size: var(--checkbox-size-xs, 0.875rem); }
+  &[data-checkbox-size="sm"] { --checkbox-size: var(--checkbox-size-sm, 1rem); }
+  &[data-checkbox-size="md"] { --checkbox-size: var(--checkbox-size-md, 1.25rem); }
+  &[data-checkbox-size="lg"] { --checkbox-size: var(--checkbox-size-lg, 1.5rem); }
+}
+
+.checkbox-label {
+  font-size: var(--checkbox-label-fs, 1rem);
+  color: var(--checkbox-label-color, inherit);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-required {
+  color: var(--checkbox-required-color, #dc3545);
+  margin-inline-start: var(--space-xs, 0.125rem);
+}

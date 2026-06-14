@@ -123,17 +123,17 @@ export default List
 ## CSS Variables
 
 ```scss
---list-padding-inline-start: 1.25rem;
---list-gap: 0.5rem;
---list-item-padding-block: 0.25rem;
+--list-padding-inline-start: var(--space-lg, 1.25rem);
+--list-gap: var(--space-sm, 0.5rem);
+--list-item-padding-block: var(--space-xs, 0.25rem);
 --list-marker-color: var(--color-primary, #0066cc);
---list-inline-gap: 1rem;
+--list-inline-gap: var(--space-md, 1rem);
 
 // Definition list
 --dl-term-fw: 600;
---dl-term-margin-block-start: 0.5rem;
+--dl-term-margin-block-start: var(--space-sm, 0.5rem);
 --dl-desc-margin-inline-start: 0;
---dl-desc-margin-block-end: 0.5rem;
+--dl-desc-margin-block-end: var(--space-sm, 0.5rem);
 ```
 
 ## SCSS Template
@@ -141,14 +141,14 @@ export default List
 ```scss
 // list.scss
 ul, ol {
-  padding-inline-start: var(--list-padding-inline-start, 1.25rem);
+  padding-inline-start: var(--list-padding-inline-start, var(--space-lg, 1.25rem));
   display: flex;
   flex-direction: column;
-  gap: var(--list-gap, 0.5rem);
+  gap: var(--list-gap, var(--space-sm, 0.5rem));
   margin: 0;
 
   > li {
-    padding-block: var(--list-item-padding-block, 0.25rem);
+    padding-block: var(--list-item-padding-block, var(--space-xs, 0.25rem));
 
     &::marker {
       color: var(--list-marker-color, #0066cc);
@@ -158,7 +158,7 @@ ul, ol {
   &[data-variant="inline"] {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--list-inline-gap, 1rem);
+    gap: var(--list-inline-gap, var(--space-md, 1rem));
     list-style: none;
     padding-inline-start: 0;
   }
@@ -174,12 +174,12 @@ dl {
 
   > dt {
     font-weight: var(--dl-term-fw, 600);
-    margin-block-start: var(--dl-term-margin-block-start, 0.5rem);
+    margin-block-start: var(--dl-term-margin-block-start, var(--space-sm, 0.5rem));
   }
 
   > dd {
     margin-inline-start: var(--dl-desc-margin-inline-start, 0);
-    margin-block-end: var(--dl-desc-margin-block-end, 0.5rem);
+    margin-block-end: var(--dl-desc-margin-block-end, var(--space-sm, 0.5rem));
   }
 }
 ```

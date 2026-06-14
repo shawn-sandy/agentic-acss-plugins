@@ -1,0 +1,8 @@
+// img.scss
+img {
+  display: var(--img-display, block);
+  max-width: var(--img-max-width, 100%);
+  height: var(--img-height, auto);
+  object-fit: var(--img-object-fit, cover);
+  border-radius: var(--img-radius, var(--radius-none, 0));
+}

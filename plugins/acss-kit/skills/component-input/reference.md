@@ -209,9 +209,9 @@ export default Input
 --input-bg: var(--color-surface, #fff);
 --input-color: var(--color-text, inherit);
 --input-border: 1px solid var(--color-border, #d0d0d0);
---input-radius: 0.375rem;
---input-padding-inline: 0.75rem;
---input-padding-block: 0.5rem;
+--input-radius: var(--radius-md, 0.375rem);
+--input-padding-inline: var(--space-md, 0.75rem);
+--input-padding-block: var(--space-sm, 0.5rem);
 --input-fs: 1rem;
 --input-line-height: 1.5;
 --input-transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -242,9 +242,9 @@ select {
   background: var(--input-bg, #fff);
   color: var(--input-color, inherit);
   border: var(--input-border, 1px solid #d0d0d0);
-  border-radius: var(--input-radius, 0.375rem);
-  padding-inline: var(--input-padding-inline, 0.75rem);
-  padding-block: var(--input-padding-block, 0.5rem);
+  border-radius: var(--input-radius, var(--radius-md, 0.375rem));
+  padding-inline: var(--input-padding-inline, var(--space-md, 0.75rem));
+  padding-block: var(--input-padding-block, var(--space-sm, 0.5rem));
   font-size: var(--input-fs, 1rem);
   line-height: var(--input-line-height, 1.5);
   transition: var(--input-transition);

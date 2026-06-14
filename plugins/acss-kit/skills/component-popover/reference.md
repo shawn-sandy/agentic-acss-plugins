@@ -185,7 +185,7 @@ export default Popover
 --popover-bg: var(--color-surface, #fff);
 --popover-color: var(--color-text, inherit);
 --popover-border: 1px solid var(--color-border, #e0e0e0);
---popover-radius: 0.375rem;
+--popover-radius: var(--radius-md, 0.375rem);
 --popover-padding: 0.75rem 1rem;
 --popover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 --popover-max-width: 20rem;
@@ -201,7 +201,7 @@ export default Popover
   // Native popover element resets — re-establish basic block
   margin: 0;
   border: var(--popover-border, 1px solid #e0e0e0);
-  border-radius: var(--popover-radius, 0.375rem);
+  border-radius: var(--popover-radius, var(--radius-md, 0.375rem));
   background: var(--popover-bg, #fff);
   color: var(--popover-color, inherit);
   box-shadow: var(--popover-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
@@ -235,8 +235,8 @@ export default Popover
 
 .popover-close {
   position: absolute;
-  top: 0.25rem;
-  right: 0.5rem;
+  top: var(--space-xs, 0.25rem);
+  right: var(--space-sm, 0.5rem);
   background: transparent;
   border: none;
   font-size: 1.25rem;

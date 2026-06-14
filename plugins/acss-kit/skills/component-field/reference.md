@@ -83,13 +83,13 @@ export default Field
 ```scss
 --field-display: flex;
 --field-direction: column;
---field-gap: 0.375rem;
---field-margin-block-end: 1rem;
+--field-gap: var(--space-sm, 0.375rem);
+--field-margin-block-end: var(--space-md, 1rem);
 
 --field-label-fs: 0.875rem;
 --field-label-fw: 500;
 --field-label-color: var(--color-text, inherit);
---field-label-margin-block-end: 0.25rem;
+--field-label-margin-block-end: var(--space-xs, 0.25rem);
 ```
 
 ## SCSS Template
@@ -99,14 +99,14 @@ export default Field
 [data-style="fields"] {
   display: var(--field-display, flex);
   flex-direction: var(--field-direction, column);
-  gap: var(--field-gap, 0.375rem);
-  margin-block-end: var(--field-margin-block-end, 1rem);
+  gap: var(--field-gap, var(--space-sm, 0.375rem));
+  margin-block-end: var(--field-margin-block-end, var(--space-md, 1rem));
 
   > label {
     font-size: var(--field-label-fs, 0.875rem);
     font-weight: var(--field-label-fw, 500);
     color: var(--field-label-color, inherit);
-    margin-block-end: var(--field-label-margin-block-end, 0.25rem);
+    margin-block-end: var(--field-label-margin-block-end, var(--space-xs, 0.25rem));
     display: block;
   }
 }

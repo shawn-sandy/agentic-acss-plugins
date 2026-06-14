@@ -84,7 +84,7 @@ export default IconButton
 --icon-btn-size: 3rem;             // 48px tap target (WCAG 2.5.5 AAA)
 --icon-btn-padding: 0;
 --icon-btn-radius: 50%;
---icon-btn-gap: 0.5rem;
+--icon-btn-gap: var(--space-sm, 0.5rem);
 --icon-label-bp: 48rem;            // Breakpoint above which label appears
 --icon-label-fs: 0.9375rem;
 ```
@@ -101,7 +101,7 @@ export default IconButton
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--icon-btn-gap, 0.5rem);
+  gap: var(--icon-btn-gap, var(--space-sm, 0.5rem));
   border: none;
   background: transparent;
 }

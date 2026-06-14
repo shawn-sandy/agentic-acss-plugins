@@ -121,7 +121,7 @@ export default Table
 
 --table-caption-fs: 0.9375rem;
 --table-caption-fw: 600;
---table-caption-padding-block: 0.5rem;
+--table-caption-padding-block: var(--space-sm, 0.5rem);
 --table-caption-text-align: start;
 
 --table-th-fs: 0.875rem;
@@ -152,7 +152,7 @@ export default Table
     caption-side: top;
     font-size: var(--table-caption-fs, 0.9375rem);
     font-weight: var(--table-caption-fw, 600);
-    padding-block: var(--table-caption-padding-block, 0.5rem);
+    padding-block: var(--table-caption-padding-block, var(--space-sm, 0.5rem));
     text-align: var(--table-caption-text-align, start);
   }
 
