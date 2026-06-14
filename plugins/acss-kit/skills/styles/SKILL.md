@@ -266,8 +266,10 @@ lacks, turning our generator into a DESIGN.md **producer**. See
 **Semantic round-trip, not lossless:** we emit our 18 `--color-*` roles under
 DESIGN.md token names (inverse of Appendix A). M3 ladder tokens we do not model
 (`surface-tint`, `*-container` pairs, `*-fixed*`) are not reproduced; roles with
-no M3 slot (`success`, `warning`, `focus-ring`, `text-subtle`) keep our names and
-are re-synthesized on re-import. State this in the summary.
+no M3 slot (`success`, `warning`, `focus-ring`, `text-subtle`) keep our names —
+the adapter carries matching candidates so a DESIGN.md we exported round-trips
+them (an external M3 DESIGN.md omits them and they re-synthesize). State this in
+the summary.
 
 **`--format=design-md`** (default) is **pure Python — no Node needed**.
 **`--format=dtcg|tailwind`** shells `npx @google/design.md export` and **requires
@@ -278,7 +280,7 @@ Node/`npx`**; halt with `"--format=dtcg|tailwind needs Node/npx — use --format
 1. **Locate the theme dir** (`--dir`, else the `/theme-create` rule: prefer `src/styles/theme/`, else ask). It must contain `light.css` (and ideally `space-radius.css`, `typography.css`).
 2. **`design-md` path:** run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_design_md.py --dir=<dir> --name=<Brand>` — it shells `css_to_tokens.py` to assemble the tokens JSON, applies the inverse mapping, and writes a DESIGN.md (YAML front-matter + a prose skeleton with the canonical `##` sections and `TODO` rationale placeholders). Write stdout to `<dir>/DESIGN.md` (or the user's path). Exit 1 → print the `note:` reason (e.g. no light-mode colors) and halt.
 3. **`dtcg`/`tailwind` path:** first ensure a DESIGN.md exists (run step 2 if not), then shell `npx @google/design.md export --format dtcg|json-tailwind <DESIGN.md>` and write its output. These formats are produced by the upstream CLI for free.
-4. **Validate (design-md path).** Run `validate_design_md.py <DESIGN.md>` on the emitted file — it should be lint-clean (a primary role is always present, since our theme requires `--color-primary`). Surface any warnings.
+4. **Validate (optional — needs `npx`).** `validate_design_md.py` shells `npx @google/design.md lint`, so **only run it if `npx` is available**, and treat it as a courtesy lint (warnings only — the emitted file is valid by construction: a primary role is always present, since our theme requires `--color-primary`). **Skip this step when `npx` is absent — never halt the pure-Python `design-md` export on it.**
 5. **Summary** — file(s) written, the **mapped-vs-kept-name** color roles, and the round-trip caveat (dark mode is not represented in standard DESIGN.md front-matter; only `light` is exported).
 
 ### References to load

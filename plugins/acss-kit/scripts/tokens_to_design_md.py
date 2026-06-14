@@ -26,7 +26,9 @@ Semantic round-trip (value-preserving, not byte-identical): we emit the 18
 M3 ladders and re-synthesizes the roles M3 omits, so `surface-tint`, the
 `*-container` accent pairs, and `*-fixed*` variants are not reproduced. The
 roles our theme does not source from M3 (`success`, `warning`, `focus-ring`,
-`text-subtle`) keep our own names and are re-synthesized rather than read back.
+`text-subtle`) keep our own names; the adapter carries matching candidates so a
+DESIGN.md *we* exported round-trips them (an external M3 DESIGN.md omits them and
+they fall through to OKLCH synthesis).
 
 ⚠️ FORMAT BOUNDARY — the exact DESIGN.md front-matter group/sub-keys
 (`colors`/`spacing`/`rounded`/`typography`; `fontFamily`/`fontSize`/`fontWeight`/
@@ -51,7 +53,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 # Inverse of Appendix A / design_md_to_tokens.COLOR_SOURCES. Each of our 18
 # roles maps to ONE DESIGN.md color token name. Where M3 has a unique slot we
 # use its name (so the value round-trips through the adapter); where it has none
-# we keep our own name (the value is preserved but re-synthesized on import).
+# we keep our own name (design_md_to_tokens.COLOR_SOURCES carries a matching
+# candidate, so an exported DESIGN.md round-trips the value).
 # Order is the emission order.
 # ---------------------------------------------------------------------------
 ROLE_TO_DMD: list[tuple[str, str]] = [
@@ -61,7 +64,7 @@ ROLE_TO_DMD: list[tuple[str, str]] = [
     ("--color-surface-subtle", "surface-container-low"),   # optional
     ("--color-text",           "on-surface"),
     ("--color-text-muted",     "on-surface-variant"),
-    ("--color-text-subtle",    "on-surface-subtle"),        # optional, no M3 slot
+    ("--color-text-subtle",    "text-subtle"),              # optional, no M3 slot → our name
     ("--color-text-inverse",   "on-primary"),
     ("--color-border",         "outline-variant"),
     ("--color-border-strong",  "outline"),
@@ -159,7 +162,7 @@ def build_design_md(tokens: dict, name: str) -> tuple[str, list[str]]:
         "> `--color-*` roles are emitted under DESIGN.md token names. M3 ladder",
         "> tokens our theme does not model (`surface-tint`, the `*-container` pairs,",
         "> `*-fixed*`) are not reproduced; roles with no M3 slot (`success`,",
-        "> `warning`, `focus-ring`, `on-surface-subtle`) keep our names.",
+        "> `warning`, `focus-ring`, `text-subtle`) keep our names and round-trip.",
         "",
         "## Overview",
         "",
@@ -251,6 +254,7 @@ _FIXTURE = {
             "--color-surface-raised": "#e2e8f8",
             "--color-text": "#151c27",
             "--color-text-muted": "#534434",
+            "--color-text-subtle": "#6b5d4f",
             "--color-text-inverse": "#ffffff",
             "--color-border": "#d8c3ad",
             "--color-border-strong": "#867461",
@@ -298,6 +302,8 @@ def self_test() -> int:
           all(s in text for s in ("## Overview", "## Colors", "## Typography",
                                   "## Spacing & Radius", "## Components")))
     check("success kept under our name (no M3 slot)", "\n  success: '#2e7d32'" in text)
+    check("text-subtle kept under our name (not on-surface-subtle)",
+          "\n  text-subtle: '#6b5d4f'" in text and "on-surface-subtle" not in text)
 
     # round-trip: parse our own front-matter back, assert values preserved
     parsed = parse_front_matter_scalars(text)
