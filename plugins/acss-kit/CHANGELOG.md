@@ -4,6 +4,17 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-06-14
+
+### Added
+
+- **Spec-driven generation — button pilot (Workstream A+B+C PR 7a).** Introduces the first neutral **COMPONENT.md** in the acss-kit library: `skills/component-button/button.component.md`, the framework-agnostic source of truth (front-matter contract + `## Semantic Structure` / `## Styles` / `## Behavior` / `## Accessibility`) with the canonical React projection moved into a `## Target: react` adapter (Props Interface + Key Patterns + TSX Template). Conforms to the style-agent COMPONENT.md spec.
+- **`/kit-add` reads COMPONENT.md when present.** kit-core Step B1 now prefers `component-<name>/<name>.component.md` over the legacy `reference.md`: `## Styles` → the `.scss` file, `## Target: react` → the `.tsx` file, the adapter's `generation:` line → the Generation Contract. The legacy `reference.md` path is unchanged for the other 14 components.
+
+### Changed
+
+- **Golden guard proves the inversion is lossless.** `tests/lib/extract_full.mjs` now also recognizes `## Styles` as a SCSS source section; `tests/run.sh` step 2a extracts the new `button.component.md` and asserts its SCSS (and the existing `reference.md`'s) are **byte-identical** to the same `button.scss` golden. The React TSX likewise extracts byte-identical from both sources, so `/kit-add button` output is unchanged.
+
 ## [1.8.0] - 2026-06-14
 
 ### Added

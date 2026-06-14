@@ -159,7 +159,8 @@ Cascade outcome: **theme > utilities > components > foundation**.
 ### B1. Lookup the component
 
 Read the component's reference doc:
-- Per-component skills: `../../component-{name}/reference.md`
+- **Prefer the neutral COMPONENT.md** if present: `../../component-{name}/{name}.component.md` (the framework-agnostic spec — see `plugins/style-agent/docs/component-md/spec.md`). Map its sections to generation: `## Styles` → the `.scss` file, `## Target: react` (its `## TSX Template` + `## Props Interface` + `## Key Pattern:` blocks) → the `.tsx` file, and the `generation:` line in the `## Target: react` block → the Generation Contract. This is the spec-driven source going forward; extraction is byte-identical to the legacy `reference.md` (golden-guarded).
+- Else the legacy `reference.md`: `../../component-{name}/reference.md`
 - Inline-only components: `references/inline-components.md` (Badge, Tag, Heading, Text, Details, Progress)
 
 If the component is not found, inform the developer. Run `/kit-list` to show available components.
