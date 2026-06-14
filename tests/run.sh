@@ -60,6 +60,24 @@ mkdir -p "$EXTRACTED"
 section "2. extract + syntax-check acss-kit references"
 node "$REPO_ROOT/tests/validate_extracted_tsx.mjs"
 
+# Step 2a — golden guard for the token-swept component-button (Workstream A PR 2).
+# extract_full.mjs mirrors /kit-add; the golden locks the swept output so future
+# edits can't silently regress the --space/--radius/--font token consumption.
+section "2a. component-button golden (token-sweep regression guard)"
+BTN_REF="$REPO_ROOT/plugins/acss-kit/skills/component-button/reference.md"
+GOLDEN="$REPO_ROOT/tests/fixtures/golden/component-button"
+BTN_TMP="$TMP_ROOT/component-button"
+mkdir -p "$BTN_TMP"
+node "$REPO_ROOT/tests/lib/extract_full.mjs" "$BTN_REF" tsx > "$BTN_TMP/button.tsx"
+node "$REPO_ROOT/tests/lib/extract_full.mjs" "$BTN_REF" scss > "$BTN_TMP/button.scss"
+if diff -u "$GOLDEN/button.tsx" "$BTN_TMP/button.tsx" && diff -u "$GOLDEN/button.scss" "$BTN_TMP/button.scss"; then
+  green "component-button golden OK"
+else
+  red "component-button golden DRIFT — extracted output differs from tests/fixtures/golden/component-button/"
+  red "If the change is intentional, regenerate: node tests/lib/extract_full.mjs <ref> tsx|scss > tests/fixtures/golden/component-button/button.<ext>"
+  exit 1
+fi
+
 # Step 3
 section "3. SCSS contract"
 SCSS_LOG="$TMP_ROOT/scss-contract.log"

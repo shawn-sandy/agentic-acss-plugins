@@ -4,6 +4,20 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-06-14
+
+### Changed
+
+- **`component-button` consumes the token homes (Workstream A PR 2 — sweep pilot).** `button.scss` now reads `--space-sm` (gap), `--radius-md` (border-radius), and `--font-label-md-weight` (font-weight) via nested fallbacks — `var(--btn-x, var(--<token>, <original-literal>))`. With no DESIGN.md / token files present the original literals apply, so generated output is **pixel-identical** to before; with a theme present, button responds to it. Establishes the fallback-preserving, nearest-step, skip-intentional-non-scale mapping discipline the bulk sweep (PR 3) inherits.
+
+### Fixed
+
+- **`--color-primary-dark` debt.** `button`'s primary-hover background (and the `--btn-hover-bg` example in `kit-core/references/css-variables.md`) referenced `--color-primary-dark`, which is **not** one of the 18 canonical theme roles — it silently fell back. Repointed to `--color-primary-hover`.
+
+### Added
+
+- **`tests/run.sh` step 2a** — a golden guard (`tests/fixtures/golden/component-button/`) that extracts button via `extract_full.mjs` (mirrors `/kit-add`) and diffs against the locked output, so future edits can't silently regress the token sweep.
+
 ## [1.3.0] - 2026-06-14
 
 ### Added

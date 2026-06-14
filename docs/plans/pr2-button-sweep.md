@@ -50,7 +50,11 @@ These three rules are the **policy the bulk sweep (PR 3) inherits.**
 
 1. **Apply the button swaps** to `component-button/reference.md` — both the
    `## CSS Variables` and `## SCSS Template` sections — per the swap table in the
-   appendix. Each swap wraps the existing value in `var(--<token>, <original>)`.
+   appendix. The `## CSS Variables` catalogue entry becomes
+   `var(--<token>, <original>)`; the `## SCSS Template` inline use becomes the
+   **nested** `var(--btn-x, var(--<token>, <original>))` — precedence *explicit
+   `--btn-x` override → theme token → original literal*, matching the repo's
+   existing color pattern (`var(--btn-primary-bg, var(--color-primary, #0066cc))`).
    - *Why:* makes button consume the PR-1 token homes so a DESIGN.md/`/theme-*`
      reskins it, with zero visual change until themed. *Verify:* every swapped
      declaration is `var(--space|radius|font-*, <original-literal>)`; no bare
