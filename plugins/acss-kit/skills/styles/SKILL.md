@@ -97,8 +97,11 @@ bring it to parity with [DESIGN.md](https://github.com/google-labs-code/design.m
 - Emitted to **`space-radius.css`** (`--space-*`, `--radius-*`) and
   **`typography.css`** (`--font-<role>-{family,size,weight,line,tracking}`),
   each a single `:root` block (no light/dark split).
-- The prefixes mirror the Tailwind v4 `@theme` namespaces so a DESIGN.md
-  `css-tailwind` export remaps mechanically.
+- The prefixes are **not** drop-in Tailwind v4 `@theme` names — acss-kit uses
+  `--space-*` and composite `--font-<role>-*`, vs Tailwind's `--spacing-*` and
+  split `--text-*` / `--font-weight-*` / `--leading-*` / `--tracking-*` (only
+  `--radius-*` matches) — so a DESIGN.md `css-tailwind` export needs a name
+  adapter, not a mechanical prefix remap.
 - `tokens_to_css.py` emits these files **only when** the input JSON carries
   `spacing` / `rounded` / `typography` (additive — colors-only input is
   unchanged). `css_to_tokens.py` round-trips them. Structural validation
