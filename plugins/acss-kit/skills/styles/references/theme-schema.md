@@ -68,6 +68,37 @@ Only primary/accent roles. Background, text, and border roles must NOT appear in
 
 Optional: `--color-brand-accent`.
 
+## Non-color token sections (DESIGN.md parity)
+
+Three optional, **mode-independent** top-level sections carry the typography,
+spacing, and rounded tokens that bring our token layer to DESIGN.md parity. They
+are additive — colors-only input still produces only `light.css` / `dark.css`.
+
+```json
+{
+  "spacing":   { "xs": "0.25rem", "sm": "0.5rem", "md": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem" },
+  "rounded":   { "none": "0", "sm": "0.25rem", "md": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+  "typography": {
+    "body-md": { "family": "system-ui, sans-serif", "size": "1rem", "weight": "400", "line": "1.5", "tracking": "0.01em" }
+  }
+}
+```
+
+- `spacing` / `rounded` are `map<name, dimension>` (a dimension is `0` or a
+  number with a `px`/`em`/`rem` unit). Emitted to **`space-radius.css`** as
+  `--space-<name>` and `--radius-<name>`.
+- `typography` is `map<role, composite>`; each composite has optional
+  `family` / `size` / `weight` / `line` / `tracking`. Emitted to
+  **`typography.css`** as `--font-<role>-<sub>`.
+- The CSS prefixes (`--space-*`, `--radius-*`, `--font-*`) mirror the Tailwind v4
+  `@theme` namespaces so a DESIGN.md `css-tailwind` export remaps mechanically.
+- Default scales ship at [`assets/tokens/space-radius.css`](../../../assets/tokens/space-radius.css)
+  and [`assets/tokens/typography.css`](../../../assets/tokens/typography.css) for
+  projects with no DESIGN.md.
+- Structural validation (dimension units, scale completeness, typography
+  sub-props) is handled by [`scripts/validate_tokens.py`](../../../scripts/validate_tokens.py)
+  — the dimension/typography counterpart to `validate_theme.py`'s contrast gate.
+
 ## Round-tripping
 
 CSS → JSON:

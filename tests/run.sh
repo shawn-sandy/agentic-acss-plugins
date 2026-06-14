@@ -259,6 +259,48 @@ else
   exit 1
 fi
 
+section "7f. token homes self-test (tokens_to_css + css_to_tokens round-trip + validate_tokens)"
+TOK_LOG="$TMP_ROOT/token-homes.log"
+if python3 - "$REPO_ROOT" >"$TOK_LOG" 2>&1 <<'PYEOF'
+import json, subprocess, sys, tempfile
+from pathlib import Path
+root = Path(sys.argv[1])
+scripts = root / "plugins/acss-kit/scripts"
+sys.path.insert(0, str(scripts))
+from _tokens import SPACE_SCALE, RADIUS_SCALE, DEFAULT_TYPOGRAPHY  # noqa: E402
+
+# 1. each script's own self-test
+for s in ("tokens_to_css.py", "css_to_tokens.py", "validate_tokens.py"):
+    r = subprocess.run([sys.executable, str(scripts / s), "--self-test"], capture_output=True, text=True)
+    assert r.returncode == 0, f"{s} self-test failed:\n{r.stdout}{r.stderr}"
+
+# 2. byte-stable round-trip of the default scales
+src = {"spacing": SPACE_SCALE, "rounded": RADIUS_SCALE, "typography": DEFAULT_TYPOGRAPHY}
+with tempfile.TemporaryDirectory() as d:
+    subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={d}"],
+                   input=json.dumps(src), text=True, check=True, stdout=subprocess.DEVNULL)
+    out = subprocess.run([sys.executable, str(scripts / "css_to_tokens.py"), f"--dir={d}"],
+                         capture_output=True, text=True, check=True).stdout
+    rt = json.loads(out)
+    assert rt.get("spacing") == SPACE_SCALE, "spacing round-trip drift"
+    assert rt.get("rounded") == RADIUS_SCALE, "rounded round-trip drift"
+    assert rt.get("typography") == DEFAULT_TYPOGRAPHY, "typography round-trip drift"
+
+# 3. shipped default assets validate clean
+for f in ("space-radius.css", "typography.css"):
+    p = root / "plugins/acss-kit/assets/tokens" / f
+    assert p.exists(), f"missing default asset {f}"
+
+print("token homes round-trip + self-tests OK")
+PYEOF
+then
+  green "token homes self-test OK"
+else
+  red "token homes self-test FAILED:"
+  cat "$TOK_LOG"
+  exit 1
+fi
+
 # Step 8
 section "8. acss-kit utilities validator"
 UTIL_DIR="$REPO_ROOT/plugins/acss-kit/assets/utilities"
