@@ -504,3 +504,173 @@ The one real conflict to settle: the **spec says a primary color MUST be
 defined** (reject) while the **CLI treats `missing-primary` as a warning**. We
 should follow the spec (hard fail) since a primary is the OKLCH seed our whole
 pipeline depends on.
+
+## Appendix D — Worked example: `paws-and-paths` DESIGN.md → our `light.css`
+
+Applying Appendix A to the real example's hex values, end to end. This is the
+output `/theme-from-design` would produce for the light mode (dark mode is then
+OKLCH-mirrored):
+
+| Our role | Resolved hex | Source |
+|---|---|---|
+| `--color-background` | `#f9f9ff` | `background` |
+| `--color-surface` | `#f9f9ff` | `surface` |
+| `--color-surface-raised` | `#e2e8f8` | `surface-container-high` |
+| `--color-surface-subtle` | `#f0f3ff` | `surface-container-low` |
+| `--color-text` | `#151c27` | `on-surface` |
+| `--color-text-muted` | `#534434` | `on-surface-variant` |
+| `--color-text-inverse` | `#ffffff` | `on-primary` |
+| `--color-border` | `#d8c3ad` | `outline-variant` |
+| `--color-border-strong` | `#867461` | `outline` |
+| `--color-primary` | `#855300` | `primary` |
+| `--color-primary-hover` | `#f59e0b` | `primary-container` |
+| `--color-danger` | `#ba1a1a` | `error` |
+| `--color-info` | `#00658b` | `tertiary` (blue) |
+| `--color-brand-accent` | `#0058be` | `secondary` |
+| `--color-success` | *generated* | OKLCH-synthesized (no M3 slot) |
+| `--color-warning` | *generated* | OKLCH-synthesized (no M3 slot) |
+| `--color-focus-ring` | `#855300` | = `primary` |
+
+Spot-check the gate: `--color-text-inverse` `#ffffff` on `--color-primary`
+`#855300` ≈ **6.4:1** (passes the 4.5:1 button-label pairing);
+`--color-text` `#151c27` on `--color-background` `#f9f9ff` ≈ **16:1** (passes).
+So this DESIGN.md would generate a contrast-valid theme with **2 roles
+synthesized** and the rest mapped — exactly the collapse-plus-synthesize model.
+A frozen copy of this table makes an ideal `tests/` round-trip fixture.
+
+## Appendix E — Worked example: a sample `COMPONENT.md` (button)
+
+A sketch of the Workstream-B format, mirroring DESIGN.md's bipartite shape
+(YAML front-matter + prose) but for an implementation spec. Note the
+`{token.path}` references pointing into a sibling DESIGN.md:
+
+```markdown
+---
+spec: component.md
+version: alpha
+name: button
+element: button
+verified-against: "@fpkit/acss@6.5.0"
+tokens:
+  background: "{colors.primary}"
+  textColor: "{colors.on-primary}"
+  rounded: "{rounded.md}"
+  paddingBlock: "{spacing.sm}"
+  paddingInline: "{spacing.md}"
+  typography: "{typography.label-md}"
+variants:
+  hover: { background: "{colors.primary-container}" }
+  danger: { background: "{colors.error}" }
+props:
+  type: { values: [button, submit, reset], required: true }
+  disabled: { type: boolean, a11y: "aria-disabled, stays in tab order" }
+  size: { values: [xs, sm, md, lg, xl, 2xl] }
+  color: { values: [primary, secondary, danger, success, warning] }
+a11y:
+  - 2.1.1 Keyboard (disabled stays focusable)
+  - 2.4.7 Focus Visible
+  - 2.5.8 Target Size (44x44 min)
+---
+
+## Overview
+The primary interactive element. Uses `aria-disabled` instead of native
+`disabled` to remain keyboard-operable (WCAG 2.1.1).
+
+## Generation Contract
+export_name: Button · file: button.tsx · scss: button.scss · imports: UI from '../ui'
+
+## Template
+<!-- the existing TSX/SCSS templates, unchanged -->
+
+## Accessibility
+<!-- the existing WCAG contract -->
+```
+
+Two things this sketch demonstrates: (1) the **token block is the bridge** —
+it resolves against whatever DESIGN.md is in the project, so the same
+`COMPONENT.md` re-skins per brand; (2) it references **primitive** groups
+(`{colors.*}`, `{spacing.*}`) not DESIGN.md `components.*`, per the loose-coupling
+decision in Workstream B. The existing 9-section `reference.md` body
+(TSX/SCSS/Accessibility) carries over verbatim — `COMPONENT.md` formalizes the
+*envelope*, not a rewrite of the content.
+
+## Appendix F — Adapter input shape (export formats)
+
+Confirmed from `packages/cli/src/commands/export.ts`: each format routes through
+an emitter handler — `TailwindEmitterHandler` (`json-tailwind`/`tailwind`),
+`TailwindV4EmitterHandler` → `serializeTailwindV4(theme)` (`css-tailwind`), and
+`DtcgEmitterHandler` (`dtcg`). The two candidate inputs for
+`design_md_to_tokens.py`:
+
+**`css-tailwind`** — a Tailwind v4 `@theme { }` block of CSS custom properties.
+Tailwind v4 namespaces tokens as `--color-*`, `--spacing-*`, `--radius-*`,
+`--font-*`, `--text-*` (font-size). The happy consequence: the prefix
+**already matches our `--color-*` convention**, so extraction is a trivial
+CSS-custom-property parse in Python stdlib — only the **M3-name remap of
+Appendix A** remains (e.g. `--color-on-surface` → `--color-text`):
+
+```css
+@theme {
+  --color-primary: #855300;
+  --color-on-surface: #151c27;
+  --color-surface-container-high: #e2e8f8;
+  --radius-md: 0.75rem;
+  --spacing-md: 24px;
+  --text-body-md: 16px;
+}
+```
+
+**`dtcg`** — W3C Design Tokens JSON: nested groups, each token an object with
+`$type` + `$value` (composite `typography` carries an object `$value`):
+
+```json
+{
+  "colors": { "primary": { "$type": "color", "$value": "#855300" } },
+  "spacing": { "md": { "$type": "dimension", "$value": "24px" } },
+  "typography": { "body-md": { "$type": "typography",
+    "$value": { "fontFamily": "Plus Jakarta Sans", "fontSize": "16px",
+                "fontWeight": 400, "lineHeight": "24px" } } }
+}
+```
+
+**Recommendation:** consume **`css-tailwind`** as the adapter input. CSS-custom-
+property parsing is trivial stdlib, the `--color-*`/`--radius-*`/`--spacing-*`
+prefixes line up with our naming, and we avoid DTCG's nested `$value`/`$type`
+unwrapping. Keep `dtcg` purely as our *export* interop target (Appendix C of
+"DTCG is free"), not an import path. (Exact Tailwind-v4 prefixes should be
+confirmed against `serializeTailwindV4` at build time — they drive the parser.)
+
+## Phased delivery roadmap
+
+A dependency-ordered sequence, sized S/M/L, mirroring how the component-skill
+split was staged (pilot → bulk, golden tests throughout):
+
+| PR | Scope | Workstream | Size | Depends on |
+|---|---|---|---|---|
+| **0** | This proposal *(done)* + `COMPONENT.md` spec draft + advisory rule | B | M | — |
+| **1** | Token homes: extend `theme.schema.json` + `_tokens.py` `ROLE_GROUPS`; `tokens_to_css.py` emits `typography.css` + `space-radius.css`; new unit/scale validators | A (infra) | L | 0 |
+| **2** | Sweep **pilot (button)**: literals → `var(--space/radius/font-*)`; fix `--color-primary-dark` debt; golden-output test | A | M | 1 |
+| **3** | Bulk sweep remaining 14 (~150 sites) + wire `alert` state colors to roles | A | L | 2 |
+| **4** | `design_md_to_tokens.py` (consume `css-tailwind`) + `validate_design_md.py` + `/theme-from-design` | A (core) | L | 1, parse-route decision |
+| **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) | A | M | 4 |
+| **6** | Figma bridge (`get_variable_defs` → DESIGN.md; Code Connect out) + PostToolUse hook + `tests/run.sh` round-trip step | C | M | 4 |
+
+Critical path is **0 → 1 → 4**; the component sweep (2, 3) is parallelizable
+once token homes (1) land and is the only *large* user-visible churn.
+
+## Why DESIGN.md (vs. raw DTCG / Style Dictionary / Tailwind config)
+
+For completeness on the "why adopt this format" question:
+
+- **vs. raw DTCG / `tokens.json`:** DTCG is a token *interchange* format with no
+  prose, no section grammar, and no agent-consumption story. DESIGN.md *layers
+  rationale on top* and exports *to* DTCG — we get interop without losing the
+  human/agent narrative. (We target DTCG on export, not as the authoring format.)
+- **vs. Style Dictionary:** a build tool, not a portable spec — it transforms
+  tokens but defines no canonical file a human/agent reads as source of truth.
+- **vs. a Tailwind config:** framework-specific and code, not a neutral artifact;
+  DESIGN.md *exports to* Tailwind (v3 and v4), so a Tailwind project is a
+  consumer, not a competitor.
+- **Net:** DESIGN.md is the only option that is simultaneously human-readable,
+  agent-consumable, prose-bearing, and export-interoperable — which is exactly
+  the seam our `styles` layer needs and the niche our `COMPONENT.md` extends.
