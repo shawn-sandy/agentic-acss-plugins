@@ -431,3 +431,76 @@ This proposal is for review. On approval, the natural follow-on is to convert
 the two workstreams into execution plans under `docs/plans/` — `COMPONENT.md`
 spec (Workstream B) first, then the `design_md_to_tokens.py` adapter and
 full-parity token homes (Workstream A).
+
+---
+
+## Appendix A — M3 → our-roles translation table (draft)
+
+Derived from the real `paws-and-paths` example (M3 naming) against our 15
+required + 3 optional roles. This is the load-bearing artifact for
+`design_md_to_tokens.py`; both **collapse** (many M3 → one of ours) and
+**synthesize** (M3 has no slot → OKLCH) appear.
+
+| Our role | Source M3 token(s) | Strategy |
+|---|---|---|
+| `--color-background` | `background` (fallback `surface`) | direct |
+| `--color-surface` | `surface` / `surface-container-lowest` | direct |
+| `--color-surface-raised` | `surface-container-high` / `-highest` | collapse ladder |
+| `--color-surface-subtle` *(opt)* | `surface-container-low` / `surface-dim` | collapse ladder |
+| `--color-text` | `on-surface` / `on-background` | direct |
+| `--color-text-muted` | `on-surface-variant` | direct |
+| `--color-text-subtle` *(opt)* | `on-surface-variant` (lightened) | derive |
+| `--color-text-inverse` | `on-primary` | `on-X` → inverse |
+| `--color-border` | `outline-variant` | M3 `-variant` is the *softer* outline |
+| `--color-border-strong` | `outline` | M3 `outline` is the *stronger* one |
+| `--color-primary` | `primary` | direct |
+| `--color-primary-hover` | `primary-container` / `inverse-primary` | best-effort state |
+| `--color-danger` | `error` | alias |
+| `--color-success` | *(none in M3)* | **synthesize via OKLCH** (hue ≈ 145°) |
+| `--color-warning` | *(none in M3)* | **synthesize** (hue ≈ 85°) |
+| `--color-info` | `tertiary` (if blue) else *(none)* | map-or-synthesize |
+| `--color-focus-ring` | *(none)* | **synthesize** (usually = `primary`) |
+| `--color-brand-accent` *(opt)* | `secondary` | direct |
+
+Dropped on collapse (no target role, acceptable loss): `surface-tint`, the
+`*-container`/`on-*-container` accent pairs, and all `*-fixed`/`*-fixed-dim`
+variants. The table itself should ship as a `styles` reference doc so the
+mapping is reviewable and testable in isolation.
+
+## Appendix B — Figma ⇄ DESIGN.md bridge (MCP I/O contract)
+
+Confirmed shapes of the in-session Figma MCP tools that make the bridge real:
+
+| Tool | Input | Output | Use in this design |
+|---|---|---|---|
+| `get_variable_defs` | `fileKey`, `nodeId` | flat map `{ 'color/primary': '#855300', 'spacing/md': '24px' }` | Figma variables → DESIGN.md tokens (author) or → our roles directly. Same freeform-naming → translation-table problem as M3. |
+| `get_code_connect_map` | `fileKey`, `nodeId` | `{ nodeId: { codeConnectSrc, codeConnectName } }` | Links a Figma component node to a **codebase component file** — i.e. a Figma "Button" ↔ our `component-button`. Can auto-populate a `COMPONENT.md` ↔ Figma binding. |
+| `add_code_connect_map` | mapping | — | Push our components back so designers see which code implements each design node (code→design direction). |
+| `get_design_context` | `fileKey`, `nodeId` | code + screenshot + metadata | Visual grounding when reconciling a token change against a real frame. |
+
+Net: **Figma variables → DESIGN.md → our theme** (inbound, via
+`get_variable_defs`) and **our components → Figma Code Connect** (outbound, via
+`add_code_connect_map`) form the two-way bridge DESIGN.md's interop promise
+implies — and reuse the same translation table as Appendix A.
+
+## Appendix C — `validate_design_md.py` parity (detector contract)
+
+Our validator (detector contract: JSON to stdout, `reasons` array, exit 0/1)
+normalizes upstream `lint` output plus the spec's normative consumer-behavior
+table:
+
+| Finding | Spec / CLI severity | Our exit impact |
+|---|---|---|
+| Duplicate section heading | **Error — reject file** (normative MUST) | exit 1 |
+| `broken-ref` (unresolved `{token.path}`) | Error | exit 1 |
+| `missing-primary` | **Spec: MUST** define a primary / **CLI: warning** — *discrepancy to resolve* | exit 1 (follow spec) |
+| `contrast-ratio` (WCAG AA) | Warning | reason, exit 0 (our `validate_theme.py` is the hard gate post-generation) |
+| `orphaned-tokens`, `missing-typography`, `section-order`, `unknown-key` | Warning | reason, exit 0 |
+| `unknown-component-property` | Accept **with warning** | reason, exit 0 |
+| Unknown section / color / typography / spacing | **Preserve; do not error** | no reason |
+| `token-summary`, `missing-sections` | Info | informational reason |
+
+The one real conflict to settle: the **spec says a primary color MUST be
+defined** (reject) while the **CLI treats `missing-primary` as a warning**. We
+should follow the spec (hard fail) since a primary is the OKLCH seed our whole
+pipeline depends on.
