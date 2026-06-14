@@ -5,7 +5,7 @@ created: 2026-06-14
 repo-name: acss-plugins
 ---
 
-# Proposal: a `flesh-out` skill — turn a half-formed idea into a decision-complete proposal
+# Proposal: a `proposal-builder` skill — turn a half-formed idea into a decision-complete proposal
 
 > This proposal codifies the workflow this very session used — taking "look at
 > design.md and align our components" from a vague prompt to a 750-line,
@@ -28,7 +28,7 @@ predictable:
 - **One-shot reports** — a wall of text that can't be deepened, corrected, or
   turned into action.
 
-The `flesh-out` skill is a **thinking partner** that avoids these: it researches
+The `proposal-builder` skill is a **thinking partner** that avoids these: it researches
 to ground, distinguishes facts from decisions, drives the human-in-the-loop
 decision cadence, and produces a single living proposal artifact that deepens
 each round and converges on something buildable.
@@ -57,14 +57,17 @@ questions, and "let's build it":
    **recommendation-first** (best option labelled, with rationale) — never a bare
    menu. Then **record every answer in the artifact and propagate its
    consequences** to every section it touches.
-5. **Author the proposal artifact.** Write/append to `docs/plans/<slug>.md` in
-   the canonical shape (below); **commit and push each meaningful round** — the
-   doc is the deliverable, chat is scaffolding.
+5. **Author the proposal artifact.** Write/append to `docs/proposals/<slug>.md`
+   in the canonical shape (below); **commit and push each meaningful round** —
+   the doc is the deliverable, chat is scaffolding.
 6. **Deepen on request.** Each "continue / keep going" adds a *distinct layer*
    (tooling surface, worked examples, appendices, roadmap, a diagram) — grounded
    in new sources, never padding.
-7. **Converge to execution.** When the proposal is decision-complete, offer to
-   split it into execution plans using the repo's `Why`/`Verify` step format.
+7. **Converge and hand off.** When the proposal is decision-complete, the skill
+   **stops** — it hands the proposal to the planning layer (the `Plan` agent or
+   the repo's `Why`/`Verify` execution-plan format) rather than authoring the
+   plan itself. The seam: `proposal-builder` owns "should we + what"; planning
+   owns "how."
 
 ## Right-sizing triage (the scale-down gate)
 
@@ -116,16 +119,16 @@ Each maps to a real moment in this session:
 
 ## Relationship to existing capabilities (why this isn't redundant)
 
-`flesh-out` is the **upstream, human-in-the-loop, idea→proposal** layer. It sits
+`proposal-builder` is the **upstream, human-in-the-loop, idea→proposal** layer. It sits
 between "raw idea" and "implementation plan," and it *composes with* existing
 tools rather than replacing them:
 
-| Capability | What it does | How `flesh-out` differs / composes |
+| Capability | What it does | How `proposal-builder` differs / composes |
 |---|---|---|
-| **`deep-research` skill** | One-shot, web-centric, adversarially-verified **cited report** on a topic | `flesh-out` adds **codebase grounding**, a **human decision cadence**, and a **living proposal artifact** that converges on something buildable. It can **delegate its web-research phase to `deep-research`**, then layer on the rest. deep-research answers "what's true about X"; flesh-out answers "should we, and what exactly." |
-| **`Plan` agent / execution-plan format** | Produces an **implementation plan** (steps, critical files, trade-offs) assuming the *what* is decided | `flesh-out` is **upstream** — it decides the *what/whether* and produces the proposal, then **hands the decided proposal to** the Plan agent or the repo's `Why`/`Verify` plan format for the *how*. Clear seam: flesh-out = "should we + what"; Plan = "how." |
-| **Plan mode (`EnterPlanMode`)** | A harness gate for proposing a code change before acting | Different axis — that gates *edits*; `flesh-out` develops *ideas*. They can co-exist (flesh-out may run, then later work enters plan mode). |
-| **`AskUserQuestion`** | Asks the user a structured question | A **tool `flesh-out` orchestrates** at step 4, not a competitor. |
+| **`deep-research` skill** | One-shot, web-centric, adversarially-verified **cited report** on a topic | `proposal-builder` adds **codebase grounding**, a **human decision cadence**, and a **living proposal artifact** that converges on something buildable. It can **delegate its web-research phase to `deep-research`**, then layer on the rest. deep-research answers "what's true about X"; proposal-builder answers "should we, and what exactly." |
+| **`Plan` agent / execution-plan format** | Produces an **implementation plan** (steps, critical files, trade-offs) assuming the *what* is decided | `proposal-builder` is **upstream** — it decides the *what/whether* and produces the proposal, then **hands the decided proposal to** the Plan agent or the repo's `Why`/`Verify` plan format for the *how*. Clear seam: proposal-builder = "should we + what"; Plan = "how." |
+| **Plan mode (`EnterPlanMode`)** | A harness gate for proposing a code change before acting | Different axis — that gates *edits*; `proposal-builder` develops *ideas*. They can co-exist (proposal-builder may run, then later work enters plan mode). |
+| **`AskUserQuestion`** | Asks the user a structured question | A **tool `proposal-builder` orchestrates** at step 4, not a competitor. |
 
 The unique value is the **combination**: codebase + web grounding, an explicit
 facts-vs-decisions discipline with the human in the loop, and a committed
@@ -142,18 +145,18 @@ tools it leans on — `WebFetch`/`WebSearch`, `Agent`, `Read`/`Grep`/`Glob`,
 
 ```yaml
 ---
-name: flesh-out
+name: proposal-builder
 description: >-
   Use when the user has a half-formed idea, a "should we / how would we"
   question, or wants to compare an external approach to ours and propose
   alignment. Researches across web + codebase in parallel, grounds every claim
   in real sources, separates facts from decisions, drives the decision cadence,
-  and produces a decision-complete proposal doc under docs/plans/.
+  and produces a decision-complete proposal doc under docs/proposals/.
 disable-model-invocation: false
 ---
 ```
 
-Invocation: `/flesh-out <idea>` (or auto-triggers on a matching idea-shaped
+Invocation: `/proposal-builder <idea>` (or auto-triggers on a matching idea-shaped
 prompt). The body is the right-sizing triage, the 8-step workflow, the
 artifact-shape template, and the principles table — written as operating
 instructions.
@@ -165,23 +168,23 @@ building.
 **When not to use:** a concrete bug fix, a well-specified implementation task, or
 a single factual lookup — those are Tier 0 below (answer directly, no loop).
 
-## Where it lives
+## Where it lives — DECIDED
 
-Three options:
+`proposal-builder` will live in **the agentics marketplace** (not as an
+acss-plugins project skill or a personal global skill). It is domain-general by
+nature, so a shared marketplace is the right home.
 
-1. **Project skill (`.claude/skills/flesh-out/`)** — alongside `add-command`,
-   `release-plugin`, etc. Pro: versioned with this repo, discoverable here.
-   Con: domain-general value trapped in one repo.
-2. **Personal/global skill (`~/.claude/skills/`)** — Pro: available in every
-   session/repo, which matches how general this workflow is. Con: not shared.
-3. **A new framework-agnostic plugin** — overkill for one skill today.
-
-**Recommendation:** start as a **project skill** here. The precedent is exact —
-`.claude/skills/` already holds nine slash-invocable, discoverable workflow
-skills (`add-command`, `release-plugin`, `validate-plugins`, …) with the same
-`disable-model-invocation: false` shape, so `flesh-out` drops in with zero new
-machinery. Add an explicit note that it is domain-general and a candidate to
-promote to a global skill (`~/.claude/skills/`) once proven.
+Implications:
+- **Author it repo-agnostic.** No coupling to acss-kit/style-agent specifics —
+  the codebase-grounding phase must work in any project. Paths like
+  `docs/proposals/` are *runtime conventions* (where it writes in whatever
+  project it runs), not acss-plugins paths.
+- **Convention precedent still applies.** The `.claude/skills/` shape verified
+  here (`name`/`description`/`disable-model-invocation: false`, slash framing,
+  step-oriented body) is the template; the agentics marketplace packaging
+  (plugin manifest, marketplace entry) wraps that.
+- This proposal doc stays here as the design record; the eventual `SKILL.md` is
+  authored for the marketplace and moved there.
 
 ## Risks & tensions
 
@@ -198,16 +201,20 @@ promote to a global skill (`~/.claude/skills/`) once proven.
 - **Artifact sprawl.** Deepening must add distinct layers, not volume. The
   reviewer test: could each new section be a future execution-plan input?
 
-## Open questions
+## Resolved decisions (2026-06-14 review)
 
-1. **Name.** `flesh-out` vs. `develop-idea` / `scope` / `think-through` /
-   `proposal`. (`flesh-out` matches the user's framing.)
-2. **Placement.** Project skill now vs. global skill (see above).
-3. **Artifact location.** Always `docs/plans/`, or a dedicated `docs/proposals/`
-   to distinguish exploratory proposals from execution plans?
-4. **Convergence handoff.** Should the skill itself author the execution
-   plan(s), or stop at "decision-complete proposal" and hand to a separate
-   planning skill?
+1. **Name: `proposal-builder`.** Invoked as `/proposal-builder <idea>`.
+2. **Placement: the agentics marketplace** (domain-general; see "Where it lives").
+3. **Artifact location: a dedicated `docs/proposals/` dir**, distinct from
+   `docs/plans/` execution plans. The skill writes proposals there in whatever
+   project it runs.
+4. **Handoff: stops at the decision-complete proposal** and hands off to the
+   planning layer — it does not author execution plans itself (workflow step 7).
+
+Remaining follow-ons (not blocking): which repo *is* the agentics marketplace,
+and whether this repo's existing proposals (`design-md-spec-alignment.md`,
+`plugins-refactoring.md`) migrate from `docs/plans/` to `docs/proposals/` for
+consistency.
 
 ## Dogfooding / self-test
 
@@ -222,12 +229,13 @@ the regression set:
   items, a verified architectural constraint).
 - this file — the recursive case (the skill proposing itself).
 
-Authoring `flesh-out/SKILL.md` should reproduce shapes like these; if it can't,
+Authoring `proposal-builder/SKILL.md` should reproduce shapes like these; if it can't,
 the skill body is underspecified.
 
 ## Next step
 
-On approval, convert this into an execution plan and author
-`.claude/skills/flesh-out/SKILL.md` with the right-sizing triage, the 8-step
-workflow, the artifact-shape template, and the principles table — using this very
-document (and the four siblings above) as the skill's canonical worked examples.
+On approval, author `proposal-builder/SKILL.md` **for the agentics marketplace**
+— with the right-sizing triage, the 8-step workflow, the artifact-shape template,
+and the principles table — using this very document (and the siblings above) as
+the skill's canonical worked examples. Convert this proposal into an execution
+plan first if the marketplace packaging needs sequencing.
