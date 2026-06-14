@@ -4,6 +4,17 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-06-14
+
+### Added
+
+- **`/theme-from-design <DESIGN.md>` — generate a full theme from a Google [DESIGN.md](https://github.com/google-labs-code/design.md) (Workstream A PR 4).** Produces `light.css` / `dark.css` (colors) plus `space-radius.css` and `typography.css`, gated by WCAG contrast. Route 1 (decided): consumes the upstream `npx @google/design.md export --format css-tailwind` output rather than parsing YAML in stdlib. **Requires Node/`npx`.**
+- **`scripts/design_md_to_tokens.py`** (generator/validator) — parses the `css-tailwind` `@theme` block; maps Material-3 color names → our 18 roles (per the proposal's Appendix A); **synthesizes** the roles M3 omits (success/warning/info/focus-ring) via the OKLCH palette generator so every theme is complete and contrast-valid; lifts spacing/rounded/typography through a Tailwind→ours **name adapter** (TW `--spacing-*`/`--text-*`/`--font-weight-*`/… → our `--space-*`/`--font-<role>-*`), normalizing px→rem while preserving pill sentinels (`9999px`).
+- **`scripts/validate_design_md.py`** (detector) — normalizes `npx @google/design.md lint` findings to our `{ok, reasons, warnings}` contract; **hard-fails on a missing primary** (the OKLCH seed) — stricter than the upstream linter's warning, by decision.
+- **`tests/run.sh` step 7f** now self-tests both new scripts and runs an end-to-end check (fixture `css-tailwind` → adapter → `tokens_to_css.py` → `validate_theme.py` contrast gate).
+
+> **Format boundary:** the upstream `css-tailwind` export and `lint --format json` shapes are `alpha` and were not verifiable in this build. Every name-mapping assumption is isolated in the adapter tables (`COLOR_SOURCES` / `TW_*` / `classify`), which are the single reconciliation point against the real CLI. See `docs/plans/design-md-token-parity.md`.
+
 ## [1.5.0] - 2026-06-14
 
 ### Changed
