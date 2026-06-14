@@ -106,23 +106,55 @@ DESIGN.md (YAML front-matter)
 Surfaced as a new flow (`/theme-from-design DESIGN.md`) or by extending
 `/theme-extract` to accept a `.md` input.
 
-### Color mapping (DESIGN.md → our roles)
+### Grounding: a real DESIGN.md
 
-| DESIGN.md token | Our role | Notes |
+The upstream [`examples/paws-and-paths/DESIGN.md`](https://github.com/google-labs-code/design.md/blob/main/examples/paws-and-paths/DESIGN.md)
+makes the mapping concrete — and reveals that real files follow
+**Material Design 3 (M3) naming**, not the spec's short "recommended" list:
+
+- **Colors** are an M3 set: `surface`, `surface-container-low…highest`,
+  `on-surface`, `on-surface-variant`, `primary`, `on-primary`,
+  `primary-container`, `secondary`/`tertiary` (+ `-container`, `on-`),
+  `outline`, `outline-variant`, `error`, `error-container`, `inverse-surface`.
+  That's **~45 color tokens** — *more* than our 15 roles, with `on-X`
+  foreground pairs and a surface-elevation ladder.
+- **Spacing** is in **px** with semantic keys: `base: 8px`, `xs…xl`, plus
+  `gutter: 16px`, `margin: 24px`.
+- **Rounded** uses a Tailwind-style **`DEFAULT`** key and mixes units:
+  `sm: 0.25rem … xl: 1.5rem`, `full: 9999px`.
+- **Typography** composites carry `fontWeight` as a **quoted string** (`"800"`)
+  and `fontSize`/`lineHeight` in px, `letterSpacing` in em.
+- **Components** have **freeform names** (`button-primary`, `card-walk-stat`,
+  `list-item-walker`, `badge-status`) referencing `{colors.*}`,
+  `{typography.*}`, `{rounded.*}`, `{spacing.*}`.
+
+### Color mapping (DESIGN.md M3 → our roles)
+
+The realistic job is **collapse**, not just fill — M3 supplies more roles than
+we have, so the adapter selects/merges:
+
+| DESIGN.md (M3) token | Our role | Notes |
 |---|---|---|
-| `colors.primary` | `--color-primary` | direct |
-| `colors.surface` | `--color-surface` | direct |
-| `colors.on-surface` | `--color-text` | rename |
-| `colors.neutral` | `--color-background` / `--color-border` | needs translation table |
-| `colors.error` | `--color-danger` | alias |
-| `colors.secondary` / `tertiary` | `--color-brand-accent` (optional) | best-effort |
-| *(roles DESIGN.md omits)* | the rest of our 15 required roles | **seed the OKLCH generator from `primary` to synthesize the gaps**, then run `validate_theme.py` |
+| `primary` | `--color-primary` | direct |
+| `primary-container` / `inverse-primary` | `--color-primary-hover` | best-effort state derivation |
+| `on-primary` | `--color-text-inverse` | `on-X` → inverse text |
+| `surface` / `background` | `--color-surface` / `--color-background` | M3 splits these; we map both |
+| `surface-container*` ladder | `--color-surface-raised` / `--color-surface-subtle` | collapse N levels → our 2 |
+| `on-surface` | `--color-text` | direct |
+| `on-surface-variant` | `--color-text-muted` | direct |
+| `outline` / `outline-variant` | `--color-border` / `--color-border-strong` | direct |
+| `error` | `--color-danger` | alias |
+| `secondary` / `tertiary` | `--color-brand-accent` (optional) | best-effort |
+| *(success/warning/info — M3 has no slots)* | `--color-success`/`warning`/`info` | **synthesize via OKLCH** |
 
-Because our 15 roles are *required* and DESIGN.md's are *recommended/optional*,
-the adapter must fill gaps: map what's present, generate the remainder via our
-existing OKLCH algorithm, and gate the whole result on contrast. DESIGN.md is
-also mode-thin (single palette) where we are light+dark — the adapter generates
-both modes from the supplied primitives.
+So the adapter does both directions: **collapse** the M3 surface/on-pairs into
+our 15, and **synthesize** the roles M3 omits (success/warning/info, focus-ring)
+via the existing OKLCH algorithm — then gate everything on `validate_theme.py`.
+DESIGN.md is also **mode-thin** (the example is a single light palette), where we
+are light+dark — confirming the adapter must generate the dark mode from the
+supplied primitives. Normalization the adapter must handle, all seen in the real
+file: **px → rem** (÷16), the **`DEFAULT`** rounded key, **`9999px` → `full`**,
+and **quoted `fontWeight`** strings.
 
 ### Typography / spacing / rounded mapping (the full-parity work)
 
@@ -134,21 +166,44 @@ This is the part that does not exist yet and is the bulk of the effort:
 | `spacing.<scale>` (`xs`…`xl`, `base`) | `--space-*` custom properties | Components reference `--space-md` instead of rem literals in padding/gap/margin |
 | `rounded.<scale>` (`sm`…`full`) | `--radius-*` custom properties | Components reference `--radius-md` instead of hardcoded `border-radius` |
 
+**Quantified sweep (measured across all 15 component `reference.md` files):**
+
+| Sweep | Components touched | Declaration sites | Heaviest | Lightest |
+|---|---|---|---|---|
+| Spacing literals → `var(--space-*)` | 14 / 15 | **~97** | Dialog (12), Nav (9) | Img (1) |
+| Radius literals → `var(--radius-*)` | 12 / 15 | **~19** | Button (3: std + pill + icon) | most (1) |
+| Typography literals → `var(--font-*)` | 13 / 15 | **~47** | Button (6), Table (5) | Checkbox/List/Popover (1) |
+
+~**163 declaration sites** total. Bounded and mechanical, but real — best staged
+as its own sub-effort after the token homes land, with a golden-output test per
+component so the swap is provably value-preserving (the same pattern used for the
+component-skill split).
+
 Open questions this raises (flagged, not resolved):
 
 - **Schema growth.** `theme.schema.json` and `_tokens.py` `ROLE_GROUPS` are
   colors-only today. Full parity means new schema sections, new validators
   (units, scale completeness), and new round-trip coverage in
   `css_to_tokens.py`.
-- **Component template churn.** Every `reference.md` SCSS Template currently
-  hardcodes rem for spacing and radius. Full parity implies a sweep to swap
-  literals for `var(--space-*)` / `var(--radius-*)` — touching all 15
-  components. This is the single biggest ripple and should likely be its own
-  staged sub-effort.
 - **Contrast vs. typography/spacing.** Our validation gate is contrast-only.
   Typography/spacing tokens have no equivalent automated gate — we'd decide
   whether to add scale-completeness / minimum-target-size checks or leave them
   unvalidated.
+
+### Current-state token debt the sweep can fold in
+
+The inventory surfaced existing drift worth fixing *while* we're in these files:
+
+- **`button` references `--color-primary-dark`**, which is **not one of our 15
+  canonical roles** (the schema defines `--color-primary-hover`). This is a live
+  inconsistency — the button's hover color resolves to a fallback today.
+- **`alert` hardcodes its state colors** (`#d1ecf1`, `#bee5eb`, …) instead of
+  consuming the existing `--color-info` / `--color-success` / `--color-warning`
+  / `--color-danger` semantic roles. Full parity should wire these to roles, so
+  a DESIGN.md (or `/theme-*`) actually recolors alerts.
+
+These aren't new scope so much as cleanup the parity sweep naturally absorbs —
+and they argue for a **role-reference audit** step in the same effort.
 
 ## Workstream B — publish a sibling spec for our component markdown
 
@@ -171,6 +226,14 @@ a documented spec** — working name `COMPONENT.md` — mirroring
   hinge that connects B back to A.
 - Consumer-behavior table (unknown section → preserve; duplicate → reject) and
   a `version: alpha` field, matching DESIGN.md's conventions.
+
+One wrinkle the real example exposes: DESIGN.md `components` entries have
+**freeform, project-specific names** (`card-walk-stat`, `list-item-walker`,
+`badge-status`) with no clean 1:1 to our component set. So `COMPONENT.md` can't
+assume a DESIGN.md provides a matching component block — it must reference the
+**primitive** token groups (`{colors.*}`, `{spacing.*}`, `{rounded.*}`,
+`{typography.*}`), which *are* stable, and treat DESIGN.md's `components.*` map
+as optional per-instance overrides. This keeps the two specs loosely coupled.
 
 The payoff is a **two-file design system**: `DESIGN.md` owns visual identity
 (tokens), `COMPONENT.md` owns component implementation and *references* DESIGN.md
@@ -208,7 +271,15 @@ it rather than re-implement, and treat it as a **build/CI-time tool** (like the
 
 Confirmed **omissions** upstream (things we'd own if we want them): no import
 (it's export-only), no JSON schema file, no Figma plugin, no GitHub Action, no
-IDE extension.
+IDE extension. (Upstream is a Bun/Turbo monorepo with the CLI in
+`packages/cli/`; its `.agents/skills/` are *dev* skills — `tdd`, `ink`,
+`agent-dx-cli-scale` — not design-system consumption skills, so there's nothing
+to reuse there.)
+
+**DTCG alignment is effectively free.** Because `export dtcg` already emits W3C
+Design Tokens from a DESIGN.md, our *internal* token JSON does **not** need to
+*be* DTCG — we get DTCG interop by piping through the CLI, and avoid coupling our
+schema to the evolving DTCG draft.
 
 ### C.2 The pivotal architectural decision: how we parse DESIGN.md
 
