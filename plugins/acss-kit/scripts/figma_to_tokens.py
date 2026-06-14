@@ -81,6 +81,7 @@ _PX_PREFIXES = ("--spacing-", "--radius-", "--text-", "--tracking-")
 
 
 def _slug(text: str) -> str:
+    """Lowercase a Figma name segment into a token-safe `a-z0-9-` slug."""
     return _SLUG_RE.sub("-", text.strip().lower()).strip("-")
 
 
@@ -145,6 +146,7 @@ _FIXTURE = {
 
 
 def self_test() -> int:
+    """Exercise name normalization and end-to-end mapping against _FIXTURE."""
     passed = failed = 0
 
     def check(name: str, cond: bool, detail: str = "") -> None:
@@ -165,7 +167,7 @@ def self_test() -> int:
           "  --font-weight-body-md: 400;" in css and "400px" not in css)
     check("fontFamily → --font-", "  --font-body-md: Public Sans;" in css)
 
-    tokens, reasons = figma_to_tokens(_FIXTURE)
+    tokens, _reasons = figma_to_tokens(_FIXTURE)
     light = tokens.get("modes", {}).get("light", {})
     check("primary mapped through adapter", light.get("--color-primary") == "#855300")
     check("on-surface → text", light.get("--color-text") == "#151c27")
@@ -195,6 +197,7 @@ def self_test() -> int:
 
 
 def main() -> int:
+    """CLI entry: read a get_variable_defs map (file/stdin) → tokens JSON on stdout."""
     args = sys.argv[1:]
     if "--self-test" in args:
         return self_test()

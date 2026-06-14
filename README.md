@@ -13,7 +13,7 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 | Plugin | Version | What it ships |
 |---|---|---|
-| [`acss-kit`](./plugins/acss-kit) | 1.3.1 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. WCAG 2.2 AA validation built-in. |
+| [`acss-kit`](./plugins/acss-kit) | 1.8.0 | Accessible React components, static HTML snippets, OKLCH CSS themes, and Tailwind-style utility classes for fpkit/acss projects. WCAG 2.2 AA validation built-in. |
 | [`style-agent`](./plugins/style-agent) | 0.5.0 | Framework-agnostic CSS authoring skills. `/css-to-class` extracts utility-class lists into a single named class; `/inline-style-to-class` converts inline styles or JSX style objects into a named class appended to the project stylesheet; `/create-utilities` generates a utility-class string from a plain-language description. Works with plain CSS, SCSS, Tailwind, or any utility-first workflow. Also publishes the **COMPONENT.md** spec — a framework-neutral format for describing a component's structure, props, behavior, and accessibility, themed by a sibling DESIGN.md. |
 
 The two plugins are **decoupled** — install either or both independently.
