@@ -104,6 +104,14 @@ component swaps `aria-hidden` for `role="img"` so the label is announced (WCAG
 
 (None — Icon doesn't have a dedicated SCSS file. Color comes from `currentColor` by default and can be overridden via the `color` prop. Size comes from the `size` prop in pixels. If you need theme-driven sizing, set `--icon-size` in your theme and pass `size={parseInt(getComputedStyle(...).getPropertyValue('--icon-size'))}` — but typically the prop is fine.)
 
+## Styles
+
+Icon emits **no component-level CSS** — there is no `icon.scss`. The SVG uses
+`fill="currentColor"`, so color is inherited from the surrounding text `color`
+(or the `color` prop), and dimensions come from the `size` prop. Theming is
+therefore handled by the consumer's `color` / `font-size` context, not a
+dedicated stylesheet.
+
 ## Accessibility
 
 WCAG 2.2 AA compliance for the generated `Icon` component.

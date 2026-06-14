@@ -4,7 +4,6 @@ version: alpha
 name: img
 element: img
 tokens:
-  display: "{display.block}"
   rounded: "{rounded.none}"
 props:
   src:
