@@ -186,6 +186,133 @@ interface; the adapter implements it. B is also docs-only and lower-risk. (This
 ordering is a recommendation for the *eventual* build, not a decision for this
 proposal pass.)
 
+## Workstream C — tooling & integration surface
+
+"Aligning" only pays off if the tooling is wired end to end. This section
+inventories **what already exists upstream**, **the new tools we'd build**, and
+**how it threads into our existing infra and the MCP servers in-session**.
+
+### C.1 Upstream `@google/design.md` toolchain (adopt, don't rebuild)
+
+The official npm package ships a Node CLI and a linter API. We should **reuse**
+it rather than re-implement, and treat it as a **build/CI-time tool** (like the
+`npm` deps already in `tests/`), not a plugin runtime dependency.
+
+| Upstream tool | What it does | How we use it |
+|---|---|---|
+| `npx @google/design.md lint <file>` | 9 rules → JSON findings (`broken-ref` error; `missing-primary`, `contrast-ratio`, `orphaned-tokens`, `missing-typography`, `section-order`, `unknown-key` warnings; `token-summary`, `missing-sections` info) | CI gate + PostToolUse hook on `DESIGN.md` edits |
+| `npx @google/design.md diff <before> <after>` | Token-level + regression diff, exit 1 on regression | CI brand-drift check across commits |
+| `npx @google/design.md export --format <fmt> <file>` | `json-tailwind` (TW v3 `theme.extend`), `css-tailwind` (TW v4 `@theme {}` custom props), `dtcg` (W3C DTCG JSON) | **Primary import path** — see C.2 |
+| `npx @google/design.md spec [--rules]` | Emits the spec / lint-rules table (markdown or json) | Pin a copy as our reference; drives our `COMPONENT.md` sibling spec |
+| `@google/design.md/linter` → `lint(str)` → `{findings, summary, designSystem}` | Programmatic parse into `DesignSystemState` | Optional Node test helper if we want richer fixtures |
+
+Confirmed **omissions** upstream (things we'd own if we want them): no import
+(it's export-only), no JSON schema file, no Figma plugin, no GitHub Action, no
+IDE extension.
+
+### C.2 The pivotal architectural decision: how we parse DESIGN.md
+
+Our plugin scripts are **Python 3 stdlib-only** — and **stdlib has no YAML
+parser**. DESIGN.md front-matter is YAML with `{token.path}` references. So we
+cannot naively `import yaml`. Two viable routes:
+
+- **Route 1 — consume the CLI's export output (recommended).** Shell out to
+  `npx @google/design.md export --format dtcg` (or `css-tailwind`) and parse the
+  resulting **JSON/CSS in Python** (both stdlib-friendly). This offloads YAML
+  parsing *and* `{token.path}` reference resolution to the upstream parser, so
+  we never drift from the alpha grammar. Cost: a Node/`npx` dependency at the
+  author/CI boundary. Fits how `tests/` already uses npm.
+- **Route 2 — minimal stdlib YAML-subset parser.** Hand-roll a parser for the
+  constrained subset DESIGN.md uses (flat maps, scalar values, `{ref}` strings)
+  plus a reference resolver. Zero runtime deps, but re-implements upstream and
+  risks drift as the `alpha` format moves.
+
+Recommendation: **Route 1 for authoring/CI; keep a tiny stdlib fallback parser
+only if we decide end users must run `/theme-from-design` with no Node present.**
+This is the single most important tooling decision and is called out in
+[Open questions](#open-questions-for-review).
+
+### C.3 New tools we build (mapped to our contract families)
+
+Following `.claude/rules/python-scripts.md` (detector vs. generator/validator):
+
+| New tool | Kind | Contract | Role |
+|---|---|---|---|
+| `design_md_to_tokens.py` | Python script | generator/validator (data→stdout, errs→stderr, 0/1/2) | DESIGN.md (via CLI export JSON) → our internal token JSON; maps colors→roles, fills gaps via OKLCH, lifts typography/spacing/rounded |
+| `validate_design_md.py` | Python script | detector (JSON+`reasons`, 0/1) | Thin normalizer: shells `npx … lint`, reshapes findings into our detector JSON so skills/hooks can parse it uniformly |
+| `tokens_to_design_md.py` | Python script | generator/validator | **Export** our theme CSS → a DESIGN.md (the import-*into*-DESIGN.md direction upstream lacks) — closes the round-trip |
+| `/theme-from-design <DESIGN.md>` | Command + `styles` flow | — | Workstream-A entry: DESIGN.md → `tokens_to_css.py` → light/dark + typography + space-radius CSS → `validate_theme.py` |
+| `/design-export [--format=design-md\|dtcg\|tailwind]` | Command + `styles` flow | — | Our tokens → DESIGN.md (ours) or interop formats (upstream CLI) |
+| `design-md` references | `styles`/`kit-core` reference docs | — | Mapping table (DESIGN.md token ↔ our role), pinned spec excerpt, version SHA |
+
+These slot beside the existing script set (`generate_palette.py`,
+`tokens_to_css.py`, `css_to_tokens.py`, `validate_theme.py`,
+`generate_bridge.py`, `verify_integration.py`, `oklch_shift.py`, …) without
+changing their contracts.
+
+### C.4 Wiring into existing infra
+
+- **Hooks** (`.claude/settings.json` PostToolUse): add a validator that fires on
+  Write/Edit to any `DESIGN.md` (and our future `COMPONENT.md`), shelling
+  `validate_design_md.py` — mirrors how we already validate `plugin.json`,
+  command front-matter, and SKILL.md front-matter.
+- **Rules** (`.claude/rules/`): a new advisory rule on `**/DESIGN.md` (and
+  `**/COMPONENT.md`) reminding of section order, `{token.path}` syntax, and the
+  role-name translation table — same pattern as `scss-conventions.md`.
+- **Tests** (`tests/run.sh`): add a step that (a) lints fixture DESIGN.md files,
+  and (b) round-trips DESIGN.md → tokens → CSS → `validate_theme.py`, asserting
+  contrast holds. Optionally a golden test: a fixture DESIGN.md must produce a
+  byte-stable theme.
+- **Pre-submit checklist / CI**: `npx @google/design.md lint` and `diff` on any
+  committed DESIGN.md; `diff` surfaces brand regressions in PRs.
+
+### C.5 MCP servers we can take advantage of in-session
+
+The live session already exposes servers that map directly onto DESIGN.md's
+"convert to/from Figma variables, tokens.json" interop promise:
+
+- **Figma MCP** (`get_variable_defs`, `search_design_system`,
+  `get_design_context`, `get_code_connect_map`): pull Figma variables →
+  synthesize a DESIGN.md (or feed `design_md_to_tokens.py` directly); or push
+  our generated tokens back as Figma variables. This makes
+  Figma ⇄ DESIGN.md ⇄ our theme a real round-trip and supersedes the current
+  `/theme-extract` Figma path with a standards-based one. (Our `/theme-extract`
+  already delegates to a `figma-design-tokens` skill — this is its evolution.)
+- **context7**: fetch current `@google/design.md` package docs while authoring
+  the adapter, so we track the moving `alpha` surface instead of guessing.
+- **github MCP**: run the lint/diff gates as PR checks; post DESIGN.md diff
+  summaries on brand-changing PRs.
+
+## How projects take advantage of DESIGN.md
+
+Beyond "consume a file," the integration unlocks concrete project workflows:
+
+1. **Persistent, agent-portable brand source of truth.** One `DESIGN.md` in the
+   repo root survives across sessions and across *different* agents/tools — the
+   problem DESIGN.md was built to solve. Every `/kit-add` and `/theme-*`
+   invocation reads from it instead of re-deriving brand each time.
+2. **One-file project onboarding.** Drop a DESIGN.md → `/theme-from-design`
+   generates the full token surface (colors + typography + spacing + radius) →
+   `/kit-create` scaffolds components already wired to those tokens. Zero manual
+   theme authoring.
+3. **Cross-framework reach via `style-agent`.** This is the biggest audience
+   expansion: `style-agent` is framework-agnostic, and DESIGN.md +
+   `export css-tailwind`/`json-tailwind` lets **any** Tailwind or plain-CSS
+   project consume the same brand — not just fpkit/acss projects. DESIGN.md
+   becomes the neutral interchange that both plugins share.
+4. **Design↔engineering contract.** Figma variables ⇄ DESIGN.md ⇄ our CSS keeps
+   designers and engineers on one synchronized token set, round-tripped through
+   the Figma MCP.
+5. **Brand-drift detection in CI.** `diff` two DESIGN.md revisions to catch
+   unintended token changes; `lint`'s `contrast-ratio` rule plus our
+   `validate_theme.py` form a double a11y gate.
+6. **Portability / no lock-in.** `export dtcg` emits W3C Design Tokens, so a
+   project's brand flows out to any DTCG-aware tool — adopting our plugins
+   doesn't trap the design system in a proprietary format.
+7. **Multi-brand at scale.** A DESIGN.md per brand maps onto our existing
+   `brand-*.css` preset mechanism, so theming many brands is a directory of
+   DESIGN.md files, each linted and contrast-gated.
+
 ## Risks & tensions
 
 - **Full parity is a large surface.** Typography + spacing + rounded token
@@ -215,7 +342,17 @@ proposal pass.)
    independent PRs (token homes first, component sweep last)?
 4. **DESIGN.md authoring.** Do we *generate* a DESIGN.md from a seed color
    (a new `styles` output) in addition to consuming one — i.e. is DESIGN.md an
-   import format, an export format, or both?
+   import format, an export format, or both? (Upstream CLI is export-only, so
+   the import-*into*-DESIGN.md direction is ours to build via
+   `tokens_to_design_md.py`.)
+5. **Parse route (the load-bearing tooling call).** Route 1 (shell
+   `npx @google/design.md export` and parse JSON in Python — accurate, but adds
+   a Node/`npx` dependency at runtime for `/theme-from-design`) vs. Route 2
+   (hand-rolled stdlib YAML-subset parser — zero deps, but re-implements
+   upstream and drifts as `alpha` moves). See [C.2](#c2-the-pivotal-architectural-decision-how-we-parse-designmd).
+6. **CLI as runtime vs. build-time dep.** Is requiring `npx` acceptable for end
+   users running `/theme-from-design`, or must consumption work with zero Node
+   present (pushing us toward Route 2)?
 
 ## Next step
 
