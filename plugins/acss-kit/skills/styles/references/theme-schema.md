@@ -90,8 +90,11 @@ are additive — colors-only input still produces only `light.css` / `dark.css`.
 - `typography` is `map<role, composite>`; each composite has optional
   `family` / `size` / `weight` / `line` / `tracking`. Emitted to
   **`typography.css`** as `--font-<role>-<sub>`.
-- The CSS prefixes (`--space-*`, `--radius-*`, `--font-*`) mirror the Tailwind v4
-  `@theme` namespaces so a DESIGN.md `css-tailwind` export remaps mechanically.
+- The CSS prefixes are **not** drop-in Tailwind v4 `@theme` names: acss-kit uses
+  `--space-*` and composite `--font-<role>-*` tokens, whereas Tailwind uses
+  `--spacing-*` and the split `--text-*` / `--font-weight-*` / `--leading-*` /
+  `--tracking-*` namespaces (only `--radius-*` matches), so a DESIGN.md
+  `css-tailwind` export needs a name adapter rather than a mechanical prefix remap.
 - Default scales ship at [`assets/tokens/space-radius.css`](../../../assets/tokens/space-radius.css)
   and [`assets/tokens/typography.css`](../../../assets/tokens/typography.css) for
   projects with no DESIGN.md.

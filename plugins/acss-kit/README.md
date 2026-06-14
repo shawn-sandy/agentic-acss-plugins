@@ -301,6 +301,25 @@ Toggle dark mode by setting `data-theme="dark"` on the `<html>` element.
 
 The full CSS Token Convention — 18 defined `--color-*` properties (15 required + 3 optional), grouped by purpose, with the WCAG 2.2 AA Required Contrast Pairings table — is documented in [`skills/styles/SKILL.md`](skills/styles/SKILL.md#css-token-convention).
 
+### Token homes — typography, spacing, and rounded (1.3.0+)
+
+Themes are no longer colors-only. When a theme carries `spacing`, `rounded`, or `typography` data, the generator emits two **mode-independent** token files (each a single `:root` block) alongside `light.css` / `dark.css`:
+
+- `space-radius.css` — `--space-*` (`xs`, `sm`, `md`, `lg`, `xl`, `2xl`) and `--radius-*` (`none`, `sm`, `md`, `lg`, `xl`, `full`) scales.
+- `typography.css` — composite `--font-<role>-{family,size,weight,line,tracking}` tokens for roles like `headline-lg`, `body-md`, and `label-sm`.
+
+These tokens mirror the `spacing`, `rounded`, and `typography` sections of a sibling [DESIGN.md](https://github.com/google-labs-code/design.md) — the format they're designed to consume. They are **not** drop-in [Tailwind v4 `@theme`](https://tailwindcss.com/docs/theme) names: acss-kit emits `--space-*` and composite `--font-<role>-{size,weight,line,tracking}` tokens, whereas Tailwind uses `--spacing-*` and the split `--text-*` / `--font-weight-*` / `--leading-*` / `--tracking-*` namespaces (only `--radius-*` lines up), so a Tailwind export needs an explicit name adapter rather than a prefix match. The token homes are **additive** — a colors-only theme produces byte-identical output to earlier versions. Default scales ship at [`assets/tokens/space-radius.css`](assets/tokens/space-radius.css) and [`assets/tokens/typography.css`](assets/tokens/typography.css), so projects without a DESIGN.md still get a sane baseline.
+
+Components consume the token homes through nested fallbacks, so generated output stays pixel-identical when no theme is present and responds to the theme when one exists. `button` is the first component swept onto them (1.3.1):
+
+```scss
+gap: var(--btn-gap, var(--space-sm, 0.5rem));
+font-weight: var(--btn-fw, var(--font-label-md-weight, 500));
+border-radius: var(--btn-radius, var(--radius-md, 0.375rem));
+```
+
+The structural validator for these token kinds is `scripts/validate_tokens.py` (the dimension/typography counterpart to `validate_theme.py`'s contrast gate).
+
 ## Generated code characteristics
 
 ### TypeScript (.tsx)
