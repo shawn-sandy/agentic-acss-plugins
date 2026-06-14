@@ -114,6 +114,23 @@ Settled before this draft:
    colors — not to stay colors-only. This is the larger, more invasive scope
    and changes how components reference dimensions (rem literals → tokens).
 
+Resolved in the 2026-06-14 review:
+
+3. **Parse route: Route 1 — consume the `css-tailwind` export.** The adapter
+   shells `npx @google/design.md export --format css-tailwind` and parses the
+   CSS custom properties in Python stdlib. Accepts a Node/`npx` dependency at
+   build *and* runtime (`/theme-from-design`) in exchange for never drifting
+   from the alpha grammar. (Settles old open questions on parse route and
+   runtime-vs-build dependency.)
+4. **`missing-primary` is a hard error.** `validate_design_md.py` rejects a
+   DESIGN.md with no primary (follows the spec's normative MUST, diverges from
+   the CLI's warning) — the primary is the OKLCH seed the pipeline needs.
+5. **`COMPONENT.md` lives in `style-agent`.** The spec is framework-agnostic and
+   publishable, matching DESIGN.md's neutrality; acss-kit's `reference.md` docs
+   conform to it rather than owning it.
+6. **The component sweep ships as phased PRs.** Token homes → button pilot (with
+   a golden-output test) → bulk-migrate the remaining 14, per the roadmap.
+
 ## Workstream A — let our components *consume* a `DESIGN.md`
 
 The seam is our **theme pipeline**, not the per-component files. Components
@@ -241,8 +258,9 @@ and they argue for a **role-reference audit** step in the same effort.
 standard*. Our `reference.md` shape is equally rigorous but only encoded
 implicitly inside the `acss-kit-component-author` maintainer skill and
 kit-core's Step B. The proposal: **formalize our component-markdown format into
-a documented spec** — working name `COMPONENT.md` — mirroring
-`DESIGN.md/docs/spec.md`:
+a documented spec** — working name `COMPONENT.md`, **owned by `style-agent`**
+(framework-agnostic, so acss-kit's `reference.md` docs *conform to* it rather
+than own it) — mirroring `DESIGN.md/docs/spec.md`:
 
 - Purpose + bipartite format (front-matter + markdown body).
 - Fixed section order (our existing 9 sections: Verification banner, Overview,
@@ -311,27 +329,26 @@ Design Tokens from a DESIGN.md, our *internal* token JSON does **not** need to
 *be* DTCG — we get DTCG interop by piping through the CLI, and avoid coupling our
 schema to the evolving DTCG draft.
 
-### C.2 The pivotal architectural decision: how we parse DESIGN.md
+### C.2 The pivotal architectural decision: how we parse DESIGN.md — DECIDED
 
 Our plugin scripts are **Python 3 stdlib-only** — and **stdlib has no YAML
 parser**. DESIGN.md front-matter is YAML with `{token.path}` references. So we
-cannot naively `import yaml`. Two viable routes:
+cannot naively `import yaml`. Two routes were weighed:
 
-- **Route 1 — consume the CLI's export output (recommended).** Shell out to
-  `npx @google/design.md export --format dtcg` (or `css-tailwind`) and parse the
-  resulting **JSON/CSS in Python** (both stdlib-friendly). This offloads YAML
-  parsing *and* `{token.path}` reference resolution to the upstream parser, so
-  we never drift from the alpha grammar. Cost: a Node/`npx` dependency at the
-  author/CI boundary. Fits how `tests/` already uses npm.
+- **Route 1 — consume the CLI's export output (CHOSEN).** Shell out to
+  `npx @google/design.md export --format css-tailwind` and parse the resulting
+  **CSS custom properties in Python** (stdlib-friendly; see Appendix F). This
+  offloads YAML parsing *and* `{token.path}` reference resolution to the upstream
+  parser, so we never drift from the alpha grammar. Cost: a Node/`npx`
+  dependency at build *and* runtime (`/theme-from-design`) — accepted in the
+  2026-06-14 review.
 - **Route 2 — minimal stdlib YAML-subset parser.** Hand-roll a parser for the
-  constrained subset DESIGN.md uses (flat maps, scalar values, `{ref}` strings)
-  plus a reference resolver. Zero runtime deps, but re-implements upstream and
-  risks drift as the `alpha` format moves.
+  constrained subset DESIGN.md uses plus a reference resolver. Zero runtime
+  deps, but re-implements upstream and risks drift. *Not chosen.*
 
-Recommendation: **Route 1 for authoring/CI; keep a tiny stdlib fallback parser
-only if we decide end users must run `/theme-from-design` with no Node present.**
-This is the single most important tooling decision and is called out in
-[Open questions](#open-questions-for-review).
+**Decision:** Route 1, `css-tailwind` input. The Node/`npx` runtime dependency
+for `/theme-from-design` is accepted. (`dtcg` stays an export-only interop
+target, not an import path.)
 
 ### C.3 New tools we build (mapped to our contract families)
 
@@ -433,34 +450,31 @@ Beyond "consume a file," the integration unlocks concrete project workflows:
 
 ## Open questions for review
 
-1. **Spec home & name.** Does `COMPONENT.md` live in `style-agent`
-   (framework-agnostic, matches DESIGN.md's neutrality) or `acss-kit` (where the
-   `reference.md` shape originates)? Is `COMPONENT.md` the right name?
+The four load-bearing decisions are now settled (see
+[Locked decisions](#locked-decisions)). Remaining smaller calls:
+
+1. **`COMPONENT.md` name.** Home is decided (`style-agent`); the file/spec name
+   is not finalized — `COMPONENT.md` vs. e.g. `COMPONENTS.md` / `UI.md`.
 2. **Token file layout.** One combined `theme.css` or separate
    `typography.css` / `space-radius.css` files? Affects the `@layer` cascade and
-   import order.
-3. **Staging.** Should full parity land as one cohesive effort or as
-   independent PRs (token homes first, component sweep last)?
-4. **DESIGN.md authoring.** Do we *generate* a DESIGN.md from a seed color
-   (a new `styles` output) in addition to consuming one — i.e. is DESIGN.md an
-   import format, an export format, or both? (Upstream CLI is export-only, so
-   the import-*into*-DESIGN.md direction is ours to build via
-   `tokens_to_design_md.py`.)
-5. **Parse route (the load-bearing tooling call).** Route 1 (shell
-   `npx @google/design.md export` and parse JSON in Python — accurate, but adds
-   a Node/`npx` dependency at runtime for `/theme-from-design`) vs. Route 2
-   (hand-rolled stdlib YAML-subset parser — zero deps, but re-implements
-   upstream and drifts as `alpha` moves). See [C.2](#c2-the-pivotal-architectural-decision-how-we-parse-designmd).
-6. **CLI as runtime vs. build-time dep.** Is requiring `npx` acceptable for end
-   users running `/theme-from-design`, or must consumption work with zero Node
-   present (pushing us toward Route 2)?
+   import order. (Roadmap PR 1 assumes separate files; revisit there.)
+3. **DESIGN.md authoring direction.** We will *consume* DESIGN.md and *export*
+   to it (`tokens_to_design_md.py`, roadmap PR 5). Open: do we also offer a
+   `styles` flow that *authors* a fresh DESIGN.md from a seed color, or is
+   export-from-existing-theme enough?
 
 ## Next step
 
-This proposal is for review. On approval, the natural follow-on is to convert
-the two workstreams into execution plans under `docs/plans/` — `COMPONENT.md`
-spec (Workstream B) first, then the `design_md_to_tokens.py` adapter and
-full-parity token homes (Workstream A).
+The four load-bearing decisions are **resolved** (Route 1 / hard-fail on missing
+primary / `style-agent` owns `COMPONENT.md` / phased sweep), so the path is
+unblocked. The immediate follow-on is to convert the workstreams into execution
+plans under `docs/plans/`, in roadmap order:
+
+1. **Workstream B — `COMPONENT.md` spec** (roadmap PR 0), authored in
+   `style-agent`. Lowest-risk, docs-only, and it defines the `{token.path}`
+   contract the adapter consumes.
+2. **Workstream A token homes + adapter** (roadmap PRs 1 → 4), `css-tailwind`
+   input, then the phased component sweep (PRs 2 → 3).
 
 ---
 
@@ -530,10 +544,10 @@ table:
 | Unknown section / color / typography / spacing | **Preserve; do not error** | no reason |
 | `token-summary`, `missing-sections` | Info | informational reason |
 
-The one real conflict to settle: the **spec says a primary color MUST be
-defined** (reject) while the **CLI treats `missing-primary` as a warning**. We
-should follow the spec (hard fail) since a primary is the OKLCH seed our whole
-pipeline depends on.
+The one real conflict — the **spec says a primary color MUST be defined**
+(reject) while the **CLI treats `missing-primary` as a warning** — is
+**settled**: we follow the spec and **hard-fail** (exit 1), since a primary is
+the OKLCH seed our whole pipeline depends on.
 
 ## Appendix D — Worked example: `paws-and-paths` DESIGN.md → our `light.css`
 
