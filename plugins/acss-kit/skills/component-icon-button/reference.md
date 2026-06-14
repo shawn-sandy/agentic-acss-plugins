@@ -82,7 +82,7 @@ export default IconButton
 
 ```scss
 --icon-btn-size: 3rem;             // 48px tap target (WCAG 2.5.5 AAA)
---icon-btn-padding: var(--space-xs, 0);
+--icon-btn-padding: 0;
 --icon-btn-radius: 50%;
 --icon-btn-gap: var(--space-sm, 0.5rem);
 --icon-label-bp: 48rem;            // Breakpoint above which label appears
@@ -96,7 +96,7 @@ export default IconButton
 .btn[data-icon-btn] {
   width: var(--icon-btn-size, 3rem);
   height: var(--icon-btn-size, 3rem);
-  padding: var(--icon-btn-padding, var(--space-xs, 0));
+  padding: var(--icon-btn-padding, 0);
   border-radius: var(--icon-btn-radius, 50%);
   display: inline-flex;
   align-items: center;

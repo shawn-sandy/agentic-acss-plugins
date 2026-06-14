@@ -513,7 +513,7 @@ The behavior mirrors the React `useAlertBehavior` hook: dismiss-on-click, option
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  padding: var(--space-xs, 0.125rem) var(--space-xs, 0.25rem);
+  padding: 0.125rem 0.25rem;
   color: currentColor;
   flex-shrink: 0;
 

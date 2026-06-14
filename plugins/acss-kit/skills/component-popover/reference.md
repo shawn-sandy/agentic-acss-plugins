@@ -186,7 +186,7 @@ export default Popover
 --popover-color: var(--color-text, inherit);
 --popover-border: 1px solid var(--color-border, #e0e0e0);
 --popover-radius: var(--radius-md, 0.375rem);
---popover-padding: var(--space-md, 0.75rem) var(--space-md, 1rem);
+--popover-padding: 0.75rem 1rem;
 --popover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 --popover-max-width: 20rem;
 --popover-z: 10;
@@ -215,7 +215,7 @@ export default Popover
 }
 
 .popover-content {
-  padding: var(--popover-padding, var(--space-md, 0.75rem) var(--space-md, 1rem));
+  padding: var(--popover-padding, 0.75rem 1rem);
   position: relative;
 }
 
@@ -242,7 +242,7 @@ export default Popover
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  padding: var(--space-xs, 0.125rem) var(--space-xs, 0.25rem);
+  padding: 0.125rem 0.25rem;
   color: currentColor;
 
   &:focus-visible {

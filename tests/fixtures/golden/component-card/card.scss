@@ -4,7 +4,7 @@
   flex-direction: var(--card-direction, column);
   background: var(--card-bg, #fff);
   color: var(--card-color, inherit);
-  padding: var(--card-padding, var(--space-xs, 0));
+  padding: var(--card-padding, 0);
   border-radius: var(--card-radius, var(--radius-md, 0.5rem));
   border: var(--card-border, 1px solid #e0e0e0);
   box-shadow: var(--card-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
@@ -29,7 +29,7 @@
   font-weight: var(--card-title-fw, 600);
   color: var(--card-title-color, inherit);
   padding: var(--card-title-padding, 1.5rem 1.5rem 0);
-  margin: 0 0 var(--card-title-margin-block-end, var(--space-xs, 0));
+  margin: 0 0 var(--card-title-margin-block-end, 0);
 }
 
 .card-content {

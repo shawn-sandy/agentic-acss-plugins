@@ -2,7 +2,7 @@
 .btn[data-icon-btn] {
   width: var(--icon-btn-size, 3rem);
   height: var(--icon-btn-size, 3rem);
-  padding: var(--icon-btn-padding, var(--space-xs, 0));
+  padding: var(--icon-btn-padding, 0);
   border-radius: var(--icon-btn-radius, 50%);
   display: inline-flex;
   align-items: center;

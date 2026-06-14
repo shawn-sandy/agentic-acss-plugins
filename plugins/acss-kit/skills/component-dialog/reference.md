@@ -325,7 +325,7 @@ function wireDialog(dialog, root) {
 ```scss
 --dialog-bg: var(--color-surface, #fff);
 --dialog-color: var(--color-text, inherit);
---dialog-padding: var(--space-xs, 0);
+--dialog-padding: 0;
 --dialog-radius: var(--radius-md, 0.5rem);
 --dialog-width: 32rem;
 --dialog-max-width: 90vw;
@@ -362,7 +362,7 @@ function wireDialog(dialog, root) {
 .dialog {
   background: var(--dialog-bg, #fff);
   color: var(--dialog-color, inherit);
-  padding: var(--dialog-padding, var(--space-xs, 0));
+  padding: var(--dialog-padding, 0);
   border-radius: var(--dialog-radius, var(--radius-md, 0.5rem));
   border: var(--dialog-border, none);
   width: var(--dialog-width, 32rem);

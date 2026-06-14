@@ -270,7 +270,7 @@ The custom-event pattern lets the user wire whatever logic they want without mod
 ```scss
 --card-bg: var(--color-surface, #fff);
 --card-color: var(--color-text, inherit);
---card-padding: var(--space-xs, 0);
+--card-padding: 0;
 --card-radius: var(--radius-md, 0.5rem);
 --card-border: 1px solid var(--color-border, #e0e0e0);
 --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -282,7 +282,7 @@ The custom-event pattern lets the user wire whatever logic they want without mod
 --card-title-fw: 600;
 --card-title-color: var(--color-text, inherit);
 --card-title-padding: 1.5rem 1.5rem 0;
---card-title-margin-block-end: var(--space-xs, 0);
+--card-title-margin-block-end: 0;
 
 // Content
 --card-content-padding: var(--space-lg, 1.5rem);
@@ -313,7 +313,7 @@ The custom-event pattern lets the user wire whatever logic they want without mod
   flex-direction: var(--card-direction, column);
   background: var(--card-bg, #fff);
   color: var(--card-color, inherit);
-  padding: var(--card-padding, var(--space-xs, 0));
+  padding: var(--card-padding, 0);
   border-radius: var(--card-radius, var(--radius-md, 0.5rem));
   border: var(--card-border, 1px solid #e0e0e0);
   box-shadow: var(--card-shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
@@ -338,7 +338,7 @@ The custom-event pattern lets the user wire whatever logic they want without mod
   font-weight: var(--card-title-fw, 600);
   color: var(--card-title-color, inherit);
   padding: var(--card-title-padding, 1.5rem 1.5rem 0);
-  margin: 0 0 var(--card-title-margin-block-end, var(--space-xs, 0));
+  margin: 0 0 var(--card-title-margin-block-end, 0);
 }
 
 .card-content {

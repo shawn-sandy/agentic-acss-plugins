@@ -126,13 +126,13 @@ export default Table
 
 --table-th-fs: 0.875rem;
 --table-th-fw: 600;
---table-th-padding: var(--space-md, 0.75rem) var(--space-md, 1rem);
+--table-th-padding: 0.75rem 1rem;
 --table-th-bg: var(--color-surface-subtle, #f5f5f5);
 --table-th-border-bottom: 2px solid var(--color-border, #e0e0e0);
 --table-th-text-align: start;
 
 --table-td-fs: 0.9375rem;
---table-td-padding: var(--space-md, 0.75rem) var(--space-md, 1rem);
+--table-td-padding: 0.75rem 1rem;
 --table-td-border-bottom: 1px solid var(--color-border, #e0e0e0);
 
 --table-row-hover-bg: var(--color-surface-subtle, #f9f9f9);
@@ -159,7 +159,7 @@ export default Table
   th {
     font-size: var(--table-th-fs, 0.875rem);
     font-weight: var(--table-th-fw, 600);
-    padding: var(--table-th-padding, var(--space-md, 0.75rem) var(--space-md, 1rem));
+    padding: var(--table-th-padding, 0.75rem 1rem);
     background: var(--table-th-bg, #f5f5f5);
     border-bottom: var(--table-th-border-bottom, 2px solid #e0e0e0);
     text-align: var(--table-th-text-align, start);
@@ -167,7 +167,7 @@ export default Table
 
   td {
     font-size: var(--table-td-fs, 0.9375rem);
-    padding: var(--table-td-padding, var(--space-md, 0.75rem) var(--space-md, 1rem));
+    padding: var(--table-td-padding, 0.75rem 1rem);
     border-bottom: var(--table-td-border-bottom, 1px solid #e0e0e0);
   }
 
