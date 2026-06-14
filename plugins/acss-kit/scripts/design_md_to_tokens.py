@@ -78,16 +78,31 @@ TW_TYPO = {
     "family":   "--font-",          # checked AFTER --font-weight- to avoid overlap
 }
 
-_HEX_RE = re.compile(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})")
+# Longest-alternative-first so 8/6-digit win over their 4/3-digit prefixes.
+_HEX_RE = re.compile(r"#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})")
 _DIM_RE = re.compile(r"^\s*(-?\d*\.?\d+)(px|rem|em)?\s*$")
 
 
 def _hex(value: str) -> str | None:
+    """Resolve a hex color to opaque 6-digit form, or None.
+
+    css-tailwind/M3 exports may carry alpha (`#RGBA` / `#RRGGBBAA`). Our
+    `--color-*` roles are opaque and WCAG-contrast-gated, so a *fully opaque*
+    alpha channel (FF) is dropped, but a *translucent* one is rejected
+    (returns None → the role is OKLCH-synthesized) rather than silently
+    flattened to a wrong opaque color.
+    """
     m = _HEX_RE.search(value or "")
     if not m:
         return None
     h = m.group(1)
-    return "#" + (h if len(h) == 6 else "".join(c * 2 for c in h))
+    if len(h) in (3, 4):                       # expand shorthand to full bytes
+        h = "".join(c * 2 for c in h)
+    if len(h) == 8:                            # #RRGGBBAA
+        if h[6:8].lower() != "ff":             # translucent → reject
+            return None
+        h = h[:6]
+    return "#" + h
 
 
 def _norm_dim(value: str) -> str:
@@ -264,6 +279,14 @@ def self_test() -> int:
     check("typography recomposed", typo.get("size") == "1rem" and typo.get("weight") == "400"
           and typo.get("family") == "Public Sans", str(typo))
     check("typography family not polluted by font-weight", typo.get("family") == "Public Sans")
+
+    # hex alpha handling
+    check("6-digit hex preserved", _hex("#123abc") == "#123abc")
+    check("3-digit shorthand expanded", _hex("#abc") == "#aabbcc")
+    check("opaque 8-digit alpha (FF) flattened", _hex("#123abcff") == "#123abc")
+    check("opaque 4-digit alpha (F) flattened", _hex("#abcf") == "#aabbcc")
+    check("translucent 8-digit alpha rejected", _hex("#00000080") is None)
+    check("translucent 4-digit alpha rejected", _hex("#0008") is None)
 
     # missing-primary path
     empty, reasons2 = build_tokens("@theme { --color-on-surface: #111111; }")
