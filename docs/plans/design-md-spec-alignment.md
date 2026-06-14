@@ -73,6 +73,36 @@ The two systems are strikingly close on colors, and our contrast gate is
 *stronger* than DESIGN.md's lint. The gaps are **typography, spacing, and
 rounded** — DESIGN.md has token homes for all three; we have none.
 
+## Architecture at a glance
+
+End-to-end flow once both workstreams land (solid = data transform, dashed =
+cascade-time token consumption):
+
+```mermaid
+flowchart TB
+  FIGMA["Figma variables"] -->|get_variable_defs| DMD["DESIGN.md<br/>(tokens + prose)"]
+  DMD -->|"npx … export css-tailwind"| ADAPT["design_md_to_tokens.py<br/>(remap M3 → roles, synthesize gaps)"]
+  ADAPT --> TJSON["internal token JSON"]
+  TJSON --> T2C["tokens_to_css.py"]
+  T2C --> LIGHT["light.css / dark.css<br/>(--color-*)"]
+  T2C --> TYPO["typography.css<br/>(--font-*)"]
+  T2C --> SR["space-radius.css<br/>(--space-*, --radius-*)"]
+  LIGHT --> VAL["validate_theme.py<br/>(WCAG gate)"]
+
+  CMD["COMPONENT.md<br/>({token.path} refs)"] -->|/kit-add| COMP["component .tsx / .scss"]
+  LIGHT -.->|roles| COMP
+  TYPO -.-> COMP
+  SR -.-> COMP
+
+  CSS2DMD["tokens_to_design_md.py"] -->|export| DMD
+  DMD -->|export dtcg / tailwind| INTEROP["DTCG · Tailwind v3/v4"]
+```
+
+Inbound on the left (Figma/DESIGN.md → our theme), outbound on the right
+(our tokens → DESIGN.md → DTCG/Tailwind). The two markdown sources — `DESIGN.md`
+(tokens) and `COMPONENT.md` (implementation) — meet only through the
+`{token.path}` reference contract, never directly.
+
 ## Locked decisions
 
 Settled before this draft:
@@ -674,3 +704,39 @@ For completeness on the "why adopt this format" question:
 - **Net:** DESIGN.md is the only option that is simultaneously human-readable,
   agent-consumable, prose-bearing, and export-interoperable — which is exactly
   the seam our `styles` layer needs and the niche our `COMPONENT.md` extends.
+
+## Appendix G — Consolidated tool & artifact inventory
+
+Everything this effort touches, in one place — what's new vs. what already
+exists and is reused.
+
+**New (we build):**
+
+| Artifact | Type | Contract / shape | Workstream |
+|---|---|---|---|
+| `COMPONENT.md` spec | doc | versioned spec (front-matter + body), `{token.path}` refs | B |
+| `design_md_to_tokens.py` | Python | generator/validator (consumes `css-tailwind`) | A |
+| `validate_design_md.py` | Python | detector (JSON + `reasons`, exit 0/1) | A |
+| `tokens_to_design_md.py` | Python | generator (CSS → DESIGN.md, export-out) | A |
+| `/theme-from-design` | command + `styles` flow | — | A |
+| `/design-export` | command + `styles` flow | `--format=design-md\|dtcg\|tailwind` | A |
+| `typography.css` / `space-radius.css` | generated output | `--font-*` / `--space-*` `--radius-*` | A |
+| M3→roles reference (Appendix A) | `styles` reference doc | mapping table | A |
+| DESIGN.md advisory rule | `.claude/rules/*.md` | fires on `**/DESIGN.md`, `**/COMPONENT.md` | C |
+| DESIGN.md PostToolUse validator | `.claude/settings.json` hook | shells `validate_design_md.py` | C |
+| `tests/run.sh` round-trip step | test | lint + DESIGN.md→CSS→contrast | C |
+
+**Existing (reused unchanged or extended):**
+
+| Artifact | Role here | Change |
+|---|---|---|
+| `tokens_to_css.py` | emits theme CSS from token JSON | extend: typography + space-radius outputs |
+| `css_to_tokens.py` | CSS → JSON round-trip | extend: new token groups |
+| `generate_palette.py` / `_oklch.py` | OKLCH palette + gap synthesis | reused for success/warning/info/focus-ring |
+| `validate_theme.py` | WCAG contrast gate | reused as the hard gate post-adapter |
+| `theme.schema.json` / `_tokens.py` | role contract | extend: typography/spacing/rounded sections |
+| `verify_integration.py` | entrypoint import check | reused |
+| `kit-core` `/kit-add` | component generation | reads `COMPONENT.md` token refs |
+| 15 `component-*/reference.md` | implementation specs | swept: literals → token vars (PRs 2–3) |
+| `@google/design.md` CLI | `lint`/`diff`/`export`/`spec` | adopted at build/CI time |
+| Figma MCP (`get_variable_defs`, Code Connect) | design ⇄ token bridge | adopted in-session |
