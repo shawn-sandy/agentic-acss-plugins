@@ -13,7 +13,10 @@ Output: writes light.css and/or dark.css (and brand-<name>.css for each brand)
 Exit codes: 0 = success, 1 = validation error, 2 = usage/IO error.
 
 CSS variable convention (CLAUDE.md §CSS variable naming):
-  - Every var() reference includes a hardcoded hex fallback.
+  - Token DEFINITIONS emit raw values (`--color-primary: #4f46e5;`). A
+    self-referential definition (`--x: var(--x, …)`) is a CSS cycle →
+    guaranteed-invalid, so it would never apply. The `var(--token, <fallback>)`
+    fallback convention applies to CONSUMERS (components/utilities), not here.
   - :root { } for light mode tokens.
   - [data-theme="dark"] { } for dark mode tokens.
   - Brand files use both selectors with only overridden roles.
@@ -178,14 +181,14 @@ def self_test() -> int:
         "light mode only",
         {"modes": {"light": {"--color-primary": "#4f46e5", "--color-background": "#ffffff"}}},
         ["light.css"],
-        [":root {", "--color-primary: var(--color-primary, #4f46e5);",
-         "--color-background: var(--color-background, #ffffff);"],
+        [":root {", "--color-primary: #4f46e5;",
+         "--color-background: #ffffff;"],
     )
     run(
         "dark mode written to correct selector",
         {"modes": {"dark": {"--color-primary": "#7dd3fc"}}},
         ["dark.css"],
-        ['[data-theme="dark"] {', "--color-primary: var(--color-primary, #7dd3fc);"],
+        ['[data-theme="dark"] {', "--color-primary: #7dd3fc;"],
     )
     run(
         "both modes",
@@ -201,7 +204,7 @@ def self_test() -> int:
         {"brands": {"forest": {"light": {"--color-primary": "#2f7a4d"}, "dark": {"--color-primary": "#4ade80"}}}},
         ["brand-forest.css"],
         ["brand-forest.css", ":root {", '[data-theme="dark"] {',
-         "--color-primary: var(--color-primary, #2f7a4d);"],
+         "--color-primary: #2f7a4d;"],
     )
     run(
         "unknown role not emitted",
@@ -220,17 +223,17 @@ def self_test() -> int:
         "spacing + rounded emit space-radius.css",
         {"spacing": {"md": "1rem", "lg": "1.5rem"}, "rounded": {"sm": "0.25rem", "full": "9999px"}},
         ["space-radius.css"],
-        ["--space-md: var(--space-md, 1rem);",
-         "--radius-full: var(--radius-full, 9999px);",
+        ["--space-md: 1rem;",
+         "--radius-full: 9999px;",
          "/* Spacing */", "/* Radius */"],
     )
     run(
         "typography emits flattened --font-<role>-<sub>",
         {"typography": {"body-md": {"family": "Public Sans", "size": "1rem", "weight": "400", "line": "1.5"}}},
         ["typography.css"],
-        ["--font-body-md-family: var(--font-body-md-family, Public Sans);",
-         "--font-body-md-size: var(--font-body-md-size, 1rem);",
-         "--font-body-md-weight: var(--font-body-md-weight, 400);"],
+        ["--font-body-md-family: Public Sans;",
+         "--font-body-md-size: 1rem;",
+         "--font-body-md-weight: 400;"],
     )
 
     total = passed + failed

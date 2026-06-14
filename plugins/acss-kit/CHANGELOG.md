@@ -4,6 +4,12 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-06-14
+
+### Fixed
+
+- **Token definitions are no longer self-referential (theming actually applies).** `format_palette` / `format_scales` / `format_typography` previously emitted token *definitions* as `--token: var(--token, <literal>)`. A custom property that references itself is a CSS dependency cycle → it computes to the *guaranteed-invalid value*, so consumers (`var(--token, <fallback>)`) fell through to their own literal and **generated theme/token files did not actually theme components**. Confirmed empirically in Chromium (self-ref consumer resolved to the literal `8px`; raw definition resolved to the themed `32px`). Definitions now emit **raw values** (`--color-primary: #4f46e5;`, `--space-md: 1rem;`); the `var(--token, <fallback>)` convention remains correct for **consumers** (components/utilities). Regenerated the bundled `assets/tokens/space-radius.css` + `typography.css`; updated round-trip self-tests, the `tokens_to_css.py` docstring, the `styles` SKILL, and `validate_theme.py`/`css_to_tokens.py` continue to resolve both raw and legacy `var()` forms. Affects future `/theme-create`, `/theme-from-design`, and `/theme-*` output; existing user theme files should be regenerated. See `docs/plans/token-self-reference-cycle.md`.
+
 ## [1.3.1] - 2026-06-14
 
 ### Changed

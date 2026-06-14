@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: completed
 type: fix
 created: 2026-06-14
 repo-name: acss-plugins
@@ -70,6 +70,14 @@ radius (regenerating every theme file) warrants certainty:
 - *Verify:* `#a` computes to **99px** (confirms the self-ref is cyclic → broken)
   and `#b` to **10px** (confirms the raw definition + consumer-fallback works).
   If `#a` is 10px, the pattern is fine and this plan is moot — close it.
+
+> **Result (2026-06-14, real Chromium via Playwright).** Ran the equivalent test
+> — a "theme" sets both a self-ref token (`--t: var(--t, 2rem)`) and a raw token
+> (`--t: 2rem`), each consumed as button does (`var(--btn-x, var(--t, 0.5rem))`):
+> the **self-ref consumer = `8px`** (0.5rem literal — theme's 2rem ignored), the
+> **raw consumer = `32px`** (2rem — theme applies). Confirmed: self-referential
+> definitions are cyclic and do not theme; raw definitions work. **Implemented**
+> (Steps 2–3 below).
 
 ## Step 2 — Fix the emit format (definitions raw, consumers unchanged)
 

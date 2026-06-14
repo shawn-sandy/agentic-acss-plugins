@@ -122,7 +122,7 @@ def format_palette(palette: dict[str, str], selector: str, indent: str = "  ") -
     lines = [f"{selector} {{"]
     for group_name, roles in ROLE_GROUPS:
         group_lines = [
-            f"{indent}{role}: var({role}, {palette[role]});"
+            f"{indent}{role}: {palette[role]};"
             for role in roles
             if role in palette
         ]
@@ -204,12 +204,15 @@ def format_scales(
     """Render one or more dimension scales into a single :root block.
 
     ``scales`` is a list of ``(comment, css_prefix, {name: value})`` tuples.
-    Each value is emitted as ``<prefix><name>: var(<prefix><name>, <value>);``.
+    Each value is emitted as a raw definition ``<prefix><name>: <value>;`` —
+    consumers add the ``var(--token, <fallback>)`` read. (A self-referential
+    definition like ``var(--x, --x)`` would be a CSS cycle → guaranteed-invalid,
+    so token files must define raw values.)
     """
     lines = [f"{selector} {{"]
     for comment, prefix, mapping in scales:
         group_lines = [
-            f"{indent}{prefix}{name}: var({prefix}{name}, {value});"
+            f"{indent}{prefix}{name}: {value};"
             for name, value in mapping.items()
         ]
         if group_lines:
@@ -228,7 +231,7 @@ def format_typography(
     lines = [f"{selector} {{"]
     for role, sub in typography.items():
         role_lines = [
-            f"{indent}{FONT_PREFIX}{role}-{key}: var({FONT_PREFIX}{role}-{key}, {sub[key]});"
+            f"{indent}{FONT_PREFIX}{role}-{key}: {sub[key]};"
             for key in TYPO_SUBPROPS
             if key in sub
         ]
