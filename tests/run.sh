@@ -72,6 +72,7 @@ for gdir in "$GOLDEN_DIR"/component-*/; do
   n=$(basename "$gdir" | sed 's/^component-//')
   ref="$REPO_ROOT/plugins/acss-kit/skills/component-$n/reference.md"
   tmp="$TMP_ROOT/golden/$n"; mkdir -p "$tmp"
+  cmd="$REPO_ROOT/plugins/acss-kit/skills/component-$n/$n.component.md"
   for kind in scss; do
     [ -f "$gdir/$n.$kind" ] || continue
     node "$REPO_ROOT/tests/lib/extract_full.mjs" "$ref" "$kind" > "$tmp/$n.$kind" 2>/dev/null || true
@@ -79,6 +80,16 @@ for gdir in "$GOLDEN_DIR"/component-*/; do
       red "golden DRIFT: component-$n.$kind"
       head -20 "$tmp/$n.$kind.diff"
       GOLDEN_FAIL=1
+    fi
+    # Inverted COMPONENT.md (if present) must extract byte-identically to the
+    # same golden — proves reference.md → COMPONENT.md inversion is lossless.
+    if [ -f "$cmd" ]; then
+      node "$REPO_ROOT/tests/lib/extract_full.mjs" "$cmd" "$kind" > "$tmp/$n.cmd.$kind" 2>/dev/null || true
+      if ! diff -u "$gdir/$n.$kind" "$tmp/$n.cmd.$kind" >"$tmp/$n.cmd.$kind.diff" 2>&1; then
+        red "golden DRIFT: component-$n.$kind (from $n.component.md)"
+        head -20 "$tmp/$n.cmd.$kind.diff"
+        GOLDEN_FAIL=1
+      fi
     fi
   done
 done

@@ -179,7 +179,7 @@ function extractScss(content) {
     const heading = line.match(/^##\s+(.+?)\s*$/)
     if (heading && !inFence) {
       const h = heading[1].trim()
-      inSection = /^SCSS Template\b/i.test(h) || /^SCSS Pattern\b/i.test(h)
+      inSection = /^SCSS Template\b/i.test(h) || /^SCSS Pattern\b/i.test(h) || /^Styles\b/i.test(h)
       continue
     }
     const fenceMatch = line.match(/^```(\w*)\s*$/)
