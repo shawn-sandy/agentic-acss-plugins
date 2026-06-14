@@ -6,18 +6,18 @@
 :root {
 
   /* Spacing */
-  --space-xs: var(--space-xs, 0.25rem);
-  --space-sm: var(--space-sm, 0.5rem);
-  --space-md: var(--space-md, 1rem);
-  --space-lg: var(--space-lg, 1.5rem);
-  --space-xl: var(--space-xl, 2rem);
-  --space-2xl: var(--space-2xl, 3rem);
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
 
   /* Radius */
-  --radius-none: var(--radius-none, 0);
-  --radius-sm: var(--radius-sm, 0.25rem);
-  --radius-md: var(--radius-md, 0.5rem);
-  --radius-lg: var(--radius-lg, 1rem);
-  --radius-xl: var(--radius-xl, 1.5rem);
-  --radius-full: var(--radius-full, 9999px);
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
 }

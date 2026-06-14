@@ -141,7 +141,7 @@ files hold the only source of truth for every `--color-*` variable.
 2. Run `${CLAUDE_PLUGIN_ROOT}/scripts/generate_palette.py <hex-color> --mode=<mode>` (default `both`). Capture JSON stdout.
    - If exit code 1 (`"reasons"` non-empty), print the reasons and halt.
 3. Determine output directory. If `src/styles/theme/` exists in the project, use it. Otherwise ask the developer where to write theme files.
-4. Run `${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_css.py --stdin --out-dir=<dir>` piping the palette JSON. This writes `light.css` and/or `dark.css` with mandatory `var(--x, <fallback>)` syntax.
+4. Run `${CLAUDE_PLUGIN_ROOT}/scripts/tokens_to_css.py --stdin --out-dir=<dir>` piping the palette JSON. This writes `light.css` and/or `dark.css` as **raw role definitions** (`--color-primary: #hex;`). Definitions must be raw — a self-referential `var(--x, …)` definition is a CSS dependency cycle that computes to guaranteed-invalid and never applies; the `var(--token, <fallback>)` convention is for **consumers** (components/utilities), not theme definitions.
 5. Run `${CLAUDE_PLUGIN_ROOT}/scripts/validate_theme.py <dir>`. If contrast failures are found, print them as warnings and continue — generation is complete but the developer should adjust the seed or manually tune values.
 6. **Regenerate bridge** — if `${CLAUDE_PLUGIN_ROOT}/assets/utilities/token-bridge.css` exists, run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate_bridge.py --theme-dir=<dir> --out=<projectRoot>/<utilitiesDir>/token-bridge.css` so utility aliases reflect the new palette. Skip silently when no `utilitiesDir` is configured (i.e. `detect_target.py --what=utilities` returns `source: none`).
 7. Print a summary: files written, primary color, top contrast ratios.
