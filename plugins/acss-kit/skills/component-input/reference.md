@@ -1,6 +1,6 @@
 # Component: Input
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Vendored Input keeps the upstream feature surface: `validationState` (`none` | `valid` | `invalid`), `errorMessage` + `hintText` with auto-generated `aria-describedby` ids, accessible disabled handling, and the `onEnter` shortcut for Enter-key form submission. Intentional divergences: `useDisabledState` and `resolveDisabledState` are inlined into the generated `input.tsx` (same pattern as Button) so the file is self-contained.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Vendored Input keeps the upstream feature surface: `validationState` (`none` | `valid` | `invalid`), `errorMessage` + `hintText` with auto-generated `aria-describedby` ids, accessible disabled handling, and the `onEnter` shortcut for Enter-key form submission. Intentional divergences: `useDisabledState` and `resolveDisabledState` are inlined into the generated `input.tsx` (same pattern as Button) so the file is self-contained.
 
 ## Overview
 

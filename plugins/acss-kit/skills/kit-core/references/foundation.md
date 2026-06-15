@@ -1,6 +1,6 @@
 # Component: UI (Foundation)
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). The vendored `UI` component is the polymorphic React primitive that every other component imports as `import UI from '../ui'`. **Intentional preservation**: this is the one file copied verbatim from fpkit at first `/kit-add` run — the polymorphic-component pattern with ref-forwarding has subtle TypeScript shape requirements (the `as unknown as UIComponent` double-cast in particular) that benefit from being a single canonical implementation rather than a re-derived one.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). The vendored `UI` component is the polymorphic React primitive that every other component imports as `import UI from '../ui'`. **Intentional preservation**: this is the one file copied verbatim from fpkit at first `/kit-add` run — the polymorphic-component pattern with ref-forwarding has subtle TypeScript shape requirements (the `as unknown as UIComponent` double-cast in particular) that benefit from being a single canonical implementation rather than a re-derived one.
 
 ## Overview
 

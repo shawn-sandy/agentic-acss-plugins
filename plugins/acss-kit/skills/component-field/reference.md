@@ -1,6 +1,6 @@
 # Component: Field
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Field is the small label+control wrapper from `components/form/fields.tsx`. The vendored version preserves the upstream `labelFor` requirement (compile-time accessible-name guarantee for the wrapped control) and the `data-style="fields"` SCSS hook.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Field is the small label+control wrapper from `components/form/fields.tsx`. The vendored version preserves the upstream `labelFor` requirement (compile-time accessible-name guarantee for the wrapped control) and the `data-style="fields"` SCSS hook.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Component: Alert
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Generated Alert inlines the severity icon SVGs and `useAlertBehavior` hook for self-contained vendoring (no Icon component dependency, no separate hooks file).
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Generated Alert inlines the severity icon SVGs and `useAlertBehavior` hook for self-contained vendoring (no Icon component dependency, no separate hooks file).
 
 ## Overview
 

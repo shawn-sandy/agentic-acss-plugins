@@ -593,7 +593,7 @@ When adding or updating a component reference doc, follow the canonical embedded
 
 Every component reference doc must contain (in order):
 
-1. **Verification banner** — top of file, blockquote starting with `**Verified against fpkit source:**`. Records the upstream ref (e.g. `@fpkit/acss@6.5.0`) and any intentional divergences from upstream (inlined hooks, simplified compound APIs, dropped subcomponents). Future maintainers read this to understand *why* the vendored version diverges.
+1. **Verification banner** — top of file, blockquote starting with `**Verified against fpkit source:**`. Records the upstream ref (e.g. [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f)) and any intentional divergences from upstream (inlined hooks, simplified compound APIs, dropped subcomponents). Future maintainers read this to understand *why* the vendored version diverges.
 2. **`## Overview`** — one-paragraph summary of the component's purpose.
 3. **`## Generation Contract`** — `export_name`, `file`, `scss`, `imports`, `dependencies`. The `/kit-add` workflow reads these fields verbatim.
 4. **`## Props Interface`** — TypeScript interface or type alias the component accepts.
@@ -634,7 +634,7 @@ Before authoring or backfilling a reference doc:
 
 Generate a paste-ready TSX snippet (or standalone component file) from a plain-English description. Resolves the user's words against the matched component's Props Interface — never invents props or variants that aren't in the reference doc.
 
-> Delegates to whichever component reference doc matches the description. Each reference doc carries its own `@fpkit/acss@6.5.0` verification line.
+> Delegates to whichever component reference doc matches the description. Each reference doc carries its own [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) verification line.
 
 **Supported components:** Button, IconButton, Alert, Card, Dialog, Popover, Link, Img, Icon, List, Table, Field, Input, Checkbox, Nav — any component with a dedicated `component-<name>/reference.md` skill. Components that exist only as inline entries in `references/inline-components.md` (Badge, Tag, Heading, Text/Paragraph, Details, Progress) are not supported; promote them via `/acss-kit-component-author <name>` first.
 
@@ -902,7 +902,7 @@ import './fpkit/card/card.scss'
 
 Generate a self-contained, accessible React form composed from the `Field`, `Input`, `Button`, and (when needed) `Checkbox` reference components. If any of those don't yet exist in the target directory, this mode walks through `/kit-add field input checkbox button` first.
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0`. Follows upstream `components/form/form.tsx` composition pattern, targeting a single self-contained generated file.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f). Follows upstream `components/form/form.tsx` composition pattern, targeting a single self-contained generated file.
 
 **Examples:**
 - "Create a signup form with email, password, and a role dropdown."

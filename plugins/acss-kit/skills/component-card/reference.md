@@ -1,6 +1,6 @@
 # Component: Card
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Card uses the compound pattern (`Card`, `Card.Title`, `Card.Content`, `Card.Footer`) in a single `card.tsx` — same structure as upstream. Generated locally via `Object.assign(CardRoot, { Title, Content, Footer })`.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Card uses the compound pattern (`Card`, `Card.Title`, `Card.Content`, `Card.Footer`) in a single `card.tsx` — same structure as upstream. Generated locally via `Object.assign(CardRoot, { Title, Content, Footer })`.
 
 ## Overview
 

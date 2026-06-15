@@ -39,7 +39,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add table` reads this file: `## Styles` → `table.scss`,
 > `## Target: react` → `table.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). **Intentional divergence**: upstream exports `Table` plus a `RenderTable` (displayName `TBL`) helper and `RenderHead` / `RenderBody` utilities, with the table-element primitives (`Caption`, `Thead`, `Tbody`, `Tr`) split into a sibling `table-elements.tsx` file. The vendored version consolidates everything into a single `table.tsx` and exposes a compound API (`Table`, `Table.Caption`, `Table.Head`, `Table.Body`, `Table.Row`, `Table.HeaderCell`, `Table.Cell`) — same semantics as the upstream primitives, more idiomatic than the `RenderTable` utility, and self-contained.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). **Intentional divergence**: upstream exports `Table` plus a `RenderTable` (displayName `TBL`) helper and `RenderHead` / `RenderBody` utilities, with the table-element primitives (`Caption`, `Thead`, `Tbody`, `Tr`) split into a sibling `table-elements.tsx` file. The vendored version consolidates everything into a single `table.tsx` and exposes a compound API (`Table`, `Table.Caption`, `Table.Head`, `Table.Body`, `Table.Row`, `Table.HeaderCell`, `Table.Cell`) — same semantics as the upstream primitives, more idiomatic than the `RenderTable` utility, and self-contained.
 
 ## Overview
 

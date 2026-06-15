@@ -37,7 +37,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add field` reads this file: `## Styles` → `field.scss`,
 > `## Target: react` → `field.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Field is the small label+control wrapper from
 > `components/form/fields.tsx`. The vendored version preserves the upstream
 > `labelFor` requirement (compile-time accessible-name guarantee for the wrapped

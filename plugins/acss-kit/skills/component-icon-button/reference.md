@@ -1,6 +1,6 @@
 # Component: IconButton
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). The vendored IconButton imports the kit-builder `Button` and applies `variant="icon"` plus the XOR-typed accessible-name constraint from upstream. The optional `label` text uses a media-query reveal for desktop widths so the label is always in the accessibility tree but visually hidden on mobile.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). The vendored IconButton imports the kit-builder `Button` and applies `variant="icon"` plus the XOR-typed accessible-name constraint from upstream. The optional `label` text uses a media-query reveal for desktop widths so the label is always in the accessibility tree but visually hidden on mobile.
 
 ## Overview
 

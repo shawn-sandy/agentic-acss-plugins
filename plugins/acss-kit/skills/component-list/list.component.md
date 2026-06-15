@@ -42,7 +42,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add list` reads this file: `## Styles` → `list.scss`,
 > `## Target: react` → `list.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Vendored List preserves the upstream compound API (`List` +
 > `List.ListItem`) and the `role="list"` override pattern that restores list
 > semantics for VoiceOver/Safari when CSS `list-style: none` would otherwise

@@ -1,6 +1,6 @@
 # Component: List
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Vendored List preserves the upstream compound API (`List` + `List.ListItem`) and the `role="list"` override pattern that restores list semantics for VoiceOver/Safari when CSS `list-style: none` would otherwise strip them. Supports `ul`, `ol`, and `dl` variants (with `dt` / `dd` items for definition lists).
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Vendored List preserves the upstream compound API (`List` + `List.ListItem`) and the `role="list"` override pattern that restores list semantics for VoiceOver/Safari when CSS `list-style: none` would otherwise strip them. Supports `ul`, `ol`, and `dl` variants (with `dt` / `dd` items for definition lists).
 
 ## Overview
 

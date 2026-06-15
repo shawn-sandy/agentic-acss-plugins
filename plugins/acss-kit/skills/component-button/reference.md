@@ -1,6 +1,6 @@
 # Component: Button
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`; no matching tag for `6.6.0` exists upstream). Intentional divergences from upstream: `useDisabledState` and `resolveDisabledState` are inlined into the generated `button.tsx` rather than imported from `../../hooks/use-disabled-state` and `../../utils/accessibility`; `ButtonProps` is expressed as an explicit shape with `Omit<...,'disabled'>` rather than `Partial<React.ComponentProps<typeof UI>> & DisabledStateProps`. These divergences are deliberate — they let `/kit-add` produce a self-contained component without pulling a hook, util, and shared-types tree.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`; no matching tag for `6.6.0` exists upstream). Intentional divergences from upstream: `useDisabledState` and `resolveDisabledState` are inlined into the generated `button.tsx` rather than imported from `../../hooks/use-disabled-state` and `../../utils/accessibility`; `ButtonProps` is expressed as an explicit shape with `Omit<...,'disabled'>` rather than `Partial<React.ComponentProps<typeof UI>> & DisabledStateProps`. These divergences are deliberate — they let `/kit-add` produce a self-contained component without pulling a hook, util, and shared-types tree.
 
 ## Overview
 
