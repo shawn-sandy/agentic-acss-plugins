@@ -25,9 +25,14 @@ Several commands sound similar (`/kit-add`, `/kit-create`, `/theme-create`, `/st
 | If you want to… | Use |
 |---|---|
 | Generate a known component (Button, Dialog, …) | `/kit-add <name>` — explicit, fastest. Add `--target=html` for a non-React project. |
-| Describe a component in prose | `/kit-create <description>` (or just describe in chat — the `components` skill's Creator Mode auto-triggers on the same phrasing). |
-| Generate a form from prose | Describe the form in chat — the `components` skill's Form Mode auto-triggers (e.g. *"create a signup form with email, password, role select"*). |
+| Describe a component in prose | `/kit-create <description>` (or just describe in chat — kit-core's Creator Mode auto-triggers on the same phrasing). |
+| Generate a form from prose | Describe the form in chat — kit-core's Form Mode auto-triggers (e.g. *"create a signup form with email, password, role select"*). |
 | Generate a new theme from a hex | `/theme-create <hex>` (add `--mode=light` or `--mode=dark` for a single mode; default emits both). |
+| Generate a theme from a Figma file | `/theme-from-figma <url>` — reads Figma **variables** as tokens (preferred over `/theme-extract` for Figma). |
+| Generate a theme from a Google DESIGN.md | `/theme-from-design <file>` — consumes a [DESIGN.md](https://github.com/google-labs-code/design.md). |
+| Generate a theme from an image | `/theme-extract <image-path>` — samples colors from a logo or screenshot. |
+| Export your acss-kit theme as a DESIGN.md | `/design-export` (round-trips to DTCG/Tailwind with `--format`). |
+| Build a 10-step color scale from one color | `/color-scale <color>`. |
 | Edit an existing theme's role values | `/theme-update <file> --color-<role>=<hex>`. |
 | Tune the visual feel of a component or theme | `/style-tune <description>` (e.g. *warmer button*, *more elevated dialog*, *tone down the primary*). |
 | Adjust utility-class tokens (spacing, breakpoints, families) | `/utility-tune <description>`. |
@@ -127,9 +132,24 @@ contrast and stop if anything fails.
 
 ---
 
-## 6. Extract a theme from a design
+## 5a. Build a color scale from one color
 
-**When to use:** You have a Figma file or a brand image and want to derive a theme from it instead of typing in a hex.
+**When to use:** You need a 10-step tonal ramp (steps 50–900) from a single seed — for a custom palette, a data-viz scale, or to hand-build a token set.
+
+**Prompt:**
+
+```text
+Generate a 10-step OKLCH color scale from [#4f46e5], named [primary], in
+both CSS and a Markdown table.
+```
+
+**What you get:** A `--color-<name>-50 … -900` CSS block plus a table of every step (Step / Hex / OKLCH), computed in OKLCH space for even perceptual spacing. The seed can be a hex, a CSS named color, or an existing theme role. Backed by `/color-scale`.
+
+---
+
+## 6. Extract a theme from an image or design
+
+**When to use:** You have a brand image (logo, screenshot) or a Figma design and want to *sample* colors from it instead of typing in a hex. To read a Figma file's **variables** as tokens rather than sampling pixels, prefer `/theme-from-figma` (section 6a).
 
 **Prompt:**
 
@@ -146,6 +166,50 @@ theme.
 ```
 
 **What you get:** A primary color (and optional accents) picked from the source, fed into the same palette pipeline as `/theme-create`. Backed by `/theme-extract`.
+
+---
+
+## 6a. Generate a theme from a Figma file's variables
+
+**When to use:** Your Figma file defines design tokens as **variables** (`color/primary`, `spacing/md`, `radius/md`, `fontSize/body-md`, …) and you want them mapped straight into an acss-kit theme — the standards-based evolution of `/theme-extract`'s Figma path.
+
+**Prompt:**
+
+```text
+Generate an acss-kit theme from the variables in
+[https://www.figma.com/design/...]. Validate contrast.
+```
+
+**What you get:** `light.css` / `dark.css`, `space-radius.css`, and `typography.css` generated from the Figma variables (read via the Figma MCP server's `get_variable_defs`), mapped through the same Appendix A adapter as `/theme-from-design` and gated by WCAG contrast. Requires the **Figma MCP server**; everything after the variable read is pure Python. Backed by `/theme-from-figma`.
+
+---
+
+## 6b. Generate a theme from a Google DESIGN.md
+
+**When to use:** You have a [DESIGN.md](https://github.com/google-labs-code/design.md) (the Google design-token markdown format) and want a complete acss-kit theme from it.
+
+**Prompt:**
+
+```text
+Generate an acss-kit theme from [./DESIGN.md]. Synthesize any roles the
+file omits and validate contrast.
+```
+
+**What you get:** `light.css` / `dark.css` (colors), `space-radius.css`, and `typography.css`. Material-3 color names map to acss-kit's 18 roles; roles the file omits (success, warning, info, focus-ring) are synthesized via the OKLCH generator so the theme is complete and contrast-valid. **Requires Node/`npx`** (shells `npx @google/design.md export`). Backed by `/theme-from-design`.
+
+---
+
+## 6c. Export your theme as a DESIGN.md
+
+**When to use:** You have an acss-kit theme and want to publish it as a [DESIGN.md](https://github.com/google-labs-code/design.md) — to share with designers, feed another tool, or round-trip to DTCG / Tailwind.
+
+**Prompt:**
+
+```text
+Export my acss-kit theme to a DESIGN.md.
+```
+
+**What you get:** A `DESIGN.md` with YAML front-matter (`colors` / `spacing` / `rounded` / `typography`) plus a prose skeleton. `--format=dtcg` or `--format=tailwind` hands off to `npx @google/design.md export` instead. The default DESIGN.md export is pure Python (no Node); the round-trip is semantic, not lossless. Backed by `/design-export`.
 
 ---
 
@@ -268,7 +332,7 @@ theme seeded from [#4f46e5]. Track everything in .acss-kit/manifest.json
 so I can re-sync safely later.
 ```
 
-**What you get:** Every catalog component + `ui.tsx` + `light.css` / `dark.css` written via the same generators `/kit-add` and `/theme-create` use, plus `<projectRoot>/.acss-kit/manifest.json` recording the normalized sha256 of each file. Re-runs route every file through the drift check — modified files are skipped, clean files overwritten. Backed by `/kit-sync`. (Form generation lives in the `components` skill's Form Mode and is not vendored by `/kit-sync` — use the form prompt above to generate forms on demand.)
+**What you get:** Every catalog component + `ui.tsx` + `light.css` / `dark.css` written via the same generators `/kit-add` and `/theme-create` use, plus `<projectRoot>/.acss-kit/manifest.json` recording the normalized sha256 of each file. Re-runs route every file through the drift check — modified files are skipped, clean files overwritten. Backed by `/kit-sync`. (Form generation lives in kit-core's Form Mode and is not vendored by `/kit-sync` — use the form prompt above to generate forms on demand.)
 
 ---
 
@@ -307,4 +371,4 @@ families.
 - **Prefer plain English when you don't know the command.** Claude Code routes to the right skill — you don't have to memorise every slash command.
 - **Run `/setup` once per project.** Most other prompts assume the foundation `ui.tsx` is already in place.
 - **Validate after theme edits.** Every theme command runs `validate_theme.py` for AA contrast — trust the failures.
-- **Read the plugin README.** `plugins/acss-kit/README.md` covers edge cases and arguments not shown here. Upgrading from v0.x? See [`docs/migration-v1.md`](migration-v1.md).
+- **Read the plugin README.** `plugins/acss-kit/README.md` covers edge cases and arguments not shown here. See [`CHANGELOG.md`](../CHANGELOG.md) for version history and migration notes.
