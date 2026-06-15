@@ -4,6 +4,13 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-06-14
+
+### Added
+
+- **All 15 components now ship a neutral COMPONENT.md (Workstream A+B+C PR 7b — bulk inversion).** Following the button pilot, the remaining 14 components (`alert, card, checkbox, dialog, field, icon, icon-button, img, input, link, list, nav, popover, table`) each gained a `<name>.component.md`: the framework-agnostic source of truth (front-matter contract + `## Semantic Structure` / `## Styles` / `## Behavior` / `## Accessibility`) with the canonical React projection in a `## Target: react` adapter. Each per-component SKILL.md now prefers its COMPONENT.md, falling back to the legacy `reference.md`.
+- The inversion is **provably lossless**: every COMPONENT.md extracts **byte-identical** SCSS and TSX to its `reference.md` (independently verified across all 15), and `tests/run.sh` step 2a auto-discovers each `<name>.component.md` and asserts byte-identical SCSS against the existing goldens. `/kit-add` output is unchanged. Stateful components (`alert, card, dialog, popover`) carry a `## Behavior` spec + neutral `init(root)`; compound components (`card, list, table`) carry all sub-component contracts verbatim; presentational ones (`icon, img, link, nav`) omit `## Behavior`.
+
 ## [1.9.0] - 2026-06-14
 
 ### Added

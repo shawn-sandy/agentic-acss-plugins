@@ -1,7 +1,7 @@
 {
   "name": "acss-kit",
   "description": "Accessible React components, static HTML snippets, CSS themes, and Tailwind-style utility classes for fpkit/acss projects. OKLCH themes with WCAG 2.2 AA validation. Includes all /utility-* commands.",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "author": {
     "name": "Shawn Sandy",
     "url": "https://github.com/shawn-sandy/acss"
