@@ -41,7 +41,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > inherits `currentColor` from the parent context, so there is no `## Styles`
 > section.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). **Intentional divergence**: upstream Icon is a polymorphic span
 > wrapper that hosts externally-imported icon components as static properties
 > (`Icon.Add`, `Icon.ArrowDown`, etc.), pulling in 30+ separate icon files. The

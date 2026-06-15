@@ -1,6 +1,6 @@
 # Breakpoints
 
-Responsive variants are generated for every family with `families.<f>.responsive: true` in [`utilities.tokens.json`](../../../assets/utilities.tokens.json). The breakpoint values match fpkit upstream (`@fpkit/acss@6.5.0`) verbatim.
+Responsive variants are generated for every family with `families.<f>.responsive: true` in [`utilities.tokens.json`](../../../assets/utilities.tokens.json). The breakpoint values match fpkit upstream ([`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f)) verbatim.
 
 ## Default breakpoints
 

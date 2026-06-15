@@ -56,7 +56,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add popover` reads this file: `## Styles` → `popover.scss`,
 > `## Target: react` → `popover.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Uses the native HTML Popover API (`popover` attribute +
 > `popovertarget` + `showPopover()` / `hidePopover()`). Browser support: Chrome
 > 125+, Edge 125+, Safari 17.4+, Firefox 125+. The native API provides automatic

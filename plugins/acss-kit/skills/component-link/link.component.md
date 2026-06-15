@@ -38,7 +38,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add link` reads this file: `## Styles` → `link.scss`,
 > `## Target: react` → `link.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Vendored Link preserves the upstream automatic-security behavior
 > for `target="_blank"` (merging `noopener noreferrer` with any user-provided
 > `rel` tokens) and the optional `prefetch` hint. **Intentional simplification**:

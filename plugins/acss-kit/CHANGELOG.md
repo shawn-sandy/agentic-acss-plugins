@@ -4,6 +4,12 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.10.1] - 2026-06-15
+
+### Changed
+
+- **fpkit verification banners now link to a pinned source.** The `` `@fpkit/acss@6.5.0` `` version citation in every component verification banner (and the kit-core / foundation / breakpoints references) is now a clickable link pinned to a commit SHA (`https://github.com/shawn-sandy/acss/tree/9063512f…`), matching the existing `foundation.md` precedent and the full-GitHub-URL convention in CLAUDE.md / the fpkit-references rule. Applied across all 15 `reference.md` + `*.component.md` pairs; the template placeholder (`@fpkit/acss@<version>`) and the already-linked `foundation.md` occurrence are untouched. Banner text is prose, so component extraction stays byte-identical (verified). Addresses a deferred Codex review note from PR #94.
+
 ## [1.10.0] - 2026-06-14
 
 ### Added

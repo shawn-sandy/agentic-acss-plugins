@@ -50,7 +50,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add button` reads this file: `## Styles` → `button.scss`,
 > `## Target: react` → `button.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0`. Intentional divergences:
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f). Intentional divergences:
 > `useDisabledState` / `resolveDisabledState` are inlined into the generated
 > `button.tsx` rather than imported, and `ButtonProps` is an explicit shape with
 > `Omit<...,'disabled'>` — so `/kit-add` emits a self-contained component.

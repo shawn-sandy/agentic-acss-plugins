@@ -1,6 +1,6 @@
 # Component: Icon
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). **Intentional divergence**: upstream Icon is a polymorphic span wrapper that hosts externally-imported icon components as static properties (`Icon.Add`, `Icon.ArrowDown`, etc.), pulling in 30+ separate icon files. The vendored Icon is a `name`-prop dispatcher with a small built-in SVG set (info, success, warning, error, close, chevron-down, chevron-right, check, external-link). Self-contained, much smaller, and covers the icons the rest of the kit-builder components depend on. If a project needs the larger fpkit icon library, it can extend the `ICON_SVGS` map locally.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). **Intentional divergence**: upstream Icon is a polymorphic span wrapper that hosts externally-imported icon components as static properties (`Icon.Add`, `Icon.ArrowDown`, etc.), pulling in 30+ separate icon files. The vendored Icon is a `name`-prop dispatcher with a small built-in SVG set (info, success, warning, error, close, chevron-down, chevron-right, check, external-link). Self-contained, much smaller, and covers the icons the rest of the kit-builder components depend on. If a project needs the larger fpkit icon library, it can extend the `ICON_SVGS` map locally.
 
 ## Overview
 

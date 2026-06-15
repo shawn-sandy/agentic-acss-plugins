@@ -62,7 +62,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add input` reads this file: `## Styles` → `input.scss`,
 > `## Target: react` → `input.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Vendored Input keeps the upstream feature surface:
 > `validationState` (`none` | `valid` | `invalid`), `errorMessage` + `hintText`
 > with auto-generated `aria-describedby` ids, accessible disabled handling, and

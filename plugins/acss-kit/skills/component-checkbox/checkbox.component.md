@@ -65,7 +65,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add checkbox` reads this file: `## Styles` →
 > `checkbox.scss`, `## Target: react` → `checkbox.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). Wraps the kit-builder `Input` with `type="checkbox"` and exposes
 > a boolean `onChange` API. Adds size variants (`xs` | `sm` | `md` | `lg`), an
 > automatic visible label, and a controlled-vs-uncontrolled-mode warning in

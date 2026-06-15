@@ -50,7 +50,7 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > `reference.md`). `/kit-add img` reads this file: `## Styles` → `img.scss`,
 > `## Target: react` → `img.tsx`.
 >
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to
 > npm `6.6.0`). The vendored Img keeps the upstream feature set: lazy loading
 > default, error handling with a generated SVG-gradient placeholder, `srcSet` /
 > `sizes` responsive support, `fetchpriority` / `decoding` performance hints. The

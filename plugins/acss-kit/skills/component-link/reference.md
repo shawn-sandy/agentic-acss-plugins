@@ -1,6 +1,6 @@
 # Component: Link
 
-> **Verified against fpkit source:** `@fpkit/acss@6.5.0` (closest tagged ref to npm `6.6.0`). Vendored Link preserves the upstream automatic-security behavior for `target="_blank"` (merging `noopener noreferrer` with any user-provided `rel` tokens) and the optional `prefetch` hint. **Intentional simplification**: the upstream `IconLink` and `LinkButton` compound subcomponents are dropped from the default vendoring — they're trivial enough to add inline if needed (each is ~5 lines), and most consumers want one or the other but rarely both.
+> **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Vendored Link preserves the upstream automatic-security behavior for `target="_blank"` (merging `noopener noreferrer` with any user-provided `rel` tokens) and the optional `prefetch` hint. **Intentional simplification**: the upstream `IconLink` and `LinkButton` compound subcomponents are dropped from the default vendoring — they're trivial enough to add inline if needed (each is ~5 lines), and most consumers want one or the other but rarely both.
 
 ## Overview
 
