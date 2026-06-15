@@ -7,6 +7,11 @@ repo-name: acss-plugins
 
 # Proposal: Aligning our markdown component patterns with `DESIGN.md`
 
+> **✅ STATUS: SHIPPED (2026-06-15).** The full roadmap (PRs 0–7) is merged to
+> `main` — acss-kit **v1.10.1**. This document is retained as the design record;
+> see [Shipped — what landed](#shipped--what-landed) for the change inventory and
+> the [phased delivery roadmap](#phased-delivery-roadmap) for per-PR status.
+
 > **This is a proposal for review, not an execution plan.** It captures the
 > comparison between Google Labs' [`DESIGN.md`](https://github.com/google-labs-code/design.md)
 > spec and our own markdown patterns, and proposes a two-part path: (A) let our
@@ -35,6 +40,49 @@ complementary pieces:
 
 Plus the **round-trip out** (our theme → DESIGN.md / DTCG / Tailwind) and a
 **Figma bridge**, so the whole thing is bidirectional and standards-interoperable.
+
+## Shipped — what landed
+
+The initiative shipped across **6 PRs** (acss-kit `1.5.0` → `1.10.1`). Inventory:
+
+**New slash commands (acss-kit):**
+
+| Command | What | PR |
+|---|---|---|
+| `/theme-from-design <DESIGN.md>` | DESIGN.md → full theme (colors + spacing + rounded + typography), WCAG-gated. Needs Node/`npx`. | #90 |
+| `/design-export [--format=design-md\|dtcg\|tailwind]` | Theme → DESIGN.md (pure Python) or DTCG/Tailwind (`npx`). The outbound half. | #91 |
+| `/theme-from-figma <figma-url>` | Figma variables (MCP `get_variable_defs`) → theme. Pure Python after the MCP call. | #92 |
+
+**New Python scripts** (`plugins/acss-kit/scripts/`, stdlib-only, self-tested):
+`design_md_to_tokens.py` (M3→roles adapter + OKLCH gap synthesis), `validate_design_md.py`
+(detector, hard-fails on missing primary), `tokens_to_design_md.py` (inverse adapter +
+prose skeleton), `figma_to_tokens.py` (Figma→css-tailwind→tokens, reuses the adapter),
+`validate_tokens.py` (dimension/typography validator). PR 1 also gave `_tokens.py` /
+`tokens_to_css.py` token **homes** for `--space-*` / `--radius-*` / `--font-<role>-*`
+(and fixed the self-referential-`var()` cycle so themes actually apply).
+
+**COMPONENT.md system (Workstream B + the inversion):**
+
+- `style-agent` publishes the framework-neutral **COMPONENT.md spec** + example (v0.5.0).
+- All **15 acss-kit components** now ship a neutral `<name>.component.md` — semantic
+  structure + `## Styles` + `## Behavior` + `## Accessibility`, with the React projection
+  in a `## Target: react` adapter. **Provably lossless**: each extracts byte-identical
+  SCSS + TSX to its retained `reference.md`. `/kit-add` reads COMPONENT.md first.
+- The 14-component bulk inversion (#94) was executed via **parallel subagents**.
+
+**Token sweep (Workstream A):** button pilot (#`1.3.1`) + 12-component bulk sweep
+(`1.5.0`) moved ~150 literal sites onto `var(--space/radius/font-*, …)` nested fallbacks —
+pixel-identical with no theme, themed when a DESIGN.md is present.
+
+**Infra wiring:** a PostToolUse hook lints any `DESIGN.md` on save (npx-gated); a
+`.claude/rules/design-md.md` advisory rule; `tests/run.sh` gates contrast, token
+structure, the export round-trip, the Figma bridge, and **byte-identical extraction
+across all 15 components** (golden guard). fpkit verification banners pinned to a
+source-tree SHA (#95).
+
+The net: a two-file design system — **DESIGN.md owns tokens, COMPONENT.md owns
+components** — bridged end-to-end and bidirectionally (Figma ⇄ DESIGN.md ⇄ theme;
+COMPONENT.md → any framework).
 
 ## Document map
 
@@ -822,13 +870,13 @@ split was staged (pilot → bulk, golden tests throughout):
 | PR | Scope | Workstream | Size | Depends on |
 |---|---|---|---|---|
 | **0** | This proposal *(done)* + `COMPONENT.md` spec draft + advisory rule | B | M | — |
-| **1** | Token homes: extend `theme.schema.json` + `_tokens.py` `ROLE_GROUPS`; `tokens_to_css.py` emits `typography.css` + `space-radius.css`; new unit/scale validators | A (infra) | L | 0 |
-| **2** | Sweep **pilot (button)**: literals → `var(--space/radius/font-*)`; fix `--color-primary-dark` debt; golden-output test | A | M | 1 |
-| **3** | Bulk sweep remaining 14 (~150 sites) + wire `alert` state colors to roles | A | L | 2 |
-| **4** | `design_md_to_tokens.py` (consume `css-tailwind`) + `validate_design_md.py` + `/theme-from-design` | A (core) | L | 1, parse-route decision |
-| **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) *(done)* | A | M | 4 |
-| **6** | Figma bridge (`get_variable_defs` → DESIGN.md; Code Connect out) + PostToolUse hook + `tests/run.sh` round-trip step *(done)* | C | M | 4 |
-| **7** | Spec-driven generation: evolve `/kit-add` to read COMPONENT.md + resolve DESIGN.md tokens, **and invert the 15 `reference.md` → neutral COMPONENT.md** (extract neutral layers; demote TSX to `## Target: react`) | A+B+C | L | 2–4 |
+| **1** | Token homes: extend `theme.schema.json` + `_tokens.py` `ROLE_GROUPS`; `tokens_to_css.py` emits `typography.css` + `space-radius.css`; new unit/scale validators *(done)* | A (infra) | L | 0 |
+| **2** | Sweep **pilot (button)**: literals → `var(--space/radius/font-*)`; fix `--color-primary-dark` debt; golden-output test *(done)* | A | M | 1 |
+| **3** | Bulk sweep remaining 14 (~150 sites) + wire `alert` state colors to roles *(done — alert deferred)* | A | L | 2 |
+| **4** | `design_md_to_tokens.py` (consume `css-tailwind`) + `validate_design_md.py` + `/theme-from-design` *(done — PR #90)* | A (core) | L | 1, parse-route decision |
+| **5** | `tokens_to_design_md.py` + `/design-export` (round-trip out, incl. `dtcg`) *(done — PR #91)* | A | M | 4 |
+| **6** | Figma bridge (`get_variable_defs` → DESIGN.md; Code Connect out) + PostToolUse hook + `tests/run.sh` round-trip step *(done — PR #92)* | C | M | 4 |
+| **7** | Spec-driven generation: evolve `/kit-add` to read COMPONENT.md + resolve DESIGN.md tokens, **and invert the 15 `reference.md` → neutral COMPONENT.md** (extract neutral layers; demote TSX to `## Target: react`) *(done — PR #93 pilot, #94 bulk; banners pinned in #95)* | A+B+C | L | 2–4 |
 
 Critical path is **0 → 1 → 4**; the component sweep (2, 3) is parallelizable
 once token homes (1) land and is the only *large* user-visible churn.
