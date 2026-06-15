@@ -4,6 +4,12 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.10.2] - 2026-06-15
+
+### Changed
+
+- **Prompt book refreshed to match the current command surface.** `docs/prompt-book.md` (shipped by `/prompt-book`) had drifted since the per-component skill split. Added catalogue entries for the four commands introduced since: `/color-scale` (§5a), `/theme-from-figma` (§6a), `/theme-from-design` (§6b), and `/design-export` (§6c), and broadened §6 to clarify image-vs-variables theme sourcing. New entries use lettered sub-numbers so the existing stable section numbers are unchanged. Corrected the stale `components` skill references to **kit-core** (Creator Mode / Form Mode now live there) in the "When to use what" table and §14, and fixed the broken `migration-v1.md` link (removed in #78) to point at the CHANGELOG. The "When to use what" table gained rows for the new theme-sourcing routes and `/color-scale`.
+
 ## [1.10.1] - 2026-06-15
 
 ### Changed
