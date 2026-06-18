@@ -2,7 +2,7 @@
 
 A guide to the SessionStart hook that snaps a fresh worktree branch onto `origin/<default>` so every session begins from the latest default branch — what it does, why it exists, how it fires, and how to apply it.
 
-> **Origin.** Written 2026-06-18 from a working session. The prompt was a single question: *"Can we always ensure that worktrees are created from the default origin?"* Investigation found sibling worktrees sitting 15, 22, and 80 commits behind `origin/main`. The existing SessionStart hook freshened the local `main` ref but never moved the worktree's own branch onto it. We added a guarded `git reset --hard` to close that gap and verified every branch of the logic before shipping. This guide captures the rule and its edges.
+> **Origin.** Written 2026-06-18 from a working session. The prompt was a single question: *"Can we always ensure that worktrees are created from the default origin?"* Investigation found sibling worktrees sitting 15, 22, and 80 commits behind `origin/main`. The existing SessionStart hook freshened the local `main` ref but never moved the worktree's own branch onto it. We added a guarded `git reset --hard` to close that gap. A follow-up PR review (Codex) then caught a sharper bug: fetching into the *local* default ref is refused when that branch is checked out in another worktree, so the hook now fetches and resets against the **remote-tracking** ref `origin/<default>`. This guide captures the corrected rule and its edges.
 
 > **Per-user, not in this repo.** The hook this guide documents lives in `~/.claude/settings.json` — a personal, machine-local file under your home directory. It is **not** committed to `acss-plugins`, and a teammate who clones this repo will not have it. Every `~/.claude/...` path below is per-user. The repo's own committed `.claude/settings.json` has **no** `SessionStart` hook (verified: `grep -c SessionStart .claude/settings.json` → `0`), so the freshness behavior described here comes entirely from the user-level config and does not travel with the repository.
 
@@ -50,13 +50,13 @@ if [ "$CURRENT" = "$DEFAULT_BRANCH" ]; then
   git pull --ff-only origin "$DEFAULT_BRANCH" 2>/dev/null \
     && echo "OK: $DEFAULT_BRANCH is up to date with origin"
 else
-  # On a worktree / session branch — freshen the default ref first.
-  git fetch origin "$DEFAULT_BRANCH":"$DEFAULT_BRANCH" 2>/dev/null
-  BEHIND=$(git rev-list --count HEAD.."$DEFAULT_BRANCH" 2>/dev/null)
+  # On a worktree / session branch — update the remote-tracking ref first.
+  git fetch origin "$DEFAULT_BRANCH" 2>/dev/null
+  BEHIND=$(git rev-list --count "HEAD..origin/$DEFAULT_BRANCH" 2>/dev/null)
   if [ -z "$(git status --porcelain)" ] \
-     && [ "$(git rev-list --count "$DEFAULT_BRANCH"..HEAD 2>/dev/null)" = "0" ]; then
+     && [ "$(git rev-list --count "origin/$DEFAULT_BRANCH..HEAD" 2>/dev/null)" = "0" ]; then
     # Clean tree AND no commits of its own → safe to snap onto origin's default.
-    git reset --hard "$DEFAULT_BRANCH" >/dev/null 2>&1
+    git reset --hard "origin/$DEFAULT_BRANCH" >/dev/null 2>&1
     if [ -n "$BEHIND" ] && [ "$BEHIND" != "0" ]; then
       echo "OK: reset $CURRENT to origin/$DEFAULT_BRANCH (was $BEHIND behind)"
     else
@@ -72,15 +72,15 @@ fi || true
 The exact value of the `command` field as stored in `~/.claude/settings.json` (JSON-escaped, single line, `"timeout": 15`):
 
 ```text
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0; DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'); test -n \"$DEFAULT_BRANCH\" || exit 0; CURRENT=$(git branch --show-current 2>/dev/null); if [ \"$CURRENT\" = \"$DEFAULT_BRANCH\" ]; then git pull --ff-only origin \"$DEFAULT_BRANCH\" 2>/dev/null && echo \"OK: $DEFAULT_BRANCH is up to date with origin\"; else git fetch origin \"$DEFAULT_BRANCH\":\"$DEFAULT_BRANCH\" 2>/dev/null; BEHIND=$(git rev-list --count HEAD..\"$DEFAULT_BRANCH\" 2>/dev/null); if [ -z \"$(git status --porcelain)\" ] && [ \"$(git rev-list --count \"$DEFAULT_BRANCH\"..HEAD 2>/dev/null)\" = \"0\" ]; then git reset --hard \"$DEFAULT_BRANCH\" >/dev/null 2>&1; if [ -n \"$BEHIND\" ] && [ \"$BEHIND\" != \"0\" ]; then echo \"OK: reset $CURRENT to origin/$DEFAULT_BRANCH (was $BEHIND behind)\"; else echo \"OK: $CURRENT already at origin/$DEFAULT_BRANCH\"; fi; else echo \"OK: origin/$DEFAULT_BRANCH fetched; $CURRENT kept (local commits or dirty tree)\"; fi; fi || true
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0; DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'); test -n \"$DEFAULT_BRANCH\" || exit 0; CURRENT=$(git branch --show-current 2>/dev/null); if [ \"$CURRENT\" = \"$DEFAULT_BRANCH\" ]; then git pull --ff-only origin \"$DEFAULT_BRANCH\" 2>/dev/null && echo \"OK: $DEFAULT_BRANCH is up to date with origin\"; else git fetch origin \"$DEFAULT_BRANCH\" 2>/dev/null; BEHIND=$(git rev-list --count \"HEAD..origin/$DEFAULT_BRANCH\" 2>/dev/null); if [ -z \"$(git status --porcelain)\" ] && [ \"$(git rev-list --count \"origin/$DEFAULT_BRANCH..HEAD\" 2>/dev/null)\" = \"0\" ]; then git reset --hard \"origin/$DEFAULT_BRANCH\" >/dev/null 2>&1; if [ -n \"$BEHIND\" ] && [ \"$BEHIND\" != \"0\" ]; then echo \"OK: reset $CURRENT to origin/$DEFAULT_BRANCH (was $BEHIND behind)\"; else echo \"OK: $CURRENT already at origin/$DEFAULT_BRANCH\"; fi; else echo \"OK: origin/$DEFAULT_BRANCH fetched; $CURRENT kept (local commits or dirty tree)\"; fi; fi || true
 ```
 
 The four moving parts:
 
 - **`DEFAULT_BRANCH`** — resolved from `refs/remotes/origin/HEAD`, never hard-coded. On this repo it resolves to `main` (verified: `git symbolic-ref refs/remotes/origin/HEAD` → `refs/remotes/origin/main`).
 - **`CURRENT`** — the branch checked out in this worktree (`git branch --show-current`).
-- **`BEHIND`** — `git rev-list --count HEAD..$DEFAULT_BRANCH`: how many commits the default branch is *ahead of* this worktree. Used only for the human-readable message.
-- **The guard** — empty `git status --porcelain` (clean tree, no untracked files) **and** `git rev-list --count $DEFAULT_BRANCH..HEAD` equal to `0` (no commits unique to this branch).
+- **`BEHIND`** — `git rev-list --count HEAD..origin/$DEFAULT_BRANCH`: how many commits the default branch is *ahead of* this worktree. Used only for the human-readable message.
+- **The guard** — empty `git status --porcelain` (clean tree, no untracked files) **and** `git rev-list --count origin/$DEFAULT_BRANCH..HEAD` equal to `0` (no commits unique to this branch).
 
 ---
 
@@ -100,7 +100,9 @@ The evidence that triggered this work, read straight off `git branch -vv` during
 | `claude/suspicious-mccarthy-ca7865` | `behind 22` |
 | `claude/zen-tesla-7650ba` | `behind 80` |
 
-The prior version of this hook already fetched origin. But on a worktree branch it ran only `git fetch origin main:main` — which updates the local `main` ref and leaves the checked-out branch exactly where it was. Local `main` got fresh; the branch you were actually working on did not. That asymmetry is the whole bug: the hook kept the wrong ref current.
+The first version of this hook fetched origin but, on a worktree branch, ran only `git fetch origin main:main` and stopped — it updated the local `main` ref and left the checked-out branch where it was. Local `main` got fresh; the branch you were working on did not. Adding a guarded `git reset --hard` fixed that half.
+
+But the `main:main` refspec hides a second, sharper failure. In the normal layout where `main` is checked out in the primary worktree, `git fetch origin main:main` is **refused** — `fatal: refusing to fetch into branch 'refs/heads/main' checked out at …` — because Git will not update a branch that is checked out anywhere. The hook swallows that error (`2>/dev/null`) and would then reset against a *stale* local `main`, delivering the exact opposite of the intended freshness. The fix is to fetch and compare against the **remote-tracking** ref `origin/<default>`, which is never checked out and so never refused. (Caught by a Codex review on the PR; reproduced in a scratch repo — see §12.)
 
 This also serves a standing rule in the author's global instructions:
 
@@ -123,22 +125,22 @@ SessionStart fires
   │          └─ "OK: main is up to date with origin"
   │
   └─ CURRENT != DEFAULT_BRANCH  (you are on claude/<slug>)
-        └─ git fetch origin main:main          (freshen the local default ref)
-             └─ clean tree  AND  0 commits ahead of main?
-                  ├─ YES → git reset --hard main
+        └─ git fetch origin main               (updates origin/main, the remote-tracking ref)
+             └─ clean tree  AND  0 commits ahead of origin/main?
+                  ├─ YES → git reset --hard origin/main
                   │          ├─ was behind   → "reset <branch> to origin/main (was N behind)"
                   │          └─ already there → "<branch> already at origin/main"
                   └─ NO  → "origin/main fetched; <branch> kept (local commits or dirty tree)"
 ```
 
-Why `reset --hard` and not `rebase`: the reset only ever runs when the branch has **zero** unique commits, so there is nothing to replay. In that state, `reset --hard <default>` is a pure fast-forward in effect — it moves the branch pointer up to origin's tip. The git-reset documentation describes the operation as: *"Overwrite all files and directories with the version from <commit>… Tracked files not in <commit> are removed so that the working tree matches <commit>."* That sounds destructive, and it is — which is exactly why the two guards gate it.
+Why `reset --hard` and not `rebase`: the reset only ever runs when the branch has **zero** unique commits, so there is nothing to replay. In that state, `reset --hard origin/<default>` is a pure fast-forward in effect — it moves the branch pointer up to origin's tip. The git-reset documentation describes the operation as: *"Overwrite all files and directories with the version from <commit>… Tracked files not in <commit> are removed so that the working tree matches <commit>."* That sounds destructive, and it is — which is exactly why the two guards gate it.
 
 The range notation does the heavy lifting. Per the git-rev-list docs, `A..B` means *"commits reachable from B but not from A,"* and `--count` *"print[s] a number stating how many commits would have been listed."* So:
 
 | Expression | Reads as | Used for |
 | --- | --- | --- |
-| `git rev-list --count $DEFAULT_BRANCH..HEAD` | commits on this branch not in default | the **guard** (must be `0`) |
-| `git rev-list --count HEAD..$DEFAULT_BRANCH` | commits in default not on this branch | the **`BEHIND`** message count |
+| `git rev-list --count origin/$DEFAULT_BRANCH..HEAD` | commits on this branch not in origin's default | the **guard** (must be `0`) |
+| `git rev-list --count HEAD..origin/$DEFAULT_BRANCH` | commits in origin's default not on this branch | the **`BEHIND`** message count |
 
 ---
 
@@ -157,9 +159,9 @@ Any of those fires it. What **prevents** the reset from happening, in order of t
 2. **No `origin/HEAD`** — `DEFAULT_BRANCH` comes back empty → `exit 0`. Fresh clones sometimes lack this ref; set it with `git remote set-head origin -a`.
 3. **You are on the default branch** — takes the fast-forward-pull path instead, never the reset path.
 4. **Dirty tree or untracked files** — `git status --porcelain` is non-empty → skip, branch kept.
-5. **Branch has its own commits** — `$DEFAULT_BRANCH..HEAD` count is non-zero → skip, branch kept.
+5. **Branch has its own commits** — `origin/$DEFAULT_BRANCH..HEAD` count is non-zero → skip, branch kept.
 
-The trailing `|| true` guarantees the hook never fails the session, regardless of network state or git errors. Offline, the `fetch` simply fails and is ignored (it is followed by `;`, not `&&`); the branch is then evaluated against the **local** default ref, so at worst you start from the last-known-local default rather than a broken startup.
+The trailing `|| true` guarantees the hook never fails the session, regardless of network state or git errors. Offline, the `fetch` simply fails and is ignored (it is followed by `;`, not `&&`); the branch is then evaluated against the last-fetched `origin/<default>` remote-tracking ref, so at worst you start from a slightly stale `origin/<default>` rather than a broken startup.
 
 ---
 
@@ -179,7 +181,7 @@ Clean tree, zero unique commits, already at origin's tip. The `reset --hard` run
 
 ### Has its own commits → skip (data-loss protection)
 
-`$DEFAULT_BRANCH..HEAD` is non-zero, so the branch holds work that is not in the default. The reset is skipped and you see `origin/main fetched; <branch> kept (local commits or dirty tree)`. Verified live: `claude/amazing-austin-6e776c` reported `ahead-of-main=3` and was classified **SKIP**.
+`origin/$DEFAULT_BRANCH..HEAD` is non-zero, so the branch holds work that is not in origin's default. The reset is skipped and you see `origin/main fetched; <branch> kept (local commits or dirty tree)`. Verified live: `claude/amazing-austin-6e776c` reported `ahead-of-main=3` and was classified **SKIP**.
 
 ### Dirty tree → skip
 
@@ -214,11 +216,11 @@ The hook is automatic; the "operations" here are about reading it correctly and 
 What this hook explicitly does **not** do:
 
 1. **Does not control `git worktree add`.** The base commit at creation is still `HEAD`; the hook corrects freshness *after the fact*, at the next session start — it does not make creation itself origin-aware.
-2. **Does not touch a branch with its own commits.** Any unique commit (`$DEFAULT_BRANCH..HEAD` > 0) makes it skip.
+2. **Does not touch a branch with its own commits.** Any unique commit (`origin/$DEFAULT_BRANCH..HEAD` > 0) makes it skip.
 3. **Does not touch a dirty or untracked tree.** A non-empty `git status --porcelain` makes it skip.
 4. **Does not run outside a git work tree, or when `origin/HEAD` is unset.** Both are early `exit 0`.
 5. **Does not rebase, and does not handle divergence.** A branch that is both ahead and behind is "ahead > 0," so it is skipped — not replayed onto the new base.
-6. **Does not push or modify `origin`.** It only fetches and moves local refs.
+6. **Does not push or modify `origin`.** It only updates the `origin/<default>` remote-tracking ref and moves the worktree's own branch pointer.
 7. **Does not alter the primary checkout beyond a fast-forward pull** when that checkout is on the default branch.
 8. **Does not travel with any repository.** It is user-level config; see the per-user disclaimer at the top and §10.
 
@@ -283,13 +285,23 @@ Expected line: `OK: <branch> already at origin/main`. Observed this session: HEA
 
 ```bash
 for b in <branch-with-commits> <stale-branch> HEAD; do
-  ahead=$(git rev-list --count main..$b 2>/dev/null)
+  ahead=$(git rev-list --count origin/main..$b 2>/dev/null)
   [ "$ahead" = "0" ] && echo "$b: RESET (no unique commits)" \
                      || echo "$b: SKIP ($ahead unique commit(s) — protected)"
 done
 ```
 
 Expected: a branch with its own work prints `SKIP`; a purely-behind branch prints `RESET`. Observed this session: `claude/amazing-austin-6e776c` → `SKIP (3 unique commit(s))`; `claude/suspicious-mccarthy-ca7865` → `RESET`.
+
+**4. Confirm the remote-tracking ref avoids the checked-out-branch refusal.** In a layout where `main` is checked out in the primary worktree, fetching into the *local* ref is refused; fetching the remote-tracking ref is not:
+
+```bash
+# from a feature worktree, with main checked out in the primary checkout:
+git fetch origin main:main   # OLD: fatal: refusing to fetch into branch 'refs/heads/main' checked out at ...
+git fetch origin main        # NEW: updates refs/remotes/origin/main — never refused
+```
+
+Observed this session in a scratch repo: the `:main` form was refused and left local `main` stale, while `git fetch origin main` advanced `origin/main` and a clean feature worktree then `reset --hard origin/main` correctly (`was 1 behind`). This is the bug the remote-tracking ref fixes.
 
 ---
 
@@ -306,10 +318,10 @@ CURRENT        = git branch --show-current
 SessionStart┤  CURRENT == default ... pull --ff-only ... "up to date"
            │
            └─ CURRENT != default
-                fetch origin <default>:<default>
-                GUARD = (clean tree) AND (0 commits ahead of default)
-                  GUARD true  + behind  → reset --hard → "reset … (was N behind)"
-                  GUARD true  + current → reset --hard → "… already at origin/<default>"
+                fetch origin <default>            (updates origin/<default>)
+                GUARD = (clean tree) AND (0 commits ahead of origin/<default>)
+                  GUARD true  + behind  → reset --hard origin/<default> → "reset … (was N behind)"
+                  GUARD true  + current → reset --hard origin/<default> → "… already at origin/<default>"
                   GUARD false           → skip          → "… kept (local commits or dirty tree)"
 
 PROTECTED (never reset):  own commits  |  dirty tree  |  untracked files
