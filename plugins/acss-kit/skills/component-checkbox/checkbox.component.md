@@ -5,12 +5,12 @@ name: checkbox
 element: input
 tokens:
   rounded: "{rounded.sm}"
-  borderColor: "{colors.border}"
+  borderColor: "{colors.outline-variant}"
   background: "{colors.surface}"
   checkedBackground: "{colors.primary}"
   checkedBorder: "{colors.primary}"
-  labelColor: "{colors.text}"
-  requiredColor: "{colors.danger}"
+  labelColor: "{colors.on-surface}"
+  requiredColor: "{colors.error}"
   gap: "{spacing.sm}"
   labelTypography: "{typography.body-md}"
 props:

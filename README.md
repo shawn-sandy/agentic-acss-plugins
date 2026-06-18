@@ -18,6 +18,29 @@ A Claude Code **plugin marketplace** for building accessible React applications 
 
 The two plugins are **decoupled** — install either or both independently.
 
+## DESIGN.md + COMPONENT.md — the two-file design system
+
+The format layer underneath both plugins, and the direction this project is heading: a design system described in **two plain-markdown files** that any coding agent can read and project into real code. There is no runtime, no schema package — just two files coupled through token references.
+
+| File | Owns | Format |
+|---|---|---|
+| **[DESIGN.md](https://github.com/google-labs-code/design.md)** | The **visual identity** — `colors`, `typography`, `spacing`, `rounded` tokens (plus a freeform `components` block). | Google Labs design-token format. A `primary` color is required — it seeds the OKLCH palette. |
+| **[COMPONENT.md](./plugins/style-agent/docs/component-md/spec.md)** | A single **component** — its semantic structure, props, behavior, and accessibility contract. | Framework-neutral spec published by `style-agent`. One file per component (`<name>.component.md`). |
+
+The coupling is the `{token.path}` reference: a COMPONENT.md names primitives like `{colors.primary}` or `{spacing.sm}`, and an agent resolves them against whatever sibling DESIGN.md the project provides. **DESIGN.md owns tokens, COMPONENT.md owns components** — loosely coupled through the file format, never through shared code. With no DESIGN.md present, every reference falls back to an embedded CSS default (`var(--x, <fallback>)`), so components still render.
+
+**Why it matters:** a component's semantic HTML, CSS, and accessibility contract are framework-agnostic web primitives — only template syntax and state binding are framework-specific. COMPONENT.md captures the neutral majority as the source of truth; an agent **projects** it into React, HTML, Astro, Angular, Vue, Svelte, or a web component, optionally guided by per-target `## Target: <framework>` adapter blocks.
+
+### How the two plugins integrate around it
+
+- **`acss-kit` is a DESIGN.md bridge — bidirectional.**
+  - **Inbound:** [`/theme-from-design <DESIGN.md>`](./plugins/acss-kit/commands/theme-from-design.md) consumes a DESIGN.md and generates the full theme (`light.css`/`dark.css`, `space-radius.css`, `typography.css`), gated by WCAG 2.2 AA contrast. [`/theme-from-figma`](./plugins/acss-kit/commands/theme-from-figma.md) does the same from Figma variables.
+  - **Outbound:** [`/design-export --format=design-md`](./plugins/acss-kit/commands/design-export.md) publishes the project's theme back out as a DESIGN.md (pure Python, no Node) — the import-*into*-DESIGN.md direction the upstream CLI lacks. The round-trip is **semantic, not lossless**: acss-kit's 18 `--color-*` roles map onto DESIGN.md token names (Appendix A role translation), and Material-3 ladder tokens it does not model are not reproduced.
+  - The Python adapters (`design_md_to_tokens.py`, `tokens_to_design_md.py`, `figma_to_tokens.py`) isolate every name assumption in adapter tables; `validate_design_md.py` lints a file before import.
+- **`style-agent` owns the COMPONENT.md spec** — the framework-neutral component half, themed by the DESIGN.md acss-kit produces. See the [spec](./plugins/style-agent/docs/component-md/spec.md) and a complete [`button.component.md` example](./plugins/style-agent/docs/component-md/examples/button.component.md).
+
+Put together: design a brand in Figma or a DESIGN.md → `acss-kit` turns it into a validated, themeable token set (and can hand it back out as DESIGN.md) → COMPONENT.md files describe components against those tokens → an agent projects each component into your framework of choice. Both formats are `alpha`/experimental and will change — pin a commit SHA when depending on them.
+
 ## Why agent-driven instead of an npm package?
 
 Most UI component libraries ship as npm packages. That model works, but it comes with trade-offs that compound over time:
@@ -205,6 +228,8 @@ See [`tests/README.md`](./tests/README.md) for the full workflow, the `--reset` 
 | [`AGENTS.md`](./AGENTS.md) | Maintainers | Project agent definitions |
 | [`plugins/acss-kit/README.md`](./plugins/acss-kit/README.md) | acss-kit users | Full plugin behavior, command catalog, skills overview |
 | [`plugins/acss-kit/docs/`](./plugins/acss-kit/docs/) | acss-kit contributors | Architecture, recipes, troubleshooting, tutorial |
+| [`plugins/style-agent/README.md`](./plugins/style-agent/README.md) | style-agent users | CSS authoring commands, the COMPONENT.md spec |
+| [`plugins/style-agent/docs/component-md/spec.md`](./plugins/style-agent/docs/component-md/spec.md) | Design-system authors | COMPONENT.md format — front-matter, neutral body, target adapters, DESIGN.md coupling |
 | [`tests/README.md`](./tests/README.md) | All | Local test workflow, sandbox fixtures, reset/troubleshooting |
 
 ## Relationship to the main fpkit repo

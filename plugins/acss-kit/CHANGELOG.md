@@ -4,6 +4,20 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-06-18
+
+### Changed
+
+- **COMPONENT.md token references unified to the DESIGN.md/Material-3 vocabulary.** Across the 15 `*.component.md` files, color `{token.path}` refs mixed two dialects — acss-kit role names (`{colors.text}`, `{colors.border}`, `{colors.danger}`, `{colors.info}`, `{colors.surface-subtle}`) and the DESIGN.md/M3 names the exporter actually emits (`{colors.on-surface}`, `{colors.error}`). A component's refs therefore would not resolve against a DESIGN.md produced by acss-kit's own `/design-export`. The 18 affected refs (spread across 9 files — `alert, card, checkbox, dialog, field, input, nav, popover, table`) now use the DESIGN.md/M3 names (`text`→`on-surface`, `border`→`outline-variant`, `danger`→`error`, `info`→`tertiary`, `surface-subtle`→`surface-container-low`), matching the published `style-agent` spec example. Generated SCSS/TSX is **byte-identical** — the change is confined to front-matter `tokens:` maps and prose; the emitted CSS still uses `var(--color-*)`, so `/kit-add` output is unchanged.
+
+### Fixed
+
+- **`{typography.title-md}` referenced an undefined token** (`component-table`) — repointed to `{typography.headline-md}`, which the default typography scale defines.
+
+### Added
+
+- **DESIGN.md dogfood fixture + round-trip verification.** `tests/fixtures/design-md/DESIGN.md` is acss-kit's own default theme (seed `#4f46e5`) published through the real `/design-export` pipeline, paired with the shipped `*.component.md` files. New `tests/run.sh` step 7g asserts every component `{token.path}` resolves against the fixture's front-matter and that re-importing it through the adapter still passes the WCAG contrast gate — locking the two-file (DESIGN.md + COMPONENT.md) design system together.
+
 ## [1.10.2] - 2026-06-15
 
 ### Changed

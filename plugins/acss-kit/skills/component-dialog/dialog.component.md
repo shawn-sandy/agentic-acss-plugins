@@ -6,12 +6,12 @@ element: dialog
 role: dialog
 tokens:
   background: "{colors.surface}"
-  textColor: "{colors.text}"
+  textColor: "{colors.on-surface}"
   rounded: "{rounded.md}"
   headerPadding: "{spacing.lg}"
   bodyPadding: "{spacing.lg}"
   footerGap: "{spacing.md}"
-  titleTypography: "{typography.title-md}"
+  titleTypography: "{typography.headline-md}"
 props:
   dialogRef:
     type: ref

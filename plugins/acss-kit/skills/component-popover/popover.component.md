@@ -6,8 +6,8 @@ element: div
 role: dialog
 tokens:
   background: "{colors.surface}"
-  textColor: "{colors.text}"
-  border: "{colors.border}"
+  textColor: "{colors.on-surface}"
+  border: "{colors.outline-variant}"
   rounded: "{rounded.md}"
   paddingBlock: "{spacing.sm}"
   paddingInline: "{spacing.md}"
