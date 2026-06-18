@@ -20,8 +20,11 @@ and this fixture is here so the two halves are verified to actually fit.
 
 ## Regenerate
 
-The front-matter is machine-generated; only the prose body (Overview, the
-human-readable tables, Components) is hand-maintained. To refresh the tokens:
+The front-matter is machine-generated, with one hand-added token
+(`surface-container-low` — the default palette omits the optional
+`--color-surface-subtle` role that `component-table`'s header reads). The prose
+body (Overview, the human-readable tables, Components) is hand-maintained. To
+refresh the tokens:
 
 ```sh
 S=plugins/acss-kit/scripts

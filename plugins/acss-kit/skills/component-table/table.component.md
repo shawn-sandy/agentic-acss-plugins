@@ -6,7 +6,7 @@ element: table
 tokens:
   background: "{colors.surface}"
   textColor: "{colors.on-surface}"
-  headerBackground: "{colors.surface-container-high}"
+  headerBackground: "{colors.surface-container-low}"
   border: "{colors.outline-variant}"
   caption: "{typography.label-md}"
 props:

@@ -4,6 +4,10 @@ colors:
   background: '#ffffff'
   surface: '#f3f5fc'
   surface-container-high: '#ffffff'
+  # surface-container-low added by hand: the default palette (generate_palette.py)
+  # does not emit the optional --color-surface-subtle role, but component-table's
+  # header reads var(--color-surface-subtle), whose DESIGN.md name is this token.
+  surface-container-low: '#e9edf8'
   on-surface: '#030307'
   on-surface-variant: '#75767d'
   on-primary: '#ffffff'
@@ -102,6 +106,7 @@ color and regenerate to rebrand — every component re-themes through the
 | `background` | `--color-background` | `#ffffff` |
 | `surface` | `--color-surface` | `#f3f5fc` |
 | `surface-container-high` | `--color-surface-raised` | `#ffffff` |
+| `surface-container-low` | `--color-surface-subtle` | `#e9edf8` |
 | `on-surface` | `--color-text` | `#030307` |
 | `on-surface-variant` | `--color-text-muted` | `#75767d` |
 | `on-primary` | `--color-text-inverse` | `#ffffff` |
@@ -155,4 +160,4 @@ exercises (component → token → DESIGN.md).
 | `list` | `colors.primary` `spacing.lg` `spacing.sm` `spacing.xs` `spacing.md` |
 | `nav` | `colors.on-surface` `colors.primary` `rounded.sm` `spacing.md` `spacing.sm` |
 | `popover` | `colors.surface` `colors.on-surface` `colors.outline-variant` `rounded.md` `spacing.sm` `spacing.md` |
-| `table` | `colors.surface` `colors.on-surface` `colors.surface-container-high` `colors.outline-variant` `typography.label-md` |
+| `table` | `colors.surface` `colors.on-surface` `colors.surface-container-low` `colors.outline-variant` `typography.label-md` |
