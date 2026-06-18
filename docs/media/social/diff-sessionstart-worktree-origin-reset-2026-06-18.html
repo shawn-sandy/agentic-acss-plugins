@@ -221,11 +221,11 @@
       <tbody>
         <tr><td colspan="2" class="hunk-header">@@ SessionStart hook · worktree-branch path (else) @@</td></tr>
         <tr class="ctx"><td class="ln"> </td><td class="code"> else</td></tr>
-        <tr class="ctx"><td class="ln"> </td><td class="code">   git fetch origin "$DEFAULT":"$DEFAULT"   # freshen default ref</td></tr>
-        <tr class="add"><td class="ln">+</td><td class="code">   BEHIND=$(git rev-list --count HEAD.."$DEFAULT")</td></tr>
+        <tr class="ctx"><td class="ln"> </td><td class="code">   git fetch origin "$DEFAULT"   # update the remote-tracking ref</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">   BEHIND=$(git rev-list --count "HEAD..origin/$DEFAULT")</td></tr>
         <tr class="add"><td class="ln">+</td><td class="code">   if [ -z "$(git status --porcelain)" ] \</td></tr>
-        <tr class="add"><td class="ln">+</td><td class="code">      &amp;&amp; [ "$(git rev-list --count "$DEFAULT"..HEAD)" = 0 ]; then</td></tr>
-        <tr class="add"><td class="ln">+</td><td class="code">     git reset --hard "$DEFAULT"   # clean + 0 own commits → snap to origin</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">      &amp;&amp; [ "$(git rev-list --count "origin/$DEFAULT..HEAD")" = 0 ]; then</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">     git reset --hard "origin/$DEFAULT"   # snap onto origin's tip</td></tr>
         <tr class="add"><td class="ln">+</td><td class="code">   fi</td></tr>
         <tr class="ctx"><td class="ln"> </td><td class="code"> fi</td></tr>
       </tbody>
