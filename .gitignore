@@ -14,9 +14,8 @@ node_modules/
 .claude/plans/
 CLAUDE.local.md
 
-# Generated session scratch (Playwright MCP snapshots, social-share cards)
+# Generated session scratch (Playwright MCP snapshots)
 .playwright-mcp/
-docs/media/
 
 # Stray scratch dirs (created when shell expansion of ~ leaks into a path)
 ~/

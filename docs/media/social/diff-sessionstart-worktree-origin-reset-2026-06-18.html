@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>~/.claude/settings.json</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --add-bg: rgba(46, 160, 67, 0.15);
+      --del-bg: rgba(248, 81, 73, 0.15);
+      --add-fg: #3fb950;
+      --del-fg: #f85149;
+      --ctx-fg: #8b949e;
+      --hunk-bg: #1c2d3f;
+      --hunk-fg: #79c0ff;
+      --badge-bg: #1f6feb;
+      --badge-fg: #ffffff;
+      --card-width: 1024px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .card {
+      width: min(var(--card-width), 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .filename {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 13px;
+      color: var(--text);
+      opacity: 0.9;
+    }
+
+    .badge {
+      background: var(--badge-bg);
+      color: var(--badge-fg);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    td.hunk-header {
+      background: var(--hunk-bg);
+      color: var(--hunk-fg);
+      padding: 4px 12px;
+      font-size: 11px;
+      font-style: italic;
+    }
+
+    tr.add { background: var(--add-bg); }
+    tr.del { background: var(--del-bg); }
+    tr.ctx { background: transparent; }
+
+    td.ln {
+      width: 20px;
+      padding: 0 8px 0 16px;
+      color: var(--muted);
+      user-select: none;
+      font-size: 11px;
+    }
+
+    tr.add td.ln { color: var(--add-fg); }
+    tr.del td.ln { color: var(--del-fg); }
+
+    td.code {
+      padding: 1px 12px 1px 0;
+      color: var(--text);
+      white-space: pre;
+    }
+
+    tr.add td.code { color: var(--add-fg); }
+    tr.del td.code { color: var(--del-fg); }
+    tr.ctx td.code { color: var(--ctx-fg); }
+
+    .hl-add {
+      background: rgba(46, 160, 67, 0.35);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    .hl-del {
+      background: rgba(248, 81, 73, 0.35);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    .stat-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .stat-pills { display: flex; gap: 8px; }
+
+    .pill-add {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(46, 160, 67, 0.15);
+      color: var(--add-fg);
+      border: 1px solid rgba(46, 160, 67, 0.3);
+    }
+
+    .pill-del {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--del-fg);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    .summary {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Copy panel ── */
+    .copy-panel {
+      width: min(var(--card-width), 100%);
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .copy-panel + .copy-panel { margin-top: 0; }
+
+    .copy-label {
+      color: #8b949e;
+      font-size: 12px;
+      margin: 0 0 8px;
+    }
+
+    .post-copy-text {
+      width: 100%;
+      min-height: 80px;
+      background: #0d1117;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+      box-sizing: border-box;
+      display: block;
+    }
+
+    .copy-btn {
+      margin-top: 8px;
+      padding: 6px 16px;
+      background: #238636;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .copy-btn:hover { background: #2ea043; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <span class="filename">~/.claude/settings.json</span>
+      <span class="badge">hook</span>
+    </div>
+
+    <table class="diff-table">
+      <tbody>
+        <tr><td colspan="2" class="hunk-header">@@ SessionStart hook · worktree-branch path (else) @@</td></tr>
+        <tr class="ctx"><td class="ln"> </td><td class="code"> else</td></tr>
+        <tr class="ctx"><td class="ln"> </td><td class="code">   git fetch origin "$DEFAULT":"$DEFAULT"   # freshen default ref</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">   BEHIND=$(git rev-list --count HEAD.."$DEFAULT")</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">   if [ -z "$(git status --porcelain)" ] \</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">      &amp;&amp; [ "$(git rev-list --count "$DEFAULT"..HEAD)" = 0 ]; then</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">     git reset --hard "$DEFAULT"   # clean + 0 own commits → snap to origin</td></tr>
+        <tr class="add"><td class="ln">+</td><td class="code">   fi</td></tr>
+        <tr class="ctx"><td class="ln"> </td><td class="code"> fi</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stat-bar">
+      <div class="stat-pills">
+        <span class="pill-add">+5</span>
+        <span class="pill-del">-0</span>
+      </div>
+      <span class="summary">Fresh worktree branches now start at origin's default — guarded by clean tree + zero own commits</span>
+    </div>
+  </div>
+  <div class="copy-panel">
+    <p class="copy-label">LinkedIn</p>
+    <textarea readonly class="post-copy-text" id="post-copy-linkedin" style="min-height:320px">`git worktree add` doesn't branch from origin. It branches from whatever HEAD happens to be.
+
+That one detail is why my Claude Code worktrees kept drifting — sibling branches sitting 15, 22, even 80 commits behind origin/main. A stale local checkout silently births a stale worktree, and nothing fetches first.
+
+The fix: enforce freshness at session start, not at creation. A SessionStart hook resets a worktree branch onto origin/&lt;default&gt; every time a session opens — but only when it's safe to.
+
+Two guards gate the `git reset --hard`:
+1. Clean tree — `git status --porcelain` is empty (no modified or untracked files).
+2. No work of its own — `git rev-list --count &lt;default&gt;..HEAD` is 0 (zero unique commits).
+
+Fail either and the branch is left untouched. Uncommitted edits and real commits are both protected; only fresh, empty branches snap forward.
+
+The pattern worth stealing: when you can't control how an artifact is created, enforce the invariant at the next safe checkpoint — and gate any destructive step behind cheap, explicit preconditions instead of trusting state.
+
+More git-workflow breakdowns like this on my feed.
+
+#git #DeveloperTools #ClaudeCode #DevWorkflow</textarea>
+    <button class="copy-btn" onclick="copyPost('post-copy-linkedin', this)">Copy LinkedIn post</button>
+  </div>
+  <div class="copy-panel">
+    <p class="copy-label">Twitter/X</p>
+    <textarea readonly class="post-copy-text" id="post-copy-twitter">`git worktree add` branches from HEAD, not origin — a stale checkout silently births a stale worktree.
+
+Fix: a SessionStart hook resets fresh worktree branches onto origin/main, gated by 2 checks — clean tree + 0 unique commits. Real work stays untouched.
+
+#git</textarea>
+    <button class="copy-btn" onclick="copyPost('post-copy-twitter', this)">Copy Twitter/X post</button>
+  </div>
+  <div class="copy-panel">
+    <p class="copy-label">Substack</p>
+    <textarea readonly class="post-copy-text" id="post-copy-substack" style="min-height:140px">A subtle one this week: `git worktree add` branches from HEAD, not origin. If your local checkout is stale, every new worktree inherits it — mine had drifted 15–80 commits behind origin/main unnoticed.
+
+The lesson: when you can't control how something's created, enforce the invariant at the next safe checkpoint. A SessionStart hook now resets fresh worktree branches onto origin's default — but only when the tree is clean and the branch has no commits of its own.
+
+More dev-workflow notes in the newsletter.</textarea>
+    <button class="copy-btn" onclick="copyPost('post-copy-substack', this)">Copy Substack post</button>
+  </div>
+  <script>
+    function copyPost(id, btn) {
+      var t = document.getElementById(id);
+      if (!t) return;
+      var orig = btn.textContent;
+      function done() {
+        btn.textContent = 'Copied ✓';
+        setTimeout(function () { btn.textContent = orig; }, 2000);
+      }
+      function fallback() { try { t.select(); if (document.execCommand('copy')) done(); } catch (_) {} }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(t.value).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+    }
+  </script>
+</body>
+</html>
