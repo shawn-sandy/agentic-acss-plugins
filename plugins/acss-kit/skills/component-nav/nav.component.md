@@ -9,7 +9,7 @@ tokens:
   paddingBlock: "{spacing.sm}"
   gap: "{spacing.md}"
   listGap: "{spacing.sm}"
-  linkColor: "{colors.text}"
+  linkColor: "{colors.on-surface}"
   linkHoverColor: "{colors.primary}"
   linkRadius: "{rounded.sm}"
 props:

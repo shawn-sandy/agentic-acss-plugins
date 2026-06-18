@@ -12,7 +12,7 @@ tokens:
   marginBlockEnd: "{spacing.md}"
   fontSize: "{typography.body-sm}"
   titleFontSize: "{typography.label-md}"
-  infoBackground: "{colors.info}"
+  infoBackground: "{colors.tertiary}"
   successBackground: "{colors.success}"
   warningBackground: "{colors.warning}"
   errorBackground: "{colors.error}"

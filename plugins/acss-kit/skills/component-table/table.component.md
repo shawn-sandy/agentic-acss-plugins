@@ -5,9 +5,9 @@ name: table
 element: table
 tokens:
   background: "{colors.surface}"
-  textColor: "{colors.text}"
-  headerBackground: "{colors.surface-subtle}"
-  border: "{colors.border}"
+  textColor: "{colors.on-surface}"
+  headerBackground: "{colors.surface-container-high}"
+  border: "{colors.outline-variant}"
   caption: "{typography.label-md}"
 props:
   aria-label:

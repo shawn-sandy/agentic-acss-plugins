@@ -5,13 +5,13 @@ name: input
 element: input
 tokens:
   background: "{colors.surface}"
-  textColor: "{colors.text}"
-  border: "{colors.border}"
+  textColor: "{colors.on-surface}"
+  border: "{colors.outline-variant}"
   rounded: "{rounded.md}"
   paddingInline: "{spacing.md}"
   paddingBlock: "{spacing.sm}"
   focusBorder: "{colors.primary}"
-  invalidBorder: "{colors.danger}"
+  invalidBorder: "{colors.error}"
   validBorder: "{colors.success}"
 props:
   id:

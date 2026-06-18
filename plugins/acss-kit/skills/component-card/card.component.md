@@ -5,9 +5,9 @@ name: card
 element: div
 tokens:
   background: "{colors.surface}"
-  textColor: "{colors.text}"
+  textColor: "{colors.on-surface}"
   rounded: "{rounded.md}"
-  border: "{colors.border}"
+  border: "{colors.outline-variant}"
   contentPadding: "{spacing.lg}"
   footerGap: "{spacing.md}"
 props:

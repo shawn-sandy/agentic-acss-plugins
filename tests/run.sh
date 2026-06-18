@@ -402,6 +402,77 @@ else
   exit 1
 fi
 
+# Step 7g
+section "7g. DESIGN.md dogfood (component {token.path} refs resolve + re-import gates)"
+DOG_LOG="$TMP_ROOT/design-md-dogfood.log"
+if python3 - "$REPO_ROOT" >"$DOG_LOG" 2>&1 <<'PYEOF'
+import re, subprocess, sys, tempfile
+from pathlib import Path
+root = Path(sys.argv[1])
+scripts = root / "plugins/acss-kit/scripts"
+dmd_path = root / "tests/fixtures/design-md/DESIGN.md"
+assert dmd_path.exists(), f"missing dogfood fixture {dmd_path}"
+sys.path.insert(0, str(scripts))
+import tokens_to_design_md as tdm  # noqa: E402
+
+dmd = dmd_path.read_text(encoding="utf-8")
+assert dmd.startswith("---"), "DESIGN.md must open with YAML front-matter"
+fm = dmd.split("---", 2)[1]
+
+# defined token names per primitive group, parsed from the front-matter
+scalars = tdm.parse_front_matter_scalars(dmd)            # colors / spacing / rounded
+defined = {g: set(scalars.get(g, {})) for g in ("colors", "spacing", "rounded")}
+defined["typography"] = set()                            # top-level style keys
+in_typo = False
+for line in fm.splitlines():
+    if re.match(r"^typography:\s*$", line):
+        in_typo = True; continue
+    if in_typo:
+        if re.match(r"^[a-z]", line):                    # next top-level group
+            in_typo = False; continue
+        m = re.match(r"^  ([\w-]+):\s*$", line)          # 2-space style name
+        if m:
+            defined["typography"].add(m.group(1))
+for g in ("colors", "spacing", "rounded", "typography"):
+    assert defined[g], f"DESIGN.md front-matter defines no {g} tokens"
+
+# every {token.path} the shipped component files reference must resolve
+refs = {}
+for f in sorted((root / "plugins/acss-kit/skills").glob("component-*/*.component.md")):
+    for g, n in re.findall(r"\{(colors|spacing|rounded|typography)\.([a-z0-9-]+)\}",
+                           f.read_text(encoding="utf-8")):
+        refs.setdefault((g, n), f.name)
+assert refs, "found no {token.path} references in component files — globbing broke?"
+unresolved = sorted(f"{g}.{n} ({src})" for (g, n), src in refs.items() if n not in defined[g])
+assert not unresolved, (
+    "component {token.path} refs do not resolve against the dogfood DESIGN.md:\n  "
+    + "\n  ".join(unresolved)
+    + "\n(fix the ref to a DESIGN.md/M3 token name, or add the token to the fixture)")
+
+# closed loop: DESIGN.md colors -> adapter -> CSS -> WCAG contrast gate
+colors = scalars.get("colors", {})
+assert colors.get("primary"), "dogfood DESIGN.md lost its primary color"
+theme_block = "@theme {\n" + "".join(f"  --color-{k}: {v};\n" for k, v in colors.items()) + "}\n"
+reimport = subprocess.run([sys.executable, str(scripts / "design_md_to_tokens.py"), "--stdin"],
+                          input=theme_block, capture_output=True, text=True)
+assert reimport.returncode == 0, f"re-import failed: {reimport.stderr}"
+with tempfile.TemporaryDirectory() as d:
+    subprocess.run([sys.executable, str(scripts / "tokens_to_css.py"), "--stdin", f"--out-dir={d}"],
+                   input=reimport.stdout, check=True, text=True, stdout=subprocess.DEVNULL)
+    vt = subprocess.run([sys.executable, str(scripts / "validate_theme.py"), d],
+                        capture_output=True, text=True)
+    assert vt.returncode == 0, f"dogfood DESIGN.md re-import failed contrast: {vt.stdout}"
+
+print(f"dogfood OK — {len(refs)} component refs resolve; re-import gates clean")
+PYEOF
+then
+  green "DESIGN.md dogfood OK"
+else
+  red "DESIGN.md dogfood FAILED:"
+  cat "$DOG_LOG"
+  exit 1
+fi
+
 # Step 8
 section "8. acss-kit utilities validator"
 UTIL_DIR="$REPO_ROOT/plugins/acss-kit/assets/utilities"

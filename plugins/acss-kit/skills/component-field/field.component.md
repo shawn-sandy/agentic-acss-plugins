@@ -6,7 +6,7 @@ element: div
 tokens:
   gap: "{spacing.sm}"
   marginBlockEnd: "{spacing.md}"
-  labelColor: "{colors.text}"
+  labelColor: "{colors.on-surface}"
   labelMarginBlockEnd: "{spacing.xs}"
   labelTypography: "{typography.label-sm}"
 props:
