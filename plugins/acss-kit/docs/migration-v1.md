@@ -6,7 +6,7 @@ This guide covers every user-facing change introduced in the v0.12 / v0.13 / v1.
 
 ## 1. Uninstall `acss-utilities`, install `acss-kit` v1.0.0
 
-Utility commands (`/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune`) now live inside `acss-kit`. The `acss-utilities` plugin is tombstoned at v1.0.0 — existing installs keep working but no new features will be added there.
+Utility commands (`/utility-add`, `/utility-bridge`, `/utility-list`, `/utility-tune`) now live inside `acss-kit`. The `acss-utilities` plugin has been removed from the marketplace — uninstall it and update `acss-kit`:
 
 ```text
 /plugin uninstall acss-utilities@shawn-sandy-agentic-acss-plugins
@@ -21,7 +21,7 @@ No CSS class names changed. Your existing `utilities.css` and `token-bridge.css`
 
 | Old command | New command | Notes |
 |---|---|---|
-| `/kit-add-html <name>` | `/kit-add --target=html <name>` | Old form still works (prints deprecation notice) |
+| `/kit-add-html <name>` | `/kit-add --target=html <name>` | Old form removed — use new form |
 | (acss-utilities) `/utility-add` | `/utility-add` | Now in acss-kit; arguments unchanged |
 | (acss-utilities) `/utility-bridge` | `/utility-bridge` | Now in acss-kit; arguments unchanged |
 | (acss-utilities) `/utility-list` | `/utility-list` | Now in acss-kit; arguments unchanged |
@@ -70,12 +70,13 @@ If you reference acss-kit or acss-utilities assets in custom tooling:
 
 ## 6. Rollback
 
-To stay on v0.x:
+To stay on v0.x, pin `acss-kit` to the last pre-consolidation release:
 
 ```text
 /plugin install acss-kit@0.13.0@shawn-sandy-agentic-acss-plugins
-/plugin install acss-utilities@0.5.0@shawn-sandy-agentic-acss-plugins
 ```
+
+`acss-utilities` is no longer available in the marketplace. If you need the old utility scripts, check out the git history at the tag preceding the removal commit.
 
 Or pin in your `plugin-lock.json` (if your Claude Code version supports it).
 

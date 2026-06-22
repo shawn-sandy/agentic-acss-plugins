@@ -4,6 +4,11 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+### Removed
+
+- **`acss-utilities` plugin removed from the marketplace.** The plugin was tombstoned in v1.0.0 and is now fully removed. All commands and scripts migrated to `acss-kit` in v1.0.0 remain available there.
+- **`/kit-add-html` command removed.** Deprecated alias for `/kit-add --target=html`. Use `/kit-add --target=html <component>` directly.
+
 ## [1.0.0] - 2026-05-14
 
 ### Added
