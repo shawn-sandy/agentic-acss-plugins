@@ -4,6 +4,11 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-06-22
+
+### Added
+- **Getting-started tutorial** (`docs/tutorial.md`) — a guided "your first class" walkthrough that chains all three skills in composition order (`/create-utilities` → `/css-to-class` → `/inline-style-to-class`), front-loads the read-only vs. writes-to-disk distinction, and calls out the `@media`/`@supports`/`@layer` context-preservation and `var()`-fallback correctness notes. Mirrors the structure of `acss-kit`'s tutorial. Docs-only — no command or skill behavior changes.
+
 ## [0.5.0] - 2026-06-14
 
 ### Added
