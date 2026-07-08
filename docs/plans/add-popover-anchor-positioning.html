@@ -47,6 +47,7 @@
   /* ── Reset & base ──────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 15px;
@@ -1113,7 +1114,7 @@ img, video { max-width: 100%; height: auto; }
       <div class="plan-header-actions">
         <button class="save-pdf-btn" type="button" onclick="savePDF()" aria-label="Save this plan as PDF">Save as PDF</button>
         <span class="effort-badge" aria-label="Effort level">High</span>
-        <span class="status-badge">todo</span>
+        <span class="status-badge" aria-label="Plan status">todo</span>
       </div>
     </div>
     <div class="plan-meta">
@@ -1878,7 +1879,7 @@ function copyPrompt(btn) {
         navLinks.forEach(function (a) {
           var isActive = a.getAttribute('href') === '#' + id;
           a.classList.toggle('active', isActive);
-          if (isActive) a.setAttribute('aria-current', 'true');
+          if (isActive) a.setAttribute('aria-current', 'location');
           else          a.removeAttribute('aria-current');
         });
       });
