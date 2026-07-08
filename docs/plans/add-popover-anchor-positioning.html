@@ -1621,6 +1621,21 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </details>
 
+        <details class="next-step-item">
+          <summary>Document the OddBird anchor-positioning polyfill as an opt-in Firefox upgrade</summary>
+          <div class="next-step-prompt">
+            <p>Paste this prompt into Claude to execute this follow-up:</p>
+            <pre>In plugins/acss-kit/skills/component-popover/ (both popover.component.md and reference.md, kept byte-identical), add a short "Optional: real anchoring in Firefox" note to the ## Behavior or ## Accessibility section documenting the @oddbird/css-anchor-positioning polyfill as a CONSUMER opt-in — NOT a dependency of the generated component. Keep the shipped default as the zero-dependency CSS @supports/@supports-not fallback; dependencies stays []. The note should show the feature-detected dynamic import the consumer adds in their own app entry:
+
+  if (!('anchorName' in document.documentElement.style)) {
+    import('https://unpkg.com/@oddbird/css-anchor-positioning');
+  }
+
+and state the caveats: it responds to anchor dimension changes but needs polyfill() re-invoked for popovers added later (SPA routing/lists); it reads inline styles so the per-instance anchor-name works; supporting browsers never load it. Do not add the polyfill to plugin.json or any generated package.json. Re-run the golden parity test after editing both files.</pre>
+            <button class="copy-prompt-btn" type="button" onclick="copyPrompt(this)" aria-label="Copy prompt to clipboard">Copy prompt</button>
+          </div>
+        </details>
+
         <div class="wish-list-header">
           <svg class="icon" aria-hidden="true"><use href="#ic-sparkles"/></svg>
           Wish List
