@@ -26,7 +26,7 @@ See the [tutorial](../tutorial.md) for a full walkthrough and [concepts](../conc
 | [Icon Button](icon-button.md) | Icon-only button. |
 | [Img](img.md) | Responsive image with aspect-ratio control. |
 | [Input](input.md) | Text input control. |
-| [Link](link.md) | Styled anchor / router-agnostic link. |
+| [Link component](link.md) | Styled anchor / router-agnostic link. |
 | [List](list.md) | Ordered/unordered list wrapper. |
 | [Nav](nav.md) | Navigation landmark with links. |
 | [Popover](popover.md) | Anchored popover / tooltip. |

@@ -54,7 +54,7 @@ Output — a tokenized class appended to your stylesheet (here `#2563eb` matched
 - Appends the class to a stylesheet detected from your project's own conventions — plain CSS, SCSS, or Sass-indented syntax. If no stylesheet is found, the class is emitted to chat only.
 - Reuse-or-create tokens: an existing custom property is referenced when its value matches; otherwise a new variable is declared in your tokens/variables file, an existing `:root` block, or a new `:root` block. Matching is exact on the normalised value — no color-format or unit conversion (`16px` never matches `1rem`).
 - The original literal is always kept as the `var()` fallback, so the class still renders if the variable is absent.
-- Values already written as `var(...)` pass through untouched; unresolved JSX expressions become `/* unresolved */` placeholders.
+- Values already written as `var(...)` pass through untouched; unresolved JSX expressions become `/* <property>: unresolved — was JS expression */` placeholders.
 - IDE selection enables in-place editing — the `style` attribute is removed and the `class` added directly in your source file (falls back to emitting refactored source in chat when the edit would be ambiguous).
 - Other attributes (`data-*`, `id`, `aria-*`) are preserved; the new class is appended to any existing `class`/`className`.
 

@@ -34,7 +34,7 @@ Input:
 <div class="testimonial flex-grid py-8 items-center" data-flex-grid>
 ```
 
-Output — a named class with declarations resolved from your project CSS (`py-8` and `items-center` matched; `testimonial` and `flex-grid` are defined elsewhere, so they become manual placeholders), plus the refactored HTML:
+Output — a named class with declarations resolved from your project CSS (`py-8` and `items-center` matched; `testimonial` and `flex-grid` were not found in any project CSS file, so they remain manual placeholders), plus the refactored HTML:
 
 ```css
 /* extracted: testimonial flex-grid py-8 items-center */
