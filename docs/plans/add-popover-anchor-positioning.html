@@ -11,7 +11,7 @@
 <meta name="plan-file" content="add-popover-anchor-positioning.html">
 <meta name="plan-path" content="docs/plans/add-popover-anchor-positioning.html">
 <meta name="plan-implement" content="Read and implement all steps in the plan at docs/plans/add-popover-anchor-positioning.html — Add CSS anchor positioning + dropdown/tooltip presets to component-popover">
-<meta name="plan-goal" content="Achieve this goal: Add CSS anchor positioning + tooltip/menu role presets to component-popover. The plan at docs/plans/add-popover-anchor-positioning.html describes one approach — use it as reference, but optimize for the outcome">
+<meta name="plan-goal" content="Achieve this goal: Add CSS anchor positioning + tooltip/disclosure-nav presets to component-popover. The plan at docs/plans/add-popover-anchor-positioning.html describes one approach — use it as reference, but optimize for the outcome">
 <title>Plan: Enhance component-popover with anchor positioning + dropdown/tooltip presets</title>
 <style>
   /* ── Design tokens ─────────────────────────────────────────────── */
@@ -1149,7 +1149,7 @@ img, video { max-width: 100%; height: auto; }
 
     <div class="objective-card" id="objective">
       <div class="section-label">Objective</div>
-      <p>Tether the popover to its trigger with CSS Anchor Positioning (plus a Firefox fallback) and ship <code>tooltip</code> and <code>menu</code> role presets — so <code>component-popover</code> works for dropdown nav and tooltips, not just centered cards — editing <code>popover.component.md</code> and <code>reference.md</code> in lockstep so the golden parity test stays green.</p>
+      <p>Tether the popover to its trigger with CSS Anchor Positioning (plus a Firefox fallback) and ship <code>tooltip</code> and disclosure-nav presets — so <code>component-popover</code> works for dropdown nav and tooltips, not just centered cards — editing <code>popover.component.md</code> and <code>reference.md</code> in lockstep so the golden parity test stays green.</p>
     </div>
 
     <div class="plan-implement">
@@ -1161,7 +1161,7 @@ img, video { max-width: 100%; height: auto; }
     <details class="plan-goal">
       <summary>Pursue as goal — optimize for the outcome</summary>
       <div class="plan-goal-inner">
-        <code id="goal-cmd" aria-label="Goal prompt">Achieve this goal: Add CSS anchor positioning + tooltip/menu role presets to component-popover. The plan at docs/plans/add-popover-anchor-positioning.html describes one approach — use it as reference, but optimize for the outcome</code>
+        <code id="goal-cmd" aria-label="Goal prompt">Achieve this goal: Add CSS anchor positioning + tooltip/disclosure-nav presets to component-popover. The plan at docs/plans/add-popover-anchor-positioning.html describes one approach — use it as reference, but optimize for the outcome</code>
         <button class="copy-goal-btn" type="button" onclick="copyGoal(this)" aria-label="Copy goal prompt to clipboard">Copy</button>
       </div>
     </details>
@@ -1255,7 +1255,7 @@ img, video { max-width: 100%; height: auto; }
           </tr>
           <tr>
             <td>No role semantics — reference punts <code>role</code> to the consumer</td>
-            <td><code>role="tooltip"</code> (+ <code>aria-describedby</code>) and <code>role="menu"</code> (+ <code>aria-haspopup</code> / <code>aria-expanded</code>) presets</td>
+            <td><code>role="tooltip"</code> (+ <code>aria-describedby</code>) and a <code>disclosure-nav</code> preset (trigger <code>aria-expanded</code> over a plain link list; no <code>role="menu"</code>)</td>
             <td>High</td>
           </tr>
           <tr>
@@ -1336,7 +1336,7 @@ img, video { max-width: 100%; height: auto; }
             <div class="step-body">
               <div class="step-action">
                 <span class="step-chip">todo</span>
-                <span class="step-chip-text">Sync <code>aria-expanded</code> on the trigger via the existing <code>toggle</code> listener (react adapter + neutral <code>init()</code> in <code>## Behavior</code>). Extend the handler already listening for <code>onToggle</code> to set <code>aria-expanded</code> on the trigger when <code>role="menu"</code>.</span>
+                <span class="step-chip-text">Sync <code>aria-expanded</code> on the trigger via the existing <code>toggle</code> listener (react adapter + neutral <code>init()</code> in <code>## Behavior</code>). Extend the handler already listening for <code>onToggle</code> to set <code>aria-expanded</code> on the trigger for the <code>disclosure-nav</code> preset.</span>
               </div>
               <div class="step-why">A dropdown-nav trigger with a stale/absent <code>aria-expanded</code> fails 4.1.2. Reuse the listener already there — no new effect, no new dependency.</div>
               <details class="step-verify-toggle">
@@ -1370,7 +1370,7 @@ img, video { max-width: 100%; height: auto; }
             <div class="step-body">
               <div class="step-action">
                 <span class="step-chip">todo</span>
-                <span class="step-chip-text">Add <code>## Examples</code> for dropdown-nav (<code>role="menu"</code>) and tooltip (<code>role="tooltip"</code>) to both files; drop the dead <code>--popover-z</code> reliance and note that <code>z-index</code> is inert in the top layer.</span>
+                <span class="step-chip-text">Add <code>## Examples</code> for dropdown-nav (disclosure pattern — trigger <code>aria-expanded</code> over a plain link list, no <code>role="menu"</code>) and tooltip (<code>role="tooltip"</code>) to both files; drop the dead <code>--popover-z</code> reliance and note that <code>z-index</code> is inert in the top layer.</span>
               </div>
               <div class="step-why">The examples are the acceptance surface for "reusable for dropdown nav and tooltips." The <code>--popover-z</code> note is a cleanup — the top layer ignores <code>z-index</code>, so the token is misleading.</div>
               <details class="step-verify-toggle">
@@ -1387,7 +1387,7 @@ img, video { max-width: 100%; height: auto; }
             <div class="step-body">
               <div class="step-action">
                 <span class="step-chip">todo</span>
-                <span class="step-chip-text">Update <code>SKILL.md</code> <code>description</code> + <code>hint</code> to name the new role presets (tooltip / disclosure-menu / dialog) and anchor positioning. This is unconditional — the current <code>hint</code> enumerates trigger/content/dismiss but has zero mention of the plan's new headline use cases.</span>
+                <span class="step-chip-text">Update <code>SKILL.md</code> <code>description</code> + <code>hint</code> to name the new presets (tooltip / disclosure-nav / dialog) and anchor positioning. This is unconditional — the current <code>hint</code> enumerates trigger/content/dismiss but has zero mention of the plan's new headline use cases.</span>
               </div>
               <div class="step-why">The <code>hint</code> tells users what to specify; without the new positioning/role surface the skill can't be invoked for the two use cases the objective names.</div>
               <details class="step-verify-toggle">
@@ -1616,7 +1616,7 @@ img, video { max-width: 100%; height: auto; }
           <summary>Fold the dropdown pattern into component-nav</summary>
           <div class="next-step-prompt">
             <p>Paste this prompt into Claude to execute this follow-up:</p>
-            <pre>Add a dropdown submenu pattern to component-nav (plugins/acss-kit/skills/component-nav/) that composes the enhanced Popover's role="menu" preset for expandable nav items, with roving-tabindex keyboard support (Arrow keys, Home/End) per the WAI-ARIA menu-button pattern. Keep it opt-in so the base Nav stays a plain landmark. Update both the neutral component.md source and the reference.md fallback in lockstep, and re-run the golden parity test.</pre>
+            <pre>Add a dropdown submenu pattern to component-nav (plugins/acss-kit/skills/component-nav/) that composes the enhanced Popover's disclosure-nav preset for expandable nav items (trigger aria-expanded + plain link list). Only upgrade to role="menu"/menuitem if you also implement the full menu keyboard model — roving tabindex, Arrow keys, Home/End per the WAI-ARIA menu-button pattern; otherwise keep the disclosure pattern. Keep it opt-in so the base Nav stays a plain landmark. Update both the neutral component.md source and the reference.md fallback in lockstep, and re-run the golden parity test.</pre>
             <button class="copy-prompt-btn" type="button" onclick="copyPrompt(this)" aria-label="Copy prompt to clipboard">Copy prompt</button>
           </div>
         </details>
