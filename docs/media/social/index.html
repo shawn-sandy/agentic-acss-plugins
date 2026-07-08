@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<!--
+  gallery.html — Media library for saved social media cards.
+
+  Static variables (substituted by the media-library skill):
+    GALLERY_ENTRIES  — Repeated <a> blocks, one per saved card
+    CARD_COUNT       — Total number of cards displayed
+    GENERATED_AT     — ISO timestamp of gallery generation
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Library</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #388bfd;
+      --accent-hover: #58a6ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .gallery-header {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+    }
+
+    .gallery-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .gallery-header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      max-width: 360px;
+      padding: 8px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .search-box::placeholder {
+      color: var(--muted);
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .filter-chip {
+      padding: 4px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-chip:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .filter-chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .view-toggle {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+    }
+
+    .view-btn {
+      padding: 6px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .view-btn:first-child { border-radius: 6px 0 0 6px; }
+    .view-btn:last-child { border-radius: 0 6px 6px 0; }
+
+    .view-btn.active {
+      background: var(--surface);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .visible-count {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 1200px;
+      margin: 0 auto 16px;
+    }
+
+    /* Grid view */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .gallery-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(56, 139, 253, 0.15);
+    }
+
+    .thumb-container {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: var(--bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .thumb-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumb-fallback {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--border);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .card-info {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .card-info-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .type-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    .type-diff     { background: #f8514933; color: #f85149; }
+    .type-feature  { background: #3fb95033; color: #3fb950; }
+    .type-quote    { background: #d2a8ff33; color: #d2a8ff; }
+    .type-blog     { background: #388bfd33; color: #388bfd; }
+    .type-snippet  { background: #79c0ff33; color: #79c0ff; }
+    .type-video    { background: #ff7b7233; color: #ff7b72; }
+    .type-project  { background: #ffa65733; color: #ffa657; }
+    .type-session  { background: #7ee78733; color: #7ee787; }
+
+    .card-date {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .card-topic {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .card-file {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      word-break: break-all;
+    }
+
+    /* List view */
+    .gallery-grid.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-view .gallery-card {
+      flex-direction: row;
+      align-items: center;
+      border-radius: 6px;
+    }
+
+    .list-view .thumb-container {
+      width: 120px;
+      min-width: 120px;
+      aspect-ratio: 16 / 10;
+      border-bottom: none;
+      border-right: 1px solid var(--border);
+    }
+
+    .list-view .card-info {
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-view .card-info-top {
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .list-view .card-topic {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .list-view .card-file {
+      flex-shrink: 0;
+    }
+
+    .gallery-card-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .open-img-link {
+      display: block;
+      font-size: 12px;
+      color: var(--accent);
+      text-align: center;
+      padding: 4px 0 8px;
+      text-decoration: none;
+      transition: color 0.15s;
+      background: none;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .open-img-link:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    #imgDialog {
+      border: none;
+      background: transparent;
+      padding: 0;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    #imgDialog::backdrop {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    #imgDialog .dialog-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #imgDialog img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    #imgDialog .dialog-close {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    #imgDialog .dialog-close:hover {
+      background: var(--border);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #imgDialog, #imgDialog::backdrop {
+        transition: none;
+        animation: none;
+      }
+    }
+
+    .no-results {
+      max-width: 1200px;
+      margin: 64px auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      display: none;
+    }
+
+    .gallery-footer {
+      max-width: 1200px;
+      margin: 32px auto 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .gallery-footer span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+      .toolbar { gap: 8px; }
+      .search-box { max-width: none; }
+      .list-view .thumb-container { display: none; }
+      .list-view .card-info { flex-wrap: wrap; gap: 8px; }
+      .list-view .card-topic { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <div class="gallery-header">
+    <h1>Media Library</h1>
+    <p>1 saved cards &mdash; click any card to view it</p>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" class="search-box" placeholder="Search by topic or type..." id="searchBox" aria-label="Search cards by topic or type">
+    <div class="filter-chips" id="filterChips">
+      <button class="filter-chip active" data-type="all" aria-pressed="true">All</button>
+      <button class="filter-chip" data-type="diff" aria-pressed="false">Diff</button>
+      <button class="filter-chip" data-type="feature" aria-pressed="false">Feature</button>
+      <button class="filter-chip" data-type="quote" aria-pressed="false">Quote</button>
+      <button class="filter-chip" data-type="blog" aria-pressed="false">Blog</button>
+      <button class="filter-chip" data-type="snippet" aria-pressed="false">Snippet</button>
+      <button class="filter-chip" data-type="video" aria-pressed="false">Video</button>
+      <button class="filter-chip" data-type="project" aria-pressed="false">Project</button>
+      <button class="filter-chip" data-type="session" aria-pressed="false">Session</button>
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="gridBtn" title="Grid view" aria-label="Grid view" aria-pressed="true">&#9638;</button>
+      <button class="view-btn" id="listBtn" title="List view" aria-label="List view" aria-pressed="false">&#9776;</button>
+    </div>
+  </div>
+
+  <div class="visible-count" id="visibleCount"></div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="gallery-card-wrap">
+    <a class="gallery-card" href="diff-sessionstart-worktree-origin-reset-2026-06-18.html" data-type="diff" data-topic="Sessionstart Worktree Origin Reset">
+      <div class="thumb-container">
+        <img src="diff-sessionstart-worktree-origin-reset-2026-06-18.png" alt="Sessionstart Worktree Origin Reset" onerror="showFallback(this)">
+        <span class="thumb-fallback" style="display:none">diff</span>
+      </div>
+      <div class="card-info">
+        <div class="card-info-top">
+          <span class="type-badge type-diff">diff</span>
+          <span class="card-date">2026-06-18</span>
+        </div>
+        <span class="card-topic">Sessionstart Worktree Origin Reset</span>
+        <span class="card-file">diff-sessionstart-worktree-origin-reset-2026-06-18.html</span>
+      </div>
+    </a>
+    <button type="button" class="open-img-link" data-img="diff-sessionstart-worktree-origin-reset-2026-06-18.png" data-topic="Sessionstart Worktree Origin Reset" aria-label="View image: Sessionstart Worktree Origin Reset">View image</button>
+    </div>
+  </div>
+
+  <div class="no-results" id="noResults">No cards match your search.</div>
+
+  <div class="gallery-footer">
+    <span>1 cards</span>
+    <span>Generated 2026-07-07</span>
+  </div>
+
+  <dialog id="imgDialog">
+    <div class="dialog-content">
+      <img id="imgDialogImg" src="" alt="">
+      <button class="dialog-close" aria-label="Close">&times;</button>
+    </div>
+  </dialog>
+
+  <script>
+    function showFallback(img) {
+      var container = img.parentElement;
+      img.style.display = 'none';
+      var fb = container.querySelector('.thumb-fallback');
+      if (fb) fb.style.display = 'block';
+    }
+
+    var imgDialog = document.getElementById('imgDialog');
+    var imgDialogImg = document.getElementById('imgDialogImg');
+    var dialogCloseBtn = imgDialog.querySelector('.dialog-close');
+
+    document.getElementById('galleryGrid').addEventListener('click', function(e) {
+      var btn = e.target.closest('.open-img-link');
+      if (!btn) return;
+      var imgSrc = btn.getAttribute('data-img');
+      if (!imgSrc || !/^[a-zA-Z0-9._-]+\.png$/i.test(imgSrc)) return;
+      imgDialogImg.src = encodeURI(imgSrc);
+      imgDialogImg.alt = btn.getAttribute('data-topic') || 'Social card image';
+      imgDialog.showModal();
+    });
+
+    dialogCloseBtn.addEventListener('click', function() {
+      imgDialog.close();
+    });
+
+    imgDialog.addEventListener('click', function(e) {
+      if (e.target === imgDialog) imgDialog.close();
+    });
+
+    var activeType = 'all';
+    var searchText = '';
+    var grid = document.getElementById('galleryGrid');
+    var cards = grid.querySelectorAll('.gallery-card-wrap');
+    var chips = document.querySelectorAll('.filter-chip');
+    var searchBox = document.getElementById('searchBox');
+    var noResults = document.getElementById('noResults');
+    var visibleCount = document.getElementById('visibleCount');
+
+    function applyFilters() {
+      var shown = 0;
+      for (var i = 0; i < cards.length; i++) {
+        var wrap = cards[i];
+        var inner = wrap.querySelector('.gallery-card');
+        var type = inner ? inner.getAttribute('data-type') || '' : '';
+        var topic = inner ? inner.getAttribute('data-topic') || '' : '';
+        var matchType = activeType === 'all' || type === activeType;
+        var matchSearch = !searchText ||
+          topic.toLowerCase().indexOf(searchText) !== -1 ||
+          type.toLowerCase().indexOf(searchText) !== -1;
+        if (matchType && matchSearch) {
+          wrap.style.display = '';
+          shown++;
+        } else {
+          wrap.style.display = 'none';
+        }
+      }
+      noResults.style.display = shown === 0 ? 'block' : 'none';
+      visibleCount.textContent = shown === cards.length
+        ? ''
+        : 'Showing ' + shown + ' of ' + cards.length + ' cards';
+    }
+
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].addEventListener('click', function() {
+        for (var j = 0; j < chips.length; j++) {
+          chips[j].classList.remove('active');
+          chips[j].setAttribute('aria-pressed', 'false');
+        }
+        this.classList.add('active');
+        this.setAttribute('aria-pressed', 'true');
+        activeType = this.getAttribute('data-type');
+        applyFilters();
+      });
+    }
+
+    searchBox.addEventListener('input', function() {
+      searchText = this.value.trim().toLowerCase();
+      applyFilters();
+    });
+
+    var gridBtn = document.getElementById('gridBtn');
+    var listBtn = document.getElementById('listBtn');
+
+    gridBtn.addEventListener('click', function() {
+      grid.classList.remove('list-view');
+      gridBtn.classList.add('active');
+      gridBtn.setAttribute('aria-pressed', 'true');
+      listBtn.classList.remove('active');
+      listBtn.setAttribute('aria-pressed', 'false');
+    });
+
+    listBtn.addEventListener('click', function() {
+      grid.classList.add('list-view');
+      listBtn.classList.add('active');
+      listBtn.setAttribute('aria-pressed', 'true');
+      gridBtn.classList.remove('active');
+      gridBtn.setAttribute('aria-pressed', 'false');
+    });
+  </script>
+</body>
+</html>
