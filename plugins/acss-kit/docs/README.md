@@ -8,6 +8,9 @@ Developers using the plugin to generate fpkit-style components into their own pr
 
 | Guide | What it covers |
 |-------|---------------|
+| [components/](components/README.md) | Per-component usage guides — add-command, import, props, examples, theming, and a11y for all 15 components |
+| [styles.md](styles.md) | Consuming the theming system: theme commands, how generated `light.css`/`dark.css` are imported, and theme roles |
+| [utilities.md](utilities.md) | Consuming the atomic-CSS utilities: `/utility-add`, class usage, breakpoints, and the token bridge |
 | [visual-guide.md](visual-guide.md) | A diagrams-first portal: system overview, `/kit-add` lifecycle, component anatomy, composition, theming flow, and a gated maintainer track |
 | [tutorial.md](tutorial.md) | A guided walkthrough: generate, import, and customize your first component |
 | [concepts.md](concepts.md) | The mental model: UI base component, data-\* variants, CSS-var fallbacks, aria-disabled, generation flow, and the `.acss-target.json` config |
