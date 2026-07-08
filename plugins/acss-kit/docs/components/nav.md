@@ -141,6 +141,6 @@ Generate a full matching theme with `/theme-create` (see [styles.md](../styles.m
 ## Related
 
 - [Component index](README.md)
-- [Link](link.md) — the anchor styling used inside `Nav.Item`
+- [Link component](link.md) — the anchor styling used inside `Nav.Item`
 - [List](list.md) — for inline link lists outside a nav landmark
 - Full maintainer reference: [`skills/component-nav/reference.md`](../../skills/component-nav/reference.md)
