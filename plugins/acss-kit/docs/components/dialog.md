@@ -106,7 +106,8 @@ Generate a full matching theme with `/theme-create` (see [styles.md](../styles.m
 
 - Opening with `showModal()` traps focus inside the dialog, and closing returns focus to the trigger — both native browser behaviors. Never use modeless `show()`; it does not enforce the trap.
 - `Escape` fires the native `cancel` event and closes the dialog. No keybinding code needed.
-- The native `<dialog>` supplies `role="dialog"` and `aria-modal="true"` automatically — don't add them. `aria-labelledby` references the generated title id; set `description` to add `aria-describedby` context.
+- The native `<dialog>` supplies `role="dialog"` and `aria-modal="true"` automatically — don't add them. `aria-labelledby` references the generated title id so the dialog is announced by its title.
+- The `description` prop renders a visible paragraph inside the header. Note: the generated component does **not** wire it to `aria-describedby`, so it is not announced as the dialog's programmatic description — treat it as visible supporting text.
 - The close button carries `aria-label="Close dialog"` since the `×` glyph is not an accessible name.
 - The browser focuses the first focusable element on open — often the close button. To land focus on a safer footer action, pass `autoFocus` to that button.
 - Dialog title renders as `<h2>`; keep the surrounding heading outline in mind if the page already uses `<h2>` nearby.

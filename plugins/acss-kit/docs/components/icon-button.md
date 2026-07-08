@@ -14,10 +14,11 @@ The generated component is self-contained — no `@fpkit/acss` install required.
 
 ```tsx
 import IconButton from './fpkit/icon-button/icon-button'
+import './fpkit/button/button.scss' // base .btn styles + focus-visible ring
 import './fpkit/icon-button/icon-button.scss'
 ```
 
-Adjust the path to match the `componentsDir` in your `.acss-target.json`. IconButton imports `Button` from `../button/button`, so both must be present.
+Adjust the path to match the `componentsDir` in your `.acss-target.json`. IconButton renders `Button` from `../button/button`, so both the `.tsx` and `button.scss` must be present — the icon button inherits its variant styling, disabled appearance, and focus ring from `button.scss`.
 
 ## Props
 

@@ -57,7 +57,9 @@ Plus any native `<a>` attribute except the overridden `href`, `target`, `rel`.
 // Skip-link pattern (combined with CSS visually-hidden-until-focus)
 <Link href="#main" className="skip-link">Skip to main content</Link>
 
-// Button-style link (visually a button; semantically still an anchor)
+// Button-style link — requires button.scss imported for the button appearance
+// (link.scss only removes the underline; the .btn styling comes from button.scss).
+// Semantically still an anchor: activates with Enter, not Space.
 <Link href="/signup" btnStyle="block">
   Get started
 </Link>
