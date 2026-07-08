@@ -158,6 +158,11 @@
     .filter-chip[data-type="refactor"].active  { background: #7c3aed; border-color: #7c3aed; color: #fff; }
     .filter-chip[data-type="docs"].active      { background: #ea580c; border-color: #ea580c; color: #fff; }
     .filter-chip[data-type="chore"].active     { background: #0d9488; border-color: #0d9488; color: #fff; }
+    .filter-chip[data-type="artifact"].active  { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+    .filter-chip[data-effort="all"].active     { background: var(--text); border-color: var(--text); color: #fff; }
+    .filter-chip[data-effort="low"].active     { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .filter-chip[data-effort="medium"].active  { background: #d97706; border-color: #d97706; color: #fff; }
+    .filter-chip[data-effort="high"].active    { background: #dc2626; border-color: #dc2626; color: #fff; }
 
     /* ── Visible count ───────────────────────────────────────────── */
     .visible-count {
@@ -201,7 +206,7 @@
       gap: 5px;
     }
 
-    .status-chip, .type-chip {
+    .status-chip, .type-chip, .effort-chip {
       display: inline-block;
       font-size: 10px;
       font-weight: 700;
@@ -224,6 +229,13 @@
     .type-docs     { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
     .type-chore    { background: #f0fdfa; color: #0d9488; border: 1px solid #99f6e4; }
     .type-untyped  { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+    .type-artifact { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; }
+
+    /* Effort colours — mirror the plan template's effort badge */
+    .effort-low    { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .effort-medium { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .effort-high   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .effort-chip::before { content: "\2022\00a0"; opacity: .6; }
 
     .card-title {
       font-size: 14px;
@@ -301,7 +313,7 @@
 
   <div class="gallery-header">
     <h1>Plans Library</h1>
-    <p>5 plans &mdash; click any card to open it</p>
+    <p>7 items &mdash; click any card to open it</p>
   </div>
 
   <div class="toolbar">
@@ -332,65 +344,39 @@
       <button class="filter-chip" data-type="refactor" aria-pressed="false">Refactor</button>
       <button class="filter-chip" data-type="docs" aria-pressed="false">Docs</button>
       <button class="filter-chip" data-type="chore" aria-pressed="false">Chore</button>
+      <button class="filter-chip" data-type="artifact" aria-pressed="false">Artifact</button>
+    </div>
+  </div>
+
+  <div class="filter-row" id="effortRow">
+    <span class="filter-row-label">Effort</span>
+    <div class="filter-chips" id="effortChips">
+      <button class="filter-chip active" data-effort="all" aria-pressed="true">All</button>
+      <button class="filter-chip" data-effort="low" aria-pressed="false">Low</button>
+      <button class="filter-chip" data-effort="medium" aria-pressed="false">Medium</button>
+      <button class="filter-chip" data-effort="high" aria-pressed="false">High</button>
     </div>
   </div>
 
   <div class="visible-count" id="visibleCount"></div>
 
   <div class="gallery-grid" id="galleryGrid">
-    <a class="gallery-card" href="realize-web-component-target.html"
-   data-status="todo" data-type="feature" data-title="realize the web-component projection target">
+    <a class="gallery-card" href="add-popover-anchor-positioning.html"
+   data-status="todo" data-type="feature" data-effort="high" data-title="enhance component-popover with anchor positioning + dropdown/tooltip presets">
   <div class="card-badges">
-    <span class="status-chip status-todo">todo</span>
-    <span class="type-chip type-feature">feature</span>
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-feature">feature</span>
+    <span class="effort-chip effort-high">high</span>
   </div>
-  <div class="card-title">Realize the web-component projection target</div>
+  <div class="card-title">Enhance component-popover with anchor positioning + dropdown/tooltip presets</div>
   <div class="card-meta">
-    <span class="card-date">2026-06-15</span>
-    <span class="card-file">realize-web-component-target.html</span>
-  </div>
-</a>
-<a class="gallery-card" href="generate-component-catalog.html"
-   data-status="todo" data-type="feature" data-title="generate a self-documenting component catalog from component.md">
-  <div class="card-badges">
-    <span class="status-chip status-todo">todo</span>
-    <span class="type-chip type-feature">feature</span>
-  </div>
-  <div class="card-title">Generate a self-documenting component catalog from COMPONENT.md</div>
-  <div class="card-meta">
-    <span class="card-date">2026-06-15</span>
-    <span class="card-file">generate-component-catalog.html</span>
-  </div>
-</a>
-<a class="gallery-card" href="evaluate-css-scope-encapsulation.html"
-   data-status="todo" data-type="chore" data-title="evaluate css @scope for component style encapsulation (spike)">
-  <div class="card-badges">
-    <span class="status-chip status-todo">todo</span>
-    <span class="type-chip type-chore">chore</span>
-  </div>
-  <div class="card-title">Evaluate CSS @scope for component style encapsulation (spike)</div>
-  <div class="card-meta">
-    <span class="card-date">2026-06-15</span>
-    <span class="card-file">evaluate-css-scope-encapsulation.html</span>
-  </div>
-</a>
-<a class="gallery-card" href="emit-custom-elements-manifest.html"
-   data-status="todo" data-type="feature" data-title="emit a custom elements manifest from component.md">
-  <div class="card-badges">
-    <span class="status-chip status-todo">todo</span>
-    <span class="type-chip type-feature">feature</span>
-  </div>
-  <div class="card-title">Emit a Custom Elements Manifest from COMPONENT.md</div>
-  <div class="card-meta">
-    <span class="card-date">2026-06-15</span>
-    <span class="card-file">emit-custom-elements-manifest.html</span>
+    <span class="card-date">2026-07-07</span>
+    <span class="card-file">add-popover-anchor-positioning.html</span>
   </div>
 </a>
 <a class="gallery-card" href="document-primitive-composite-boundary.html"
-   data-status="todo" data-type="docs" data-title="document the primitive vs composite boundary in the component.md spec">
+   data-status="todo" data-type="docs" data-effort="" data-title="document the primitive vs composite boundary in the component.md spec">
   <div class="card-badges">
-    <span class="status-chip status-todo">todo</span>
-    <span class="type-chip type-docs">docs</span>
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-docs">docs</span>
   </div>
   <div class="card-title">Document the primitive vs composite boundary in the COMPONENT.md spec</div>
   <div class="card-meta">
@@ -398,18 +384,74 @@
     <span class="card-file">document-primitive-composite-boundary.html</span>
   </div>
 </a>
+<a class="gallery-card" href="emit-custom-elements-manifest.html"
+   data-status="todo" data-type="feature" data-effort="" data-title="emit a custom elements manifest from component.md">
+  <div class="card-badges">
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-feature">feature</span>
+  </div>
+  <div class="card-title">Emit a Custom Elements Manifest from COMPONENT.md</div>
+  <div class="card-meta">
+    <span class="card-date">2026-06-15</span>
+    <span class="card-file">emit-custom-elements-manifest.html</span>
+  </div>
+</a>
+<a class="gallery-card" href="evaluate-css-scope-encapsulation.html"
+   data-status="todo" data-type="chore" data-effort="" data-title="evaluate css @scope for component style encapsulation (spike)">
+  <div class="card-badges">
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-chore">chore</span>
+  </div>
+  <div class="card-title">Evaluate CSS @scope for component style encapsulation (spike)</div>
+  <div class="card-meta">
+    <span class="card-date">2026-06-15</span>
+    <span class="card-file">evaluate-css-scope-encapsulation.html</span>
+  </div>
+</a>
+<a class="gallery-card" href="generate-component-catalog.html"
+   data-status="todo" data-type="feature" data-effort="" data-title="generate a self-documenting component catalog from component.md">
+  <div class="card-badges">
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-feature">feature</span>
+  </div>
+  <div class="card-title">Generate a self-documenting component catalog from COMPONENT.md</div>
+  <div class="card-meta">
+    <span class="card-date">2026-06-15</span>
+    <span class="card-file">generate-component-catalog.html</span>
+  </div>
+</a>
+<a class="gallery-card" href="realize-web-component-target.html"
+   data-status="todo" data-type="feature" data-effort="" data-title="realize the web-component projection target">
+  <div class="card-badges">
+    <span class="status-chip status-todo">todo</span><span class="type-chip type-feature">feature</span>
+  </div>
+  <div class="card-title">Realize the web-component projection target</div>
+  <div class="card-meta">
+    <span class="card-date">2026-06-15</span>
+    <span class="card-file">realize-web-component-target.html</span>
+  </div>
+</a>
+<a class="gallery-card" href="artifacts/popover-dossier-2026-07-07.html"
+   data-status="" data-type="artifact" data-effort="" data-title="popover-dossier-2026-07-07.html">
+  <div class="card-badges">
+    <span class="type-chip type-artifact">artifact</span>
+  </div>
+  <div class="card-title">popover-dossier-2026-07-07.html</div>
+  <div class="card-meta">
+    <span class="card-date">2026-07-07</span>
+    <span class="card-file">artifacts/popover-dossier-2026-07-07.html</span>
+  </div>
+</a>
   </div>
 
-  <div class="no-results" id="noResults">No plans match your search.</div>
+  <div class="no-results" id="noResults">No items match your search.</div>
 
   <div class="gallery-footer">
-    <span>5 plans</span>
-    <span>Generated 2026-06-19 13:24</span>
+    <span>7 items</span>
+    <span>Generated 2026-07-07 22:25</span>
   </div>
 
   <script>
     var activeStatus = 'all';
     var activeType   = 'all';
+    var activeEffort = 'all';
     var searchText   = '';
     var grid         = document.getElementById('galleryGrid');
     var cards        = grid.querySelectorAll('.gallery-card');
@@ -422,11 +464,14 @@
         var card   = cards[i];
         var status = card.getAttribute('data-status') || '';
         var type   = card.getAttribute('data-type')   || '';
+        var effort = card.getAttribute('data-effort') || '';
         var title  = card.getAttribute('data-title')  || '';
         var matchStatus = activeStatus === 'all' || status === activeStatus;
         var matchType   = activeType   === 'all' || type   === activeType;
+        // Plans with no effort tag pass every effort filter.
+        var matchEffort = activeEffort === 'all' || effort === '' || effort === activeEffort;
         var matchSearch = !searchText  || title.indexOf(searchText) !== -1;
-        if (matchStatus && matchType && matchSearch) {
+        if (matchStatus && matchType && matchEffort && matchSearch) {
           card.style.display = '';
           shown++;
         } else {
@@ -436,7 +481,7 @@
       noResults.style.display = shown === 0 ? 'block' : 'none';
       visibleCount.textContent = shown === cards.length
         ? ''
-        : 'Showing ' + shown + ' of ' + cards.length + ' plans';
+        : 'Showing ' + shown + ' of ' + cards.length + ' items';
     }
 
     function wireChips(containerId, prop) {
@@ -450,8 +495,10 @@
           }
           this.classList.add('active');
           this.setAttribute('aria-pressed', 'true');
-          if (prop === 'status') activeStatus = this.getAttribute('data-status');
-          else                   activeType   = this.getAttribute('data-type');
+          var val = this.getAttribute('data-' + prop);
+          if      (prop === 'status') activeStatus = val;
+          else if (prop === 'type')   activeType   = val;
+          else                        activeEffort = val;
           applyFilters();
         });
       }
@@ -459,6 +506,7 @@
 
     wireChips('statusChips', 'status');
     wireChips('typeChips',   'type');
+    wireChips('effortChips', 'effort');
 
     document.getElementById('searchBox').addEventListener('input', function () {
       searchText = this.value.trim().toLowerCase();
