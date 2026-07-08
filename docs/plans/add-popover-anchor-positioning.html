@@ -1285,7 +1285,7 @@ img, video { max-width: 100%; height: auto; }
             <div class="step-body">
               <div class="step-action">
                 <span class="step-chip">todo</span>
-                <span class="step-chip-text">Add positioning tokens + anchor CSS to the <code>## Styles</code> block (both files). Introduce <code>--popover-anchor-gap</code> (with a hardcoded <code>var()</code> fallback per the SCSS convention), map each <code>data-placement</code> to a <code>position-area</code>, wrap the anchored rules in <code>@supports (anchor-name: --a)</code>, and add a <code>@supports not</code> fallback that keeps the current absolute offset. <strong>Per-instance anchoring (review fix):</strong> derive <code>anchor-name</code> on the trigger and <code>position-anchor</code> on the popover from the component's already-generated unique <code>id</code> (via inline style), <em>not</em> a shared class-level name — otherwise multiple popovers on one page (dropdown nav, the headline use case) bind to the wrong trigger. While editing this section, reconcile the SCSS filename mismatch: <code>SKILL.md</code> Step 4 emits <code>popover.module.scss</code> but the Generation Contract says <code>popover.scss</code> — pick one and make all three references agree.</span>
+                <span class="step-chip-text">Add positioning tokens + anchor CSS to the <code>## Styles</code> block (both files). Introduce <code>--popover-anchor-gap</code> (with a hardcoded <code>var()</code> fallback per the SCSS convention), map each <code>data-placement</code> to a <code>position-area</code>, wrap the anchored rules in <code>@supports (anchor-name: --a)</code>, and add a <code>@supports not</code> fallback that keeps the current absolute offset. <strong>Per-instance anchoring (review fix):</strong> derive <code>anchor-name</code> on the trigger and <code>position-anchor</code> on the popover from the component's already-generated unique <code>id</code> (via inline style), <em>not</em> a shared class-level name — otherwise multiple popovers on one page (dropdown nav, the headline use case) bind to the wrong trigger. <strong>Sanitize the id first:</strong> <code>useId()</code> emits colons (e.g. <code>:r0:</code>) which are invalid in a CSS dashed-ident, so the raw id would produce invalid inline CSS and silently disable the anchored branch — map it to a CSS-safe token (e.g. replace non-word chars) before building <code>--pop-&lt;token&gt;</code>. While editing this section, reconcile the SCSS filename mismatch: <code>SKILL.md</code> Step 4 emits <code>popover.module.scss</code> but the Generation Contract says <code>popover.scss</code> — pick one and make all three references agree.</span>
               </div>
               <div class="step-why">This is gap #1 — the core value. Anchoring is what makes dropdowns/tooltips sit at their trigger; the <code>@supports</code> split honors the anchor+fallback choice without breaking non-supporting browsers. Per-instance names are required or the anchor resolves to the nearest matching trigger, breaking multi-instance layouts.</div>
               <details class="step-verify-toggle">
@@ -1477,12 +1477,12 @@ img, video { max-width: 100%; height: auto; }
         <div class="test-card">
           <div class="test-card-header">
             <span class="test-badge test-badge-unit">Unit</span>
-            <span class="test-card-title">Golden parity guard — neutral source vs. fallback</span>
+            <span class="test-card-title">Parity guards — SCSS automated, TSX manual</span>
           </div>
           <div class="test-card-body">
-            <p><strong>File:</strong> <code>tests/validate_extracted_tsx.mjs</code> (existing).</p>
-            <p><strong>Targets:</strong> byte-identical parity between the <code>popover.component.md</code> react adapter and the <code>reference.md</code> templates after every edit.</p>
-            <p><strong>Key cases:</strong> TSX blocks match; SCSS blocks match; no drift introduced by the dual-file edits.</p>
+            <p><strong>SCSS (automated):</strong> <code>tests/run.sh</code> §2a diffs the extracted SCSS of both <code>popover.component.md</code> and <code>reference.md</code> against the golden fixture — this is the real byte-identical guard.</p>
+            <p><strong>TSX (manual):</strong> <code>tests/validate_extracted_tsx.mjs</code> only enumerates <code>reference.md</code> and syntax-checks the extracted TSX — it does <em>not</em> extract <code>popover.component.md</code> or diff the two, so it is <strong>not</strong> a parity guard. TSX parity is confirmed by a hand diff of the two files' adapter blocks until an automated TSX-parity check is added.</p>
+            <p><strong>Key cases:</strong> SCSS blocks byte-identical (fixture green); TSX adapter blocks match on manual diff; no drift from the dual-file edits.</p>
           </div>
         </div>
 
