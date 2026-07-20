@@ -45,6 +45,122 @@ Output — a CSS rule using the variables your project already declares (here `-
 
 The summary names the token choice, the proposed class name, and which references were consulted (or states none), then closes with two or three concrete refinement offers drawn from what was emitted.
 
+## Common patterns
+
+Six recurring layouts, each with the exact input and the exact output. Token names shown (`--space-3`, `--surface`, …) are whatever your project already declares — with no match, the literal fallback is emitted alone.
+
+### Flex row
+
+```text
+a flex row with items centered and a medium gap
+```
+
+```css
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3, 1rem);
+}
+```
+
+### Flex column
+
+```text
+a flex column with a medium gap that stretches its children
+```
+
+```css
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3, 1rem);
+}
+```
+
+### Grid with named areas
+
+```text
+a page grid with a sidebar and main area, stacking on narrow screens
+```
+
+```css
+.page-grid {
+  display: grid;
+  grid-template-areas:
+    "sidebar"
+    "main";
+  gap: var(--space-4, 1.5rem);
+}
+
+.page-grid > .sidebar {
+  grid-area: sidebar;
+}
+
+.page-grid > .main {
+  grid-area: main;
+}
+
+@media (min-width: 48rem) {
+  .page-grid {
+    grid-template-columns: 16rem 1fr;
+    grid-template-areas: "sidebar main";
+  }
+}
+```
+
+Named areas are declared mobile-first, then re-declared inside the media query — the area *names* stay identical so only the arrangement changes.
+
+### Centered container with a max inline size
+
+```text
+a centered content container capped at 65 characters wide with page padding
+```
+
+```css
+.container {
+  max-inline-size: 65ch;
+  margin-inline: auto;
+  padding-inline: var(--space-4, 1.5rem);
+}
+```
+
+Logical properties (`max-inline-size`, `margin-inline`) are emitted over `max-width`/`margin-left`+`margin-right` so the rule survives a vertical or RTL writing mode.
+
+### Fluid-type text block
+
+```text
+a text block whose size scales from 1rem to 1.5rem with the viewport
+```
+
+```css
+.prose {
+  font-size: clamp(1rem, 0.85rem + 0.75vw, 1.5rem);
+  line-height: 1.5;
+  max-inline-size: 65ch;
+  text-wrap: pretty;
+}
+```
+
+The preferred term keeps a `rem` addend (`0.85rem + 0.75vw`) rather than a bare `vw` — a viewport-only value does not respond to browser zoom and fails WCAG 1.4.4.
+
+### Colour pair
+
+```text
+a surface and text colour pair for a callout, with a matching border
+```
+
+```css
+.callout {
+  background-color: var(--surface-2, oklch(97% 0.01 250));
+  color: var(--text-1, oklch(25% 0.02 250));
+  border: 1px solid var(--border-1, oklch(88% 0.01 250));
+}
+```
+
+Foreground and background are always emitted together — setting only one inherits the other from an unknown ancestor, which is how contrast regressions ship. Contrast is checked against the pair, not against an assumed white page.
+
 ## Notes
 
 - **Class mode prints by default.** The rule is appended to a stylesheet only when you name a target file, and the resolved target path and class name are confirmed with you before anything is written. On a same-name-different-value collision the class name gets a numeric suffix (`-2`, `-3`), reported in the summary.
