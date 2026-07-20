@@ -123,7 +123,7 @@ inline: a card with 1rem padding and a subtle shadow
 }
 ```
 
-**Behavior** — class mode prints the rule by default and appends to a stylesheet only when you name a target file, confirming the resolved path and class name first. SCSS vs. plain CSS is inferred from your project's stylesheet extensions. Inline mode refuses with a one-line reason (falling back to class mode) when the description implies `:hover`, `:focus-visible`, `@media`, `@container`, `@layer`, `@supports`, or a pseudo-element. Interactive elements get a `:focus-visible` rule; no new custom property is ever created unless you ask. Reach for `/create-utilities` instead when you want a utility-class string rather than a raw rule.
+**Behavior** — class mode prints the rule by default and appends to a stylesheet only when you name a target file, confirming the resolved path and class name first. SCSS vs. plain CSS is inferred from your project's stylesheet extensions. Inline mode refuses with a one-line reason (falling back to class mode) when the description implies `:hover`, `:focus-visible`, `@media`, `@container`, `@layer`, `@supports`, or a pseudo-element. Interactive elements get a `:focus-visible` rule; no new custom property is ever created unless you ask. Every modern feature is checked against its [Baseline](https://web.dev/baseline) status before it ships — Widely available features are emitted bare, Newly available ones are wrapped in `@supports` with a fallback, and Limited ones are withheld with a stated reason. Your `.browserslistrc` (or `package.json` `browserslist`) overrides the default bar when you have one. Reach for `/create-utilities` instead when you want a utility-class string rather than a raw rule.
 
 ## Specifications
 

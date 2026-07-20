@@ -1,7 +1,7 @@
 {
   "name": "style-agent",
   "description": "Write, extract, and organise CSS utilities and classes for any web project. Framework-agnostic — works with plain CSS, SCSS, Tailwind, or any utility-first workflow.",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "author": {
     "name": "Shawn Sandy",
     "url": "https://github.com/shawn-sandy/acss"

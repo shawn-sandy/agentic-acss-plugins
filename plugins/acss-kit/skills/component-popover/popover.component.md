@@ -62,6 +62,21 @@ targets: [react, html, astro, angular, vue, svelte, web-component]
 > 125+, Edge 125+, Safari 17.4+, Firefox 125+. The native API provides automatic
 > top-layer rendering, light dismiss, and keyboard handling — no `floating-ui`,
 > `@radix-ui/popover`, or `react-popper` dependency.
+>
+> **[Baseline](https://web.dev/baseline) status: Newly available — not yet Widely
+> available.** Interoperable across all four core browsers, but not yet past the
+> 30-month mark Baseline uses for "safe to ship without thinking about it." A
+> project whose `.browserslistrc` says `baseline widely available` — what
+> `/setup` writes — targets a bar this component does not yet meet. That is a
+> deliberate choice: the native API is the accessible one, and every JS
+> alternative reimplements top-layer rendering, light dismiss, and focus handling,
+> usually getting focus wrong. To support older browsers, feature-detect
+> (`HTMLElement.prototype.hasOwnProperty('popover')`, or
+> `@supports not selector(:popover-open)`) rather than dropping the component —
+> without a fallback the content renders inline and always-visible, because an
+> unsupported `popover` attribute is silently ignored. Confirm current status at
+> [webstatus.dev](https://webstatus.dev); this feature's date
+> [was already corrected once](https://web.dev/blog/popover-baseline).
 
 ## Overview
 

@@ -1,6 +1,35 @@
 # Progressive enhancement
 
+## What "baseline" means here
+
+[Baseline](https://web.dev/baseline) is the W3C WebDX Community Group's status for a web feature across the **core browser set**: Chrome and Firefox on desktop and Android, Safari on macOS and iOS, and Edge on desktop. (Edge on mobile is not a member.) Three states:
+
+| Status | Meaning | Emit it how? |
+|---|---|---|
+| **Widely available** | Interoperable for at least 30 months | Unconditionally. No `@supports`, no fallback. |
+| **Newly available** | Landed across the core set within the last 30 months | Fallback first, then the `@supports` block. Never the reverse — see below. |
+| **Limited availability** | Not interoperable yet | Don't. Emit the fallback alone and say why. |
+
+The 30-month gap between Newly and Widely is the point: it is the lag for users on old phones and locked-down enterprise browsers. A feature being "in every browser" and being safe to ship unconditionally are two different dates.
+
+**Check status, don't recall it.** Baseline dates move — the Popover API was [announced as Newly available in April 2024, then corrected to January 2025](https://web.dev/blog/popover-baseline). Look a feature up at [webstatus.dev](https://webstatus.dev) rather than trusting a remembered date, and never write a status table into a doc where it will quietly rot.
+
+A project can pin this as a build target with one Browserslist line, which every tool reading Browserslist then inherits:
+
+```text
+# .browserslistrc
+baseline widely available
+```
+
+See [Use Baseline with Browserslist](https://web.dev/articles/use-baseline-with-browserslist).
+
+---
+
+## Enhancing upward
+
 Detect the new feature and enhance upward. Write the baseline rule unconditionally, then wrap the modern improvement in an `@supports` block that tests for the feature you actually want. Browsers without it keep the baseline; browsers with it get the upgrade. No feature test is needed for the fallback, because the fallback is the default.
+
+**Source order is load-bearing, not stylistic.** The fallback must come *above* the `@supports` block. Both rules have the same selector and specificity, so the later one wins — put the fallback below and it overrides the enhancement in precisely the browsers that support it, leaving the upgrade dead code with no error to tell you.
 
 ```css
 .gallery {
@@ -59,6 +88,7 @@ Detect the new feature and enhance upward. Write the baseline rule unconditional
 
 ## Checklist
 
+- Widely available → emit unconditionally. Newly available → `@supports` with a fallback. Limited → don't emit.
 - Baseline first, `@supports` for the upgrade — never the reverse.
 - Test the exact declaration you intend to use, including its value.
 - `prefers-reduced-motion` removes motion, not functionality.

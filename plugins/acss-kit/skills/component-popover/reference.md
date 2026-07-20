@@ -2,6 +2,14 @@
 
 > **Verified against fpkit source:** [`@fpkit/acss@6.5.0`](https://github.com/shawn-sandy/acss/tree/9063512fa822963d8151c972bed9f5b0e531df0f) (closest tagged ref to npm `6.6.0`). Uses the native HTML Popover API (`popover` attribute + `popovertarget` + `showPopover()` / `hidePopover()`). Browser support: Chrome 125+, Edge 125+, Safari 17.4+, Firefox 125+. The native API provides automatic top-layer rendering, light dismiss, and keyboard handling — no `floating-ui`, `@radix-ui/popover`, or `react-popper` dependency.
 
+> **[Baseline](https://web.dev/baseline) status: Newly available — not yet Widely available.** The Popover API is interoperable across all four core browsers, but has not yet cleared the 30-month mark that Baseline uses for "safe to ship without thinking about it." A project whose `.browserslistrc` says `baseline widely available` — which is what `/setup` writes — is targeting a bar this component does not yet meet.
+>
+> This is a deliberate, documented choice, not an oversight: the native API is the accessible one. It gets top-layer rendering, light dismiss, and focus handling from the browser, and every JS alternative reimplements those and usually gets focus wrong. Ship it, and know what you are shipping.
+>
+> **If you must support browsers below the versions above,** feature-detect and fall back rather than dropping the component: `if (!HTMLElement.prototype.hasOwnProperty('popover'))` in JS, or `@supports not selector(:popover-open)` in CSS. Without a fallback, the popover content renders inline and always-visible on unsupporting browsers, because the `popover` attribute is simply ignored.
+>
+> Baseline dates get revised — this one [was corrected by nine months after publication](https://web.dev/blog/popover-baseline). Confirm the current status at [webstatus.dev](https://webstatus.dev) rather than trusting the line above.
+
 ## Overview
 
 A popover anchored to a trigger button, built on the native HTML Popover API. Supports auto-mode (light dismiss on outside click or Escape) and manual mode (explicit close button required). Optional positioning arrow, controlled or uncontrolled open state, and custom trigger element. Generates a unique ID via `useId` so multiple popovers on the same page don't collide.

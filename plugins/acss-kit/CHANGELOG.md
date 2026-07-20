@@ -4,6 +4,14 @@ All notable changes to the `acss-kit` plugin are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-07-20
+
+### Added
+
+- **`/setup` writes a `.browserslistrc` with a [Baseline](https://web.dev/baseline) target** (new Step 6.5). The file contains one query — `baseline widely available` — which [Browserslist supports natively](https://web.dev/blog/browserslist-supports-baseline) and which every tool already reading Browserslist inherits for free: autoprefixer, Lightning CSS, esbuild targets, `stylelint-browser-compat`. That target matches what the generated themes and most generated components are written against (`@layer`, `oklch()`, `color-mix()`, `:has()`); `popover` is the documented exception, since the native Popover API is Newly available rather than Widely available. **Skipped when the project already declares a target in any of the three places Browserslist reads** — a `package.json` `browserslist` key, a `.browserslistrc`, or a plain `browserslist` file — because overwriting an existing browser target would silently change what the user's build compiles for, and a new `.browserslistrc` outranks a plain `browserslist` file. Follows the existing idempotency contract: created or kept, never forced.
+
+- **`component-popover` now documents its Baseline status.** Both source-of-truth docs (`reference.md` and `popover.component.md`) state that the native Popover API is **Newly available, not yet Widely available** — so the component does not currently meet the `baseline widely available` bar that `/setup` writes into `.browserslistrc`. The note explains why shipping it anyway is the right call (the native API is the accessible one; JS alternatives reimplement top-layer rendering, light dismiss, and focus handling and usually get focus wrong), gives the feature-detect fallback for older browsers (`@supports not selector(:popover-open)`), and warns about the specific failure mode without one: an ignored `popover` attribute leaves the content rendered inline and always-visible. Prose only — the SCSS/TSX golden guard confirms `/kit-add popover` output is byte-identical.
+
 ## [1.11.0] - 2026-06-18
 
 ### Changed

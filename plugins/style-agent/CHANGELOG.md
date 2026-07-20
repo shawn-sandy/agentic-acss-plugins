@@ -4,7 +4,15 @@ All notable changes to the `style-agent` plugin are documented here. Format foll
 
 ## [Unreleased]
 
-## [0.6.0] - 2026-07-20
+## [0.7.0] - 2026-07-20
+
+### Added
+
+- **`/css` — Baseline gate.** Before emitting, the skill now classifies every modern CSS feature the rule uses by its [Baseline](https://web.dev/baseline) status and acts on it: Widely available features are emitted unconditionally, Newly available features are wrapped in `@supports` with a working fallback, and Limited-availability features are withheld in favour of the fallback with a one-line reason. The gate reads the project's declared target first (all three places Browserslist looks) and names it in the summary, but a declared target never relaxes an outcome — `last 2 versions` includes each browser's *previous* release, which may predate a Newly-available feature landing, so reading it as "looser bar, skip the `@supports`" would drop fallbacks for users the project still targets. Merely naming a feature in the request is not a waiver either; only an explicit override in words (`"emit it anyway"`) moves an outcome, and it moves it by exactly one step, so a Limited feature reaches `@supports`-with-fallback but never bare emit. Emission order is specified as fallback-first, then `@supports`: the two rules share a selector and specificity, so a fallback written below would override the enhancement in exactly the browsers that support it. A new mandatory **Baseline** line in the summary names each feature's status, what it produced, and the detected target — mirroring the existing "References consulted" line, whose purpose is to make a silently-skipped check visible. Fires only for modern features; long-settled CSS is not narrated.
+
+### Changed
+
+- **`references/progressive-enhancement.md` now defines "baseline".** The doc opened by instructing "write the baseline rule unconditionally" without ever saying what qualifies. It now leads with the three Baseline statuses, the 30-month Newly→Widely gap and why it exists, the emit-bare/wrap/withhold decision rule, and the `baseline widely available` Browserslist query. Deliberately carries **no date table** — Baseline dates get revised (the Popover API's was corrected by nine months post-publication), so the doc points at [webstatus.dev](https://webstatus.dev) for lookups instead of caching a status snapshot that would rot in place.
 
 ### Added
 - `/css` — turns a plain-language description into a CSS/SCSS rule or an inline `style` attribute, reusing the project's existing custom properties when they match, backed by bundled references for modern-CSS features with known footguns (`@container`, `@layer`, `clamp()` fluid type, `@supports`, logical properties, modern selectors, state selectors, viewport units). Class mode prints the rule by default and appends to a stylesheet only when you name a target file, confirming the target path and class name first. Inline mode refuses (with a stated reason, falling back to class mode) when the description implies `:hover`, `:focus-visible`, `@media`, `@container`, `@layer`, `@supports`, or a pseudo-element. Interactive elements get a `:focus-visible` rule, custom properties are never invented, and the summary names which references were consulted. Complements `/create-utilities`, which emits a utility-class string rather than a raw rule.
