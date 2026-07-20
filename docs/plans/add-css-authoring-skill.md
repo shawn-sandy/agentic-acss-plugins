@@ -1,7 +1,8 @@
 ---
-status: todo
+status: completed
 type: feature
 created: 2026-07-19
+modified: 2026-07-20
 issue: https://github.com/shawn-sandy/agentic-acss-plugins/issues/107
 glance: style-agent can transform styles but cannot author them from plain language, and the modern-CSS features developers most want (@container, @layer, fluid type) carry footguns models get wrong from memory. Done means /css turns a description into a correct rule that reuses the project's own CSS variables, and a build-time validator proves every reference snippet parses.
 ---
@@ -73,35 +74,35 @@ Scope note: tinycss2 is a tokenizer, so this validator is a syntax gate only —
 
 ## Acceptance Criteria
 
-- [ ] /css "a flex row aligned centered with a small gap" emits a valid CSS rule
-- [ ] With --space-2: 0.5rem present in the project the emitted gap uses var(--space-2); with no matching variable it emits the 0.5rem literal
-- [ ] No new CSS custom property is ever written unless the user explicitly asks for one
-- [ ] Class mode prints by default and appends to a stylesheet only when the user names a target file, suffixing -2/-3 on a same-name-different-value collision
-- [ ] A description implying an interactive element yields a :focus-visible rule, or a summary warning when the mode cannot carry one
-- [ ] A too-vague description triggers follow-up questions instead of a guessed rule
-- [ ] A size word that maps equally to two adjacent scale steps is asked about, never coin-flipped
-- [ ] An interactive-element request with unspecified states asks which of hover, focus, active, disabled to emit, and emits exactly those
-- [ ] An interactive-element request that already names its states emits them without asking
-- [ ] An adaptive-sizing request asks container-versus-viewport only when the description does not already say which
-- [ ] A concrete, fully-specified description is emitted with no questions asked
-- [ ] Every triggered question arrives in a single batched round, never a second interrogation
-- [ ] Appending to a stylesheet confirms the target path and class name before writing
-- [ ] Every result closes with two or three concrete refinement offers drawn from what was emitted
-- [ ] The emitted summary names which references were consulted, or states none
-- [ ] The css and create-utilities descriptions each name their output form and cross-reference the other
-- [ ] /css inline emits a style attribute for a static description and refuses with a stated reason (falling back to class mode) when the description implies :hover, :focus-visible, @media, @container, @layer, @supports, or a pseudo-element
-- [ ] A container-query request produces CSS with container-type set on the parent, not only an @container block
-- [ ] A @layer request notes that unlayered styles outrank layered ones
-- [ ] A fluid-type request produces a clamp() whose preferred term includes a rem addend, never viewport units alone
-- [ ] A form-validation request styles :user-invalid rather than :invalid, so empty untouched fields are not marked as errors on load
-- [ ] A disabled-state request emits [aria-disabled="true"] rather than :disabled, per .claude/rules/scss-conventions.md
-- [ ] modern-selectors.md states both the :where() zero-specificity rule and the :not() multi-argument highest-of-list rule
-- [ ] Reference files contain only fenced css blocks — the validator rejects scss fences
-- [ ] The committed known-bad fixture makes the validator exit non-zero, asserted by tests/run.sh
-- [ ] No "three skills" or "three CSS commands" string remains under plugins/style-agent/
-- [ ] tests/run.sh is green including the new validator stage
-- [ ] plugin.json version bumped and marketplace.json carries no version key
-- [ ] Root CLAUDE.md reflects four style-agent skills and four commands
+- [x] /css "a flex row aligned centered with a small gap" emits a valid CSS rule
+- [x] With --space-2: 0.5rem present in the project the emitted gap uses var(--space-2); with no matching variable it emits the 0.5rem literal
+- [x] No new CSS custom property is ever written unless the user explicitly asks for one
+- [x] Class mode prints by default and appends to a stylesheet only when the user names a target file, suffixing -2/-3 on a same-name-different-value collision
+- [x] A description implying an interactive element yields a :focus-visible rule, or a summary warning when the mode cannot carry one
+- [x] A too-vague description triggers follow-up questions instead of a guessed rule
+- [x] A size word that maps equally to two adjacent scale steps is asked about, never coin-flipped
+- [x] An interactive-element request with unspecified states asks which of hover, focus, active, disabled to emit, and emits exactly those
+- [x] An interactive-element request that already names its states emits them without asking
+- [x] An adaptive-sizing request asks container-versus-viewport only when the description does not already say which
+- [x] A concrete, fully-specified description is emitted with no questions asked
+- [x] Every triggered question arrives in a single batched round, never a second interrogation
+- [x] Appending to a stylesheet confirms the target path and class name before writing
+- [x] Every result closes with two or three concrete refinement offers drawn from what was emitted
+- [x] The emitted summary names which references were consulted, or states none
+- [x] The css and create-utilities descriptions each name their output form and cross-reference the other
+- [x] /css inline emits a style attribute for a static description and refuses with a stated reason (falling back to class mode) when the description implies :hover, :focus-visible, @media, @container, @layer, @supports, or a pseudo-element
+- [x] A container-query request produces CSS with container-type set on the parent, not only an @container block
+- [x] A @layer request notes that unlayered styles outrank layered ones
+- [x] A fluid-type request produces a clamp() whose preferred term includes a rem addend, never viewport units alone
+- [x] A form-validation request styles :user-invalid rather than :invalid, so empty untouched fields are not marked as errors on load
+- [x] A disabled-state request emits [aria-disabled="true"] rather than :disabled, per .claude/rules/scss-conventions.md
+- [x] modern-selectors.md states both the :where() zero-specificity rule and the :not() multi-argument highest-of-list rule
+- [x] Reference files contain only fenced css blocks — the validator rejects scss fences
+- [x] The committed known-bad fixture makes the validator exit non-zero, asserted by tests/run.sh
+- [x] No "three skills" or "three CSS commands" string remains under plugins/style-agent/
+- [x] tests/run.sh is green including the new validator stage
+- [x] plugin.json version bumped and marketplace.json carries no version key
+- [x] Root CLAUDE.md reflects four style-agent skills and four commands
 
 ## Verification
 

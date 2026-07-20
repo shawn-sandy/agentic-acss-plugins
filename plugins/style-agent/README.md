@@ -99,6 +99,32 @@ flex items-center gap-4 bg-primary focus-visible:ring
 
 For interactive elements (button, link, input), focus styling is handled automatically — `focus-visible:ring` for Tailwind/fallback projects, `focus-ring` for Bootstrap. For acss-kit, the skill warns in the summary that no focus utility exists in the bundle and suggests adding `:focus-visible` CSS to your project or using an acss-kit component class. Run `/css-to-class [name]` on the output to consolidate into a single named CSS class.
 
+### `/css [description]`
+
+Turn a plain-language description into a CSS/SCSS rule or an inline `style` attribute, reusing your project's existing custom properties when they match. Backed by bundled references for modern-CSS features with known footguns — `@container`, `@layer`, `clamp()` fluid type, `@supports`, logical properties, modern selectors, state selectors, and viewport units.
+
+**Input** — describe the rule you want in plain language:
+
+```text
+a flex row aligned centered with a small gap
+```
+
+```text
+inline: a card with 1rem padding and a subtle shadow
+```
+
+**Output** — a CSS rule using the variables your project already declares (here `--space-2: 0.5rem` matched, so the gap resolves to `var(--space-2)`; with no matching variable it emits the `0.5rem` literal):
+
+```css
+.flex-row-center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+```
+
+**Behavior** — class mode prints the rule by default and appends to a stylesheet only when you name a target file, confirming the resolved path and class name first. SCSS vs. plain CSS is inferred from your project's stylesheet extensions. Inline mode refuses with a one-line reason (falling back to class mode) when the description implies `:hover`, `:focus-visible`, `@media`, `@container`, `@layer`, `@supports`, or a pseudo-element. Interactive elements get a `:focus-visible` rule; no new custom property is ever created unless you ask. Reach for `/create-utilities` instead when you want a utility-class string rather than a raw rule.
+
 ## Specifications
 
 ### COMPONENT.md

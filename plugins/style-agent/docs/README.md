@@ -18,16 +18,18 @@
 | `/css-to-class [name]` | Extract utility classes from an HTML element or class string into a single named CSS class |
 | `/inline-style-to-class [name]` | Convert an inline style attribute, JSX style object, or `<style>` block into a named CSS class and append it to the project stylesheet, replacing hard-coded values with CSS variables (reuse-or-create) |
 | `/create-utilities [description]` | Generate a utility class string from a plain-language visual description |
+| `/css [description]` | Turn a plain-language description into a CSS/SCSS rule or inline `style` attribute, reusing the project's existing custom properties, backed by bundled references for modern-CSS features with known footguns |
 
 For per-command usage guides (when to use, how to run, before/after examples), see [`docs/commands/`](commands/README.md).
 
 ## Skills
 
-The plugin ships three skills. Command logic delegates to each skill file.
+The plugin ships four skills. Command logic delegates to each skill file.
 
 - `skills/css-to-class/SKILL.md`
 - `skills/inline-style-to-class/SKILL.md`
 - `skills/create-utilities/SKILL.md`
+- `skills/css/SKILL.md` — plus `skills/css/references/` for modern-CSS features with known footguns
 
 ## Specifications
 

@@ -13,7 +13,8 @@
 #   4. WCAG theme contrast (existing tool, lives under the plugin).
 #   5. Manifest / structure replication of verify-plugins.
 #   6. Known-bad self-tests: confirm the validators catch their own
-#      contract violations.
+#      contract violations (SCSS, TSX, and the style-agent css
+#      reference validator).
 #   7. detect_package_manager.py --self-test.
 #   7a. detect_stack.py --self-test (framework + cssPipeline + entrypoint).
 #   7b. verify_integration.py --self-test (entrypoint wiring checks).
@@ -25,6 +26,10 @@
 #   9. acss-kit utilities idempotency: regenerate from utilities.tokens.json
 #      and diff against the committed bundle + per-family partials.
 #  10. migrate_classnames.py fixture round-trip + idempotency.
+#  11. foundation.css structural checks.
+#  12. style-agent css reference validator: every fenced css block in
+#      plugins/style-agent/skills/css/references/ tokenizes, and no
+#      scss fence is present.
 #
 # Why syntax-only TSX validation: the reference docs split TSX across
 # multiple Key Pattern sections containing illustrative JSX or
@@ -193,6 +198,33 @@ console.log('known-bad: TSX validator caught', failures.length, 'failure(s)');
 "
 
 green "TSX validator caught known-bad.tsx"
+
+# (c) css reference validator must FAIL on known-bad-css-reference.md.
+# The fixture carries both rejection modes — a malformed css fence and an
+# scss fence — so a regex or contract regression in either one is caught.
+# Passed as a file (not the directory) so the synthetic known-bad.md
+# written above can't make this assertion pass for the wrong reason.
+# Asserting only a non-zero exit would let one branch mask the other: a
+# regression in malformed-CSS parsing still "passes" on the scss rejection,
+# and vice versa. Require both diagnostics by name.
+cp "$REPO_ROOT/tests/fixtures/known-bad/known-bad-css-reference.md" "$KNOWN_BAD_TMP/"
+KNOWN_BAD_CSS_ERR="$KNOWN_BAD_TMP/known-bad-css.err"
+if python3 "$REPO_ROOT/tests/validate_reference_css.py" \
+     "$KNOWN_BAD_TMP/known-bad-css-reference.md" >/dev/null 2>"$KNOWN_BAD_CSS_ERR"; then
+  red "known-bad: validate_reference_css.py PASSED on known-bad-css-reference.md (extraction regressed)"
+  exit 1
+fi
+if ! grep -q "parse error" "$KNOWN_BAD_CSS_ERR"; then
+  red "known-bad: validate_reference_css.py did not report a parse error (malformed-CSS detection regressed)"
+  cat "$KNOWN_BAD_CSS_ERR"
+  exit 1
+fi
+if ! grep -q "scss fence found" "$KNOWN_BAD_CSS_ERR"; then
+  red "known-bad: validate_reference_css.py did not report an scss fence (scss rejection regressed)"
+  cat "$KNOWN_BAD_CSS_ERR"
+  exit 1
+fi
+green "css reference validator caught known-bad-css-reference.md (both rejection modes)"
 
 # Step 7
 section "7. detect_package_manager.py --self-test"
@@ -660,6 +692,17 @@ for patch in "P1" "P2" "P3" "P4"; do
   fi
 done
 green "SOURCE.md lists patches P1–P4"
+
+# Step 12 — style-agent css reference validator
+section "12. style-agent css reference CSS"
+REF_CSS_LOG="$TMP_ROOT/reference-css.log"
+if python3 "$REPO_ROOT/tests/validate_reference_css.py" >"$REF_CSS_LOG" 2>&1; then
+  green "css reference CSS OK"
+else
+  red "css reference CSS validation failed:"
+  cat "$REF_CSS_LOG"
+  exit 1
+fi
 
 section "ALL STEPS GREEN"
 green "Phase 1 harness passed."

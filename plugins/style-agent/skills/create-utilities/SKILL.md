@@ -1,6 +1,6 @@
 ---
 name: create-utilities
-description: Use when the developer wants to create utility classes from a plain-language visual description — turning intent like "centered flex row with padding" into a ready-to-use class string.
+description: Use when the developer wants a utility-class string from a plain-language visual description — emits utility class names like "flex items-center p-4", not CSS; use /css instead to author a raw CSS/SCSS rule.
 allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
 ---
 
