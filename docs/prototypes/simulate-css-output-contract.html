@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="proto-source" content="docs/plans/add-css-authoring-skill.md">
+<meta name="proto-created" content="2026-07-20">
+<title>/css output contract — prototype</title>
+<style>
+  :root {
+    --bg:#ffffff; --surface:#f9fafb; --border:#e5e7eb; --border-mid:#d1d5db;
+    --text:#111827; --muted:#6b7280; --subtle:#9ca3af; --accent:#2563eb;
+    --accent-bg:#eff6ff; --green:#16a34a; --green-bg:#f0fdf4; --red:#dc2626;
+    --red-bg:#fef2f2; --amber:#b45309; --amber-bg:#fffbeb; --amber-br:#fde68a;
+    --radius:6px; --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:15px;
+         line-height:1.6; color:var(--text); background:var(--bg); max-width:880px;
+         margin:0 auto; padding:32px 20px 64px; }
+  header { border-bottom:1px solid var(--border); padding-bottom:16px; margin-bottom:20px; }
+  header::before { content:""; display:block; height:3px; background:var(--accent);
+                   border-radius:2px; margin-bottom:16px; }
+  h1 { font-size:22px; font-weight:700; letter-spacing:-.02em; margin-bottom:4px; }
+  h2 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+       color:var(--muted); margin-bottom:8px; }
+  .source { font-size:12px; color:var(--subtle); font-family:var(--mono); }
+  .lede { font-size:13px; color:var(--muted); margin-top:8px; }
+  form { margin:16px 0; padding:16px; background:var(--surface);
+         border:1px solid var(--border); border-radius:var(--radius); }
+  .field { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+  .field label { font-size:12px; font-weight:600; color:var(--muted); }
+  textarea, input[type=text] { padding:8px 10px; border:1px solid var(--border-mid);
+    border-radius:var(--radius); font-size:14px; font-family:inherit; color:var(--text);
+    background:var(--bg); width:100%; }
+  textarea { min-height:56px; resize:vertical; }
+  .row { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; }
+  .row > .field { flex:1 1 200px; margin-bottom:0; }
+  fieldset { border:0; }
+  legend { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; }
+  .radios { display:flex; gap:14px; }
+  .radios label, .check label { font-size:14px; font-weight:400; color:var(--text);
+    display:inline-flex; align-items:center; gap:5px; cursor:pointer; }
+  .check { margin-top:12px; }
+  button { font-family:inherit; cursor:pointer; }
+  .btn { padding:8px 16px; font-size:14px; font-weight:600; border-radius:var(--radius);
+         border:1px solid var(--accent); background:var(--accent); color:#fff; }
+  .btn:hover { filter:brightness(.92); }
+  .btn-secondary { background:var(--bg); color:var(--muted); border-color:var(--border-mid); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .toolbar { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .examples { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 20px; }
+  .chip { font-size:12px; padding:5px 11px; border-radius:999px; border:1px solid var(--border-mid);
+          background:var(--bg); color:var(--muted); }
+  .chip:hover { border-color:var(--accent); color:var(--accent); }
+  .out { margin-top:24px; }
+  pre { background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:var(--radius);
+        overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.55; }
+  pre.inline-out { background:var(--surface); color:var(--text); border:1px solid var(--border); }
+  .banner { padding:10px 14px; border-radius:var(--radius); font-size:13px; margin-bottom:12px; }
+  .banner-warn { background:var(--amber-bg); border:1px solid var(--amber-br); color:var(--amber); }
+  .banner-ask { background:var(--accent-bg); border:1px solid #bfdbfe; color:var(--accent); }
+  .summary { margin-top:16px; padding:14px 16px; background:var(--surface);
+             border:1px solid var(--border); border-radius:var(--radius); }
+  .summary ul { list-style:none; }
+  .summary li { font-size:13px; padding:3px 0; display:flex; gap:8px; }
+  .summary li b { font-weight:600; color:var(--muted); flex:0 0 148px; }
+  .badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .badge { font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; }
+  .b-token { background:var(--green-bg); color:var(--green); border:1px solid #bbf7d0; }
+  .b-literal { background:var(--surface); color:var(--muted); border:1px solid var(--border-mid); }
+  .b-mode { background:var(--accent-bg); color:var(--accent); border:1px solid #bfdbfe; }
+  .b-a11y { background:var(--amber-bg); color:var(--amber); border:1px solid var(--amber-br); }
+  code { font-family:var(--mono); font-size:.92em; background:var(--surface);
+         padding:1px 5px; border-radius:3px; border:1px solid var(--border); }
+  .scale { font-size:12px; color:var(--subtle); font-family:var(--mono); margin-top:6px; }
+  .status { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  footer { margin-top:36px; padding-top:16px; border-top:1px solid var(--border);
+           font-size:12px; color:var(--subtle); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>/css output contract</h1>
+  <div class="source">Prototype &middot; source: docs/plans/add-css-authoring-skill.md</div>
+  <p class="lede">Type a description, pick an output mode, and see what <code>/css</code> would emit.
+     The rules here mirror the plan's spec — token tiers, inline refusal, focus-visible,
+     vague-description follow-ups. <strong>Judge the output shape, not the CSS engine.</strong></p>
+</header>
+
+<script type="application/json" id="seed">{"tokens":true,"mode":"auto","description":"a flex row aligned centered with a small gap","selector":".toolbar"}</script>
+
+<form id="css-form" novalidate>
+  <div class="field">
+    <label for="description">Describe what you want</label>
+    <textarea id="description" name="description"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="selector">Class name</label>
+      <input type="text" id="selector" name="selector" placeholder=".toolbar">
+    </div>
+    <fieldset>
+      <legend>Output mode</legend>
+      <div class="radios">
+        <label><input type="radio" name="mode" value="auto" checked> Auto</label>
+        <label><input type="radio" name="mode" value="class"> Class</label>
+        <label><input type="radio" name="mode" value="inline"> Inline</label>
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="check">
+    <label><input type="checkbox" id="tokens" checked> Project defines a token scale</label>
+    <div class="scale" id="scale-hint"></div>
+  </div>
+
+  <div class="toolbar">
+    <button type="submit" class="btn">Generate</button>
+    <button type="button" class="btn btn-secondary" id="reset-btn">Reset</button>
+  </div>
+</form>
+
+<h2>Try these</h2>
+<div class="examples" id="examples"></div>
+
+<div class="out" id="out" hidden>
+  <h2>Emitted</h2>
+  <div id="banner-slot"></div>
+  <div class="badges" id="badges"></div>
+  <pre id="code"></pre>
+  <div class="summary">
+    <h2>Summary</h2>
+    <ul id="summary-list"></ul>
+  </div>
+</div>
+
+<p class="status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+<footer>
+  Prototype only — canned rules, no LLM. Preferences persist in this browser via localStorage.
+</footer>
+
+<script>
+/* === STORE === */
+var STORE_KEY = "proto-simulate-css-output-contract";
+function readSeed() {
+  try { return JSON.parse(document.getElementById('seed').textContent); }
+  catch (e) { return {}; }
+}
+function load() {
+  try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : readSeed(); }
+  catch (e) { return readSeed(); }
+}
+function save(state) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function resetStore() {
+  try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+  return readSeed();
+}
+/* === END STORE === */
+
+(function () {
+  var SCALE = [
+    { name: '--space-1', value: '0.25rem' },
+    { name: '--space-2', value: '0.5rem'  },
+    { name: '--space-3', value: '1rem'    },
+    { name: '--space-4', value: '1.5rem'  },
+    { name: '--space-5', value: '2rem'    }
+  ];
+  var SIZE_WORDS = { small: '0.5rem', medium: '1rem', large: '1.5rem', tight: '0.25rem', generous: '2rem' };
+
+  // Anything that cannot live in a style attribute — plan step 4.
+  var INLINE_BLOCKERS = [
+    { re: /\bhover\b/i,                 label: ':hover' },
+    { re: /\bfocus\b/i,                 label: ':focus-visible' },
+    { re: /\b(media quer|breakpoint|mobile|responsive)\w*/i, label: '@media' },
+    { re: /\bcontainer\b|\badapts?\b[\s\S]{0,40}\b(slot|parent|container|available (width|space))\b/i, label: '@container' },
+    { re: /\blayer\b/i,                 label: '@layer' },
+    { re: /\bsupports\b|feature detect/i, label: '@supports' },
+    { re: /::?(before|after)\b|pseudo-element/i, label: 'pseudo-element' }
+  ];
+  var INTERACTIVE = /\b(button|link|anchor|input|select|clickable|tappable|menu item)\b/i;
+  var VAGUE = /^(make it|make this|just)?\s*(look\s+)?(nice|pretty|better|good|clean|modern|professional)\.?$/i;
+
+  var els = {
+    form: document.getElementById('css-form'),
+    desc: document.getElementById('description'),
+    sel: document.getElementById('selector'),
+    tokens: document.getElementById('tokens'),
+    out: document.getElementById('out'),
+    code: document.getElementById('code'),
+    badges: document.getElementById('badges'),
+    banner: document.getElementById('banner-slot'),
+    list: document.getElementById('summary-list'),
+    status: document.getElementById('status'),
+    scaleHint: document.getElementById('scale-hint'),
+    examples: document.getElementById('examples'),
+    reset: document.getElementById('reset-btn')
+  };
+
+  var EXAMPLES = [
+    'a flex row aligned centered with a small gap',
+    'a primary button with a hover state',
+    'a card that adapts to the width of its slot',
+    'a heading that scales with the viewport',
+    'put component styles in a layer below utilities',
+    'make it look nice'
+  ];
+
+  function mode() {
+    var r = els.form.querySelector('input[name=mode]:checked');
+    return r ? r.value : 'auto';
+  }
+  function announce(m) { els.status.textContent = m; }
+
+  // --- token resolution: exact value, then semantic name, else literal (plan step 6)
+  function resolve(value, useTokens) {
+    if (!useTokens) return { css: value, tier: 'literal', note: 'no token scale in project' };
+    for (var i = 0; i < SCALE.length; i++) {
+      if (SCALE[i].value === value) {
+        return { css: 'var(' + SCALE[i].name + ')', tier: 'exact', note: SCALE[i].name + ' = ' + value };
+      }
+    }
+    return { css: value, tier: 'literal', note: 'no scale step equals ' + value };
+  }
+
+  function sizeFrom(desc) {
+    for (var w in SIZE_WORDS) { if (new RegExp('\\b' + w + '\\b', 'i').test(desc)) return { word: w, value: SIZE_WORDS[w] }; }
+    return { word: 'medium', value: '1rem' };
+  }
+
+  // --- the rule set. Each returns {decls, refs, extra, notes}
+  function build(desc, useTokens) {
+    var refs = [], notes = [], extra = '', decls = [];
+    var size = sizeFrom(desc);
+    var gap = resolve(size.value, useTokens);
+
+    if (/\bcontainer\b|\badapts?\b[\s\S]{0,40}\b(slot|parent|container|available (width|space))\b/i.test(desc)) {
+      refs.push('container-queries.md');
+      notes.push('container-type goes on the PARENT — a container cannot query itself');
+      extra = '.card-wrap {\n  container-type: inline-size;\n}\n\n';
+      return { decls: ['display: grid', 'gap: ' + gap.css], refs: refs, notes: notes, extra: extra,
+               wrap: '@container (min-inline-size: 30rem)', gapInfo: gap };
+    }
+    if (/scales? with|fluid|viewport|clamp/i.test(desc)) {
+      refs.push('responsive-text.md');
+      notes.push('preferred term keeps a rem addend — pure vw fails WCAG 1.4.4 at 200% zoom');
+      return { decls: ['font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem)', 'text-wrap: balance'],
+               refs: refs, notes: notes, extra: '', gapInfo: null };
+    }
+    if (/\blayer\b/i.test(desc)) {
+      refs.push('cascade-layers.md');
+      notes.push('UNLAYERED styles outrank every layer — keep third-party CSS inside a layer');
+      extra = '@layer reset, base, components, utilities;\n\n';
+      return { decls: ['display: flex', 'gap: ' + gap.css], refs: refs, notes: notes, extra: extra,
+               wrap: '@layer components', gapInfo: gap };
+    }
+    if (/\bgrid\b/i.test(desc)) {
+      decls.push('display: grid', 'gap: ' + gap.css);
+    } else {
+      decls.push('display: flex');
+      if (/\bcolumn|vertical|stack/i.test(desc)) decls.push('flex-direction: column');
+      if (/center|centred|centered|middle/i.test(desc)) decls.push('align-items: center');
+      decls.push('gap: ' + gap.css);
+    }
+    if (/\bpadding\b|padded/i.test(desc)) {
+      var p = resolve(size.value, useTokens);
+      decls.push('padding: ' + p.css);
+    }
+    return { decls: decls, refs: refs, notes: notes, extra: '', gapInfo: gap };
+  }
+
+  function blockersIn(desc) {
+    return INLINE_BLOCKERS.filter(function (b) { return b.re.test(desc); }).map(function (b) { return b.label; });
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;   // textContent throughout — hostile input inert
+    return n;
+  }
+  function addSummary(label, value) {
+    var li = el('li');
+    li.appendChild(el('b', null, label));
+    li.appendChild(el('span', null, value));
+    els.list.appendChild(li);
+  }
+
+  function generate() {
+    var desc = els.desc.value.trim();
+    var sel = els.sel.value.trim() || '.thing';
+    if (sel.charAt(0) !== '.' && sel.charAt(0) !== '#') sel = '.' + sel;
+    var useTokens = els.tokens.checked;
+    var want = mode();
+
+    els.banner.textContent = '';
+    els.badges.textContent = '';
+    els.list.textContent = '';
+    els.out.hidden = false;
+
+    // --- vague-description branch (plan step 3)
+    if (!desc || VAGUE.test(desc)) {
+      var ask = el('div', 'banner banner-ask');
+      ask.appendChild(document.createTextNode(
+        'Too vague to map to properties — /css asks before emitting anything:'));
+      els.banner.appendChild(ask);
+      els.code.textContent =
+        '1. What layout — flex row, flex column, or grid?\n' +
+        '2. Which spacing scale step — small, medium, or large?\n' +
+        '3. Is this an interactive element (button, link, input)?';
+      addSummary('Mode', 'none — nothing emitted');
+      addSummary('Why', 'description could not be mapped with confidence');
+      addSummary('References', 'none consulted');
+      announce('Description too vague — follow-up questions shown instead of a rule.');
+      return;
+    }
+
+    var r = build(desc, useTokens);
+    var blockers = blockersIn(desc);
+    var interactive = INTERACTIVE.test(desc);
+    var effective = want;
+
+    // --- inline refusal (plan step 4)
+    if (want === 'inline' && blockers.length) {
+      effective = 'class';
+      var warn = el('div', 'banner banner-warn');
+      warn.appendChild(document.createTextNode(
+        'Inline refused — ' + blockers.join(', ') + ' cannot live in a style attribute. Emitting a class instead.'));
+      els.banner.appendChild(warn);
+    } else if (want === 'auto') {
+      effective = 'class';
+    }
+
+    // --- focus-visible for interactive elements (plan step 5)
+    var focusBlock = '';
+    if (interactive) {
+      if (effective === 'inline') {
+        var fw = el('div', 'banner banner-warn');
+        fw.appendChild(document.createTextNode(
+          'Interactive element in inline mode — no :focus-visible can be attached. Add one in a stylesheet.'));
+        els.banner.appendChild(fw);
+      } else {
+        focusBlock = '\n\n' + sel + ':focus-visible {\n  outline: 2px solid var(--color-primary, currentColor);\n  outline-offset: 2px;\n}';
+      }
+    }
+
+    // --- render
+    var code;
+    if (effective === 'inline') {
+      code = 'style="' + r.decls.join('; ') + '"';
+      els.code.className = 'inline-out';
+    } else {
+      els.code.className = '';
+      var body = r.decls.map(function (d) { return '  ' + d + ';'; }).join('\n');
+      if (r.wrap) {
+        code = r.extra + r.wrap + ' {\n  ' + sel + ' {\n  ' +
+               r.decls.map(function (d) { return '  ' + d + ';'; }).join('\n  ') + '\n  }\n}';
+      } else {
+        code = r.extra + sel + ' {\n' + body + '\n}';
+      }
+      code += focusBlock;
+    }
+    els.code.textContent = code;
+
+    els.badges.appendChild(el('span', 'badge b-mode', effective === 'inline' ? 'inline style' : 'class rule'));
+    if (r.gapInfo) {
+      els.badges.appendChild(r.gapInfo.tier === 'exact'
+        ? el('span', 'badge b-token', 'token reused')
+        : el('span', 'badge b-literal', 'literal value'));
+    }
+    if (focusBlock) els.badges.appendChild(el('span', 'badge b-a11y', ':focus-visible added'));
+
+    addSummary('Mode', effective + (want !== effective ? ' (requested ' + want + ')' : ''));
+    if (r.gapInfo) addSummary('Token', r.gapInfo.tier + ' — ' + r.gapInfo.note);
+    addSummary('References', r.refs.length ? r.refs.join(', ') : 'none consulted');
+    if (blockers.length) addSummary('Inline blockers', blockers.join(', '));
+    r.notes.forEach(function (n) { addSummary('Gotcha', n); });
+    if (focusBlock) addSummary('Accessibility', ':focus-visible emitted for an interactive element');
+
+    save({ tokens: useTokens, mode: want, description: desc, selector: els.sel.value });
+    announce('Emitted a ' + effective + ' result. ' + (r.refs.length ? r.refs.length : 'No') + ' reference(s) consulted.');
+  }
+
+  function apply(state) {
+    els.desc.value = state.description || '';
+    els.sel.value = state.selector || '';
+    els.tokens.checked = state.tokens !== false;
+    var radio = els.form.querySelector('input[name=mode][value="' + (state.mode || 'auto') + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  EXAMPLES.forEach(function (ex) {
+    var b = el('button', 'chip', ex);
+    b.type = 'button';
+    b.addEventListener('click', function () { els.desc.value = ex; generate(); els.desc.focus(); });
+    els.examples.appendChild(b);
+  });
+
+  els.scaleHint.textContent = SCALE.map(function (s) { return s.name + ': ' + s.value; }).join('  ');
+
+  els.form.addEventListener('submit', function (ev) { ev.preventDefault(); generate(); });
+  els.reset.addEventListener('click', function () {
+    apply(resetStore());
+    els.out.hidden = true;
+    els.reset.focus();
+    announce('Reset to the sample description.');
+  });
+
+  apply(load());
+  generate();
+})();
+</script>
+</body>
+</html>
