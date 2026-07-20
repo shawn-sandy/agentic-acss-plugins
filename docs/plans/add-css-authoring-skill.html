@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-status="todo" data-effort="high">
+<html lang="en" data-status="completed" data-effort="high">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="plan-status" content="todo">
+<meta name="plan-status" content="completed">
 <meta name="plan-effort" content="high">
 <meta name="plan-type" content="feature">
 <meta name="plan-created" content="2026-07-19">
+<meta name="plan-modified" content="2026-07-20">
 <meta name="plan-repo" content="agentic-acss-plugins">
 <meta name="plan-file" content="add-css-authoring-skill.html">
 <meta name="plan-path" content="docs/plans/add-css-authoring-skill.html">
@@ -1308,7 +1309,7 @@ img, video { max-width: 100%; height: auto; }
         <button class="save-pdf-btn" type="button" onclick="savePDF()"
                 aria-label="Save this plan as PDF">Save as PDF</button>
         <span class="effort-badge" aria-label="Effort level">High</span>
-        <span class="status-badge">todo</span>
+        <span class="status-badge">completed</span>
       </div>
     </div>
     <div class="plan-meta">
@@ -1407,12 +1408,12 @@ img, video { max-width: 100%; height: auto; }
     <div class="progress-wrap" id="progress">
       <div class="progress-header">
         <span>Definition of done</span>
-        <span id="progress-label">0 / 29 done</span>
+        <span id="progress-label">29 / 29 done</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="progress-bar"
-             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-             aria-label="Plan progress" style="width:0%"></div>
+             role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+             aria-label="Plan progress" style="width:100%"></div>
       </div>
     </div>
 
@@ -1486,12 +1487,12 @@ img, video { max-width: 100%; height: auto; }
       <p class="section-intro">The step-by-step work, in order — each step says what to do, why it matters, and how to check it worked.</p>
       <div class="steps-list">
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">1</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write plugins/style-agent/skills/css/SKILL.md with front-matter (name, description, allowed-tools: Read, Glob, Grep, Bash, Edit, Write, AskUserQuestion matching the three sibling skills; disable-model-invocation unset per .claude/rules/skill-front-matter.md) and a workflow of clarify (step 3&#39;s gate), parse description, detect output mode, resolve tokens, consult references, emit, summarise, then offer refinements — closing every result with two or three concrete next moves drawn from what was actually emitted (tighten the gap, add a hover state, switch to inline, promote to a named class via /inline-style-to-class), since the answer is already delivered and the offer costs the user nothing; the references are listed with one-line summaries and loaded by model judgment when the parsed intent touches their topic rather than via a keyword trigger table, and the emitted summary must name which references were consulted (or state none)</span>
               </div>
               <div class="step-why">SKILL.md is the only always-loaded artefact so all routing and workflow logic must live there; judgment-based loading handles phrasings no keyword table would anticipate, and naming the consulted references in the summary gives that judgment a visible failure signal instead of silently skipping a footgun doc</div>
@@ -1503,12 +1504,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">2</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write the css skill&#39;s description front-matter to state explicitly that it emits a raw CSS/SCSS rule or inline style, and add a matching one-line clause to plugins/style-agent/skills/create-utilities/SKILL.md&#39;s description stating it emits a utility-class string, each naming the other as the alternative</span>
               </div>
               <div class="step-why">the two skills answer the same phrasing — this plan&#39;s own driving example is nearly verbatim create-utilities&#39; documented example — so without an explicit output-form contrast in both descriptions an ambiguous request routes by inference</div>
@@ -1520,12 +1521,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">3</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Add a clarification gate to SKILL.md that runs before anything is emitted, batching every triggered question into a single AskUserQuestion call (never a second interrogation round, and never fired at all when the description is already concrete). Four triggers: (a) the description cannot be mapped to concrete properties with confidence, for example &quot;make it look nice&quot;; (b) a relative size word maps equally well to two adjacent scale steps, so &quot;small&quot; could be --space-2 or --space-3; (c) the description implies an interactive element but does not say which states it wants, in which case ask which of hover, focus, active, and disabled to emit — when the description already names its states (&quot;a button with a hover state&quot;), emit exactly those and ask nothing; (d) the description implies adaptive sizing without saying what it adapts to, in which case ask whether it should respond to its container or to the viewport, since that routes to @container versus @media — when the description already says (&quot;adapts to its container&quot;, &quot;stacks below 768px&quot;), take it at its word. When no trigger fires, emit directly — a well-specified request must not be interrogated</span>
               </div>
               <div class="step-why">guessing on any of these silently changes the output in a way the user cannot see — a tie is a coin flip on someone&#39;s design system, and the prototype showed that &quot;a primary button with a hover state&quot; currently returns a rule with no :hover block at all; batching keeps the cost at one turn no matter how many triggers fire</div>
@@ -1537,12 +1538,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">4</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Specify the output-mode branch in SKILL.md: class mode prints the rule by default and appends to a stylesheet only when the user names a target file — and before any append, confirm the resolved target path and class name with the user, since appending mutates a file in their project; the class name itself is proposed from the description rather than asked for, and the proposal is named in the summary so a bad guess costs one follow-up. Appending reuses inline-style-to-class&#39;s proven collision rule (on a same-name-different-value clash append a numeric suffix -2, -3, and report it); SCSS vs plain CSS is inferred from the project&#39;s stylesheet extensions with plain CSS as the no-stylesheet default; inline mode fires when the user says inline or points at an element, and is refused with a one-line reason (falling back to class mode) when the description implies :hover, :focus-visible, @media, @container, @layer, @supports, or a pseudo-element</span>
               </div>
               <div class="step-why">this is the skill&#39;s only real branch and its only silent-wrong-answer risk since a dropped :hover in an inline style is lost without error, and appending without the sibling&#39;s collision rule would write a conflicting selector into a real user stylesheet</div>
@@ -1554,12 +1555,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">5</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Add a focus-visible step to SKILL.md between token resolution and emit: when the parsed description implies an interactive element (button, link, input, select, or a custom widget) emit a :focus-visible rule alongside the requested styling, or when the output mode cannot carry one state its absence in the summary</span>
               </div>
               <div class="step-why">create-utilities Step 4 already guarantees this and without the parity a generated button rule ships with no focus indicator, failing WCAG 2.4.7</div>
@@ -1571,12 +1572,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">6</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Specify token resolution in SKILL.md as three tiers: exact-value match uses the variable, semantic-name match uses it and names the choice in the summary, no match emits the literal; the skill greps the project for custom-property declarations and reads the whole scale before mapping relative words like small, and never creates a new custom property unless asked</span>
               </div>
               <div class="step-why">&quot;small&quot; is a position in a scale not a value, and inventing tokens would write into someone&#39;s design system on a throwaway request — deliberately inverting inline-style-to-class, where the value is already committed</div>
@@ -1588,12 +1589,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">7</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write references/container-queries.md covering container-type: inline-size on the parent, that a container cannot query itself, cqi/cqb versus viewport units, container-name for nesting, and one correct minimal template, cross-linking cascade-layers.md</span>
               </div>
               <div class="step-why">the missing container-type omission is the most common container-query failure and produces CSS that silently never matches</div>
@@ -1605,12 +1606,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">8</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write references/cascade-layers.md covering the unlayered-styles-win rule, the @layer order declaration coming first, where third-party CSS belongs, and !important inverting layer order, cross-linking container-queries.md</span>
               </div>
               <div class="step-why">unlayered-beats-layered is counter-intuitive and is why most first @layer attempts appear to do nothing</div>
@@ -1622,12 +1623,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">9</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write references/responsive-text.md covering clamp() with a rem-plus-vw preferred term, that a pure-vw term fails WCAG 1.4.4 at 200% zoom, a worked slope formula, and text-wrap balance and pretty</span>
               </div>
               <div class="step-why">fluid type is the most-requested modern-CSS item and its accessibility failure is invisible without explicitly testing zoom</div>
@@ -1639,12 +1640,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">10</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write the four short references — progressive-enhancement.md (@supports detecting the new feature and enhancing upward rather than not-detection cascading down, prefers-reduced-motion, prefers-contrast), logical-properties.md (inline-size, block-size, margin-inline, padding-block, inset, writing-mode rationale), modern-selectors.md (:has() with its no-pseudo-element restriction, :is() taking the highest specificity of its list versus :where() contributing zero, :not() sharing the same highest-of-list rule in its multi-argument form and matching far wider than authors expect, :nth-child(An+B of S), and native CSS nesting and how its &amp; differs from SCSS), and viewport-units.md (dvh/svh/lvh versus vh under mobile browser chrome, and 100vw causing horizontal overflow when a scrollbar is present)</span>
               </div>
               <div class="step-why">all four are short gotcha files that complete the modern-CSS pack, :not() belongs beside :is()/:where() because it shares their specificity rule and is misremembered the same way, and none warrants its own step</div>
@@ -1656,12 +1657,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">11</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write references/state-selectors.md covering :invalid matching an empty required field before the user has typed (so :user-invalid and :user-valid are the correct defaults for form styling), [aria-disabled=&quot;true&quot;] rather than the native :disabled selector per .claude/rules/scss-conventions.md, why :focus-visible is emitted instead of :focus (a mouse click should not paint a focus ring, which is why authors delete rings entirely and break keyboard use), :empty treating whitespace as content, and :placeholder-shown</span>
               </div>
               <div class="step-why">state selectors are a second selector family the pack does not cover at all, and their naive choices fail real users the same way viewport-only clamp() does — a form that lights up red on load, or a disabled control that drops out of the tab order; the aria-disabled entry also stops the skill from generating CSS that violates a convention this repo already enforces on every stylesheet edit</div>
@@ -1673,12 +1674,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">12</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write plugins/style-agent/commands/css.md per .claude/rules/command-authoring.md: YAML front-matter with argument-hint: [description] matching create-utilities.md, plus a body that only delegates to the skill</span>
               </div>
               <div class="step-why">repo convention keeps commands as thin entry points with logic in SKILL.md, and naming the argument-hint concretely keeps this step as specific as the rest of the plan</div>
@@ -1690,12 +1691,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">13</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Write tests/validate_reference_css.py extracting every fenced css block from the css skill&#39;s references, syntax-checking each with tinycss2 under the repo&#39;s generator/validator contract (errors to stderr, exit 0/1/2), and failing on any scss fence since the references are plain-CSS-only by decision; commit tests/fixtures/known-bad/known-bad-css-reference.md carrying one malformed css fence and one scss fence, and wire both the real run and a known-bad self-test into tests/run.sh alongside the existing known-bad section</span>
               </div>
               <div class="step-why">this is a tokenizer-level syntax gate, not a correctness gate — tinycss2 will happily accept an invalid container-type keyword or a :has() containing a pseudo-element, so the per-file prose greps in steps 7 to 11 remain the real check on the gotcha claims; the committed known-bad fixture follows the pattern every other validator in this harness already uses so a future regex regression cannot pass silently</div>
@@ -1707,12 +1708,12 @@ img, video { max-width: 100%; height: auto; }
           </div>
         </div>
 
-        <div class="step-card">
+        <div class="step-card completed">
           <div class="step-card-header">
             <div class="step-number">14</div>
             <div class="step-body">
               <div class="step-action">
-                <span class="step-chip">todo</span>
+                <span class="step-chip">done</span>
                 <span class="step-chip-text">Update paperwork in one pass: bump plugin.json minor version, add the CHANGELOG Added entry, add a ### /css subsection to the style-agent README matching the existing per-command When-to-use / How-to-run / Example shape (that file has no table), update docs/README.md&#39;s Commands table and its &quot;ships three skills&quot; count, write docs/commands/css.md plus its index row and correct that file&#39;s &quot;three CSS commands&quot; intro line, update the marketplace.json description, and correct the style-agent counts in root CLAUDE.md</span>
               </div>
               <div class="step-why">the repo pre-submit checklist requires all of these, three separate docs files carry a hard-coded &quot;three&quot; that goes stale the moment /css ships, and batching avoids a second commit</div>
@@ -1749,119 +1750,119 @@ img, video { max-width: 100%; height: auto; }
       <p class="section-intro">The plan counts as done when every statement below is true — check each one off as you verify it.</p>
       <ul class="criteria-list" id="criteria-list">
         <li>
-          <input type="checkbox" id="ac1">
+          <input type="checkbox" id="ac1" checked>
           <label for="ac1">/css &quot;a flex row aligned centered with a small gap&quot; emits a valid CSS rule</label>
         </li>
         <li>
-          <input type="checkbox" id="ac2">
+          <input type="checkbox" id="ac2" checked>
           <label for="ac2">With --space-2: 0.5rem present in the project the emitted gap uses var(--space-2); with no matching variable it emits the 0.5rem literal</label>
         </li>
         <li>
-          <input type="checkbox" id="ac3">
+          <input type="checkbox" id="ac3" checked>
           <label for="ac3">No new CSS custom property is ever written unless the user explicitly asks for one</label>
         </li>
         <li>
-          <input type="checkbox" id="ac4">
+          <input type="checkbox" id="ac4" checked>
           <label for="ac4">Class mode prints by default and appends to a stylesheet only when the user names a target file, suffixing -2/-3 on a same-name-different-value collision</label>
         </li>
         <li>
-          <input type="checkbox" id="ac5">
+          <input type="checkbox" id="ac5" checked>
           <label for="ac5">A description implying an interactive element yields a :focus-visible rule, or a summary warning when the mode cannot carry one</label>
         </li>
         <li>
-          <input type="checkbox" id="ac6">
+          <input type="checkbox" id="ac6" checked>
           <label for="ac6">A too-vague description triggers follow-up questions instead of a guessed rule</label>
         </li>
         <li>
-          <input type="checkbox" id="ac7">
+          <input type="checkbox" id="ac7" checked>
           <label for="ac7">A size word that maps equally to two adjacent scale steps is asked about, never coin-flipped</label>
         </li>
         <li>
-          <input type="checkbox" id="ac8">
+          <input type="checkbox" id="ac8" checked>
           <label for="ac8">An interactive-element request with unspecified states asks which of hover, focus, active, disabled to emit, and emits exactly those</label>
         </li>
         <li>
-          <input type="checkbox" id="ac9">
+          <input type="checkbox" id="ac9" checked>
           <label for="ac9">An interactive-element request that already names its states emits them without asking</label>
         </li>
         <li>
-          <input type="checkbox" id="ac10">
+          <input type="checkbox" id="ac10" checked>
           <label for="ac10">An adaptive-sizing request asks container-versus-viewport only when the description does not already say which</label>
         </li>
         <li>
-          <input type="checkbox" id="ac11">
+          <input type="checkbox" id="ac11" checked>
           <label for="ac11">A concrete, fully-specified description is emitted with no questions asked</label>
         </li>
         <li>
-          <input type="checkbox" id="ac12">
+          <input type="checkbox" id="ac12" checked>
           <label for="ac12">Every triggered question arrives in a single batched round, never a second interrogation</label>
         </li>
         <li>
-          <input type="checkbox" id="ac13">
+          <input type="checkbox" id="ac13" checked>
           <label for="ac13">Appending to a stylesheet confirms the target path and class name before writing</label>
         </li>
         <li>
-          <input type="checkbox" id="ac14">
+          <input type="checkbox" id="ac14" checked>
           <label for="ac14">Every result closes with two or three concrete refinement offers drawn from what was emitted</label>
         </li>
         <li>
-          <input type="checkbox" id="ac15">
+          <input type="checkbox" id="ac15" checked>
           <label for="ac15">The emitted summary names which references were consulted, or states none</label>
         </li>
         <li>
-          <input type="checkbox" id="ac16">
+          <input type="checkbox" id="ac16" checked>
           <label for="ac16">The css and create-utilities descriptions each name their output form and cross-reference the other</label>
         </li>
         <li>
-          <input type="checkbox" id="ac17">
+          <input type="checkbox" id="ac17" checked>
           <label for="ac17">/css inline emits a style attribute for a static description and refuses with a stated reason (falling back to class mode) when the description implies :hover, :focus-visible, @media, @container, @layer, @supports, or a pseudo-element</label>
         </li>
         <li>
-          <input type="checkbox" id="ac18">
+          <input type="checkbox" id="ac18" checked>
           <label for="ac18">A container-query request produces CSS with container-type set on the parent, not only an @container block</label>
         </li>
         <li>
-          <input type="checkbox" id="ac19">
+          <input type="checkbox" id="ac19" checked>
           <label for="ac19">A @layer request notes that unlayered styles outrank layered ones</label>
         </li>
         <li>
-          <input type="checkbox" id="ac20">
+          <input type="checkbox" id="ac20" checked>
           <label for="ac20">A fluid-type request produces a clamp() whose preferred term includes a rem addend, never viewport units alone</label>
         </li>
         <li>
-          <input type="checkbox" id="ac21">
+          <input type="checkbox" id="ac21" checked>
           <label for="ac21">A form-validation request styles :user-invalid rather than :invalid, so empty untouched fields are not marked as errors on load</label>
         </li>
         <li>
-          <input type="checkbox" id="ac22">
+          <input type="checkbox" id="ac22" checked>
           <label for="ac22">A disabled-state request emits [aria-disabled=&quot;true&quot;] rather than :disabled, per .claude/rules/scss-conventions.md</label>
         </li>
         <li>
-          <input type="checkbox" id="ac23">
+          <input type="checkbox" id="ac23" checked>
           <label for="ac23">modern-selectors.md states both the :where() zero-specificity rule and the :not() multi-argument highest-of-list rule</label>
         </li>
         <li>
-          <input type="checkbox" id="ac24">
+          <input type="checkbox" id="ac24" checked>
           <label for="ac24">Reference files contain only fenced css blocks — the validator rejects scss fences</label>
         </li>
         <li>
-          <input type="checkbox" id="ac25">
+          <input type="checkbox" id="ac25" checked>
           <label for="ac25">The committed known-bad fixture makes the validator exit non-zero, asserted by tests/run.sh</label>
         </li>
         <li>
-          <input type="checkbox" id="ac26">
+          <input type="checkbox" id="ac26" checked>
           <label for="ac26">No &quot;three skills&quot; or &quot;three CSS commands&quot; string remains under plugins/style-agent/</label>
         </li>
         <li>
-          <input type="checkbox" id="ac27">
+          <input type="checkbox" id="ac27" checked>
           <label for="ac27">tests/run.sh is green including the new validator stage</label>
         </li>
         <li>
-          <input type="checkbox" id="ac28">
+          <input type="checkbox" id="ac28" checked>
           <label for="ac28">plugin.json version bumped and marketplace.json carries no version key</label>
         </li>
         <li>
-          <input type="checkbox" id="ac29">
+          <input type="checkbox" id="ac29" checked>
           <label for="ac29">Root CLAUDE.md reflects four style-agent skills and four commands</label>
         </li>
       </ul>
