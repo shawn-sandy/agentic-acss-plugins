@@ -1,0 +1,619 @@
+<title>PR #111 Review — Web Platform Baseline in /css and /setup</title>
+
+<style>
+  :root {
+    --ink:        #12141A;
+    --ink-soft:   #454A57;
+    --ink-faint:  #767C8C;
+    --paper:      #F7F7F4;
+    --panel:      #FFFFFF;
+    --rule:       #DEDEDA;
+    --accent:     #4C5B8C;
+    --accent-bg:  #ECEEF6;
+    --clay:       #A6432E;
+    --clay-bg:    #F7E9E5;
+    --amber:      #8A6A1F;
+    --amber-bg:   #F7F0DD;
+    --moss:       #3D6B4A;
+    --moss-bg:    #E7F0E8;
+
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --s1: 0.4rem;
+    --s2: 0.75rem;
+    --s3: 1.15rem;
+    --s4: 1.85rem;
+    --s5: 3rem;
+    --s6: 4.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:       #E6E7EC;
+      --ink-soft:  #A8ADBB;
+      --ink-faint: #767C8C;
+      --paper:     #121419;
+      --panel:     #191C23;
+      --rule:      #2C303A;
+      --accent:    #9BA9DC;
+      --accent-bg: #1E2333;
+      --clay:      #E0917C;
+      --clay-bg:   #2E1F1B;
+      --amber:     #D6B45F;
+      --amber-bg:  #2B2417;
+      --moss:      #8FC49E;
+      --moss-bg:   #1A2620;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:       #E6E7EC;
+    --ink-soft:  #A8ADBB;
+    --ink-faint: #767C8C;
+    --paper:     #121419;
+    --panel:     #191C23;
+    --rule:      #2C303A;
+    --accent:    #9BA9DC;
+    --accent-bg: #1E2333;
+    --clay:      #E0917C;
+    --clay-bg:   #2E1F1B;
+    --amber:     #D6B45F;
+    --amber-bg:  #2B2417;
+    --moss:      #8FC49E;
+    --moss-bg:   #1A2620;
+  }
+
+  :root[data-theme="light"] {
+    --ink:       #12141A;
+    --ink-soft:  #454A57;
+    --ink-faint: #767C8C;
+    --paper:     #F7F7F4;
+    --panel:     #FFFFFF;
+    --rule:      #DEDEDA;
+    --accent:    #4C5B8C;
+    --accent-bg: #ECEEF6;
+    --clay:      #A6432E;
+    --clay-bg:   #F7E9E5;
+    --amber:     #8A6A1F;
+    --amber-bg:  #F7F0DD;
+    --moss:      #3D6B4A;
+    --moss-bg:   #E7F0E8;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: var(--s5) var(--s3) var(--s6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s5);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 1rem; letter-spacing: -0.01em; }
+
+  p { max-width: 68ch; }
+
+  section { display: flex; flex-direction: column; gap: var(--s3); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: var(--s2); }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s2);
+    margin-top: var(--s1);
+  }
+  .meta b {
+    color: var(--ink-faint);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-right: 0.4em;
+  }
+  .meta .state {
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 0.1em 0.5em;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.87em;
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 0.1em 0.34em;
+    border-radius: 3px;
+  }
+
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: var(--s3);
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+  }
+  pre code { background: none; color: var(--ink-soft); padding: 0; font-size: inherit; }
+  pre .bad { color: var(--clay); }
+  pre .good { color: var(--moss); }
+  pre .dim { color: var(--ink-faint); }
+
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.87rem; }
+  th, td {
+    text-align: left;
+    padding: var(--s2) var(--s3) var(--s2) 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 700;
+  }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  /* --- Baseline status ladder: the subject's own three states --- */
+  .ladder { display: flex; flex-direction: column; gap: var(--s2); }
+  .rung {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--s3);
+    align-items: baseline;
+    padding: var(--s3);
+    border-radius: 4px;
+    border-left: 3px solid var(--rule);
+    background: var(--panel);
+  }
+  .rung .name {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .rung .name small {
+    display: block;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+    color: var(--ink-faint);
+    margin-top: 0.25em;
+  }
+  .rung p { font-size: 0.9rem; margin: 0; }
+  .rung.wide  { border-left-color: var(--moss);  background: var(--moss-bg); }
+  .rung.wide  .name { color: var(--moss); }
+  .rung.newly { border-left-color: var(--amber); background: var(--amber-bg); }
+  .rung.newly .name { color: var(--amber); }
+  .rung.ltd   { border-left-color: var(--clay);  background: var(--clay-bg); }
+  .rung.ltd   .name { color: var(--clay); }
+
+  .scores { display: flex; flex-wrap: wrap; gap: var(--s3); }
+  .score {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    padding: var(--s2) var(--s3);
+    border-radius: 4px;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    min-width: 6.5rem;
+  }
+  .score .n {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .score .l {
+    font-family: var(--mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .score.is-clay  .n { color: var(--clay); }
+  .score.is-amber .n { color: var(--amber); }
+  .score.is-moss  .n { color: var(--moss); }
+
+  .finding {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule);
+    border-radius: 4px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .finding.sev-high { border-left-color: var(--clay); }
+  .finding.sev-med  { border-left-color: var(--amber); }
+  .finding.sev-proc { border-left-color: var(--accent); }
+  .finding > header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s2);
+  }
+  .finding .id {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+  .finding h3 { flex: 1 1 18rem; }
+  .finding p { font-size: 0.94rem; }
+
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .chip.high { background: var(--clay-bg);  color: var(--clay); }
+  .chip.med  { background: var(--amber-bg); color: var(--amber); }
+  .chip.proc { background: var(--accent-bg); color: var(--accent); }
+  .chip.ok   { background: var(--moss-bg);  color: var(--moss); }
+
+  .fix {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--rule);
+    padding-top: var(--s2);
+  }
+  .fix b {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+  }
+
+  .callout {
+    background: var(--accent-bg);
+    border-radius: 4px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .callout p { max-width: 64ch; }
+
+  ol.questions { display: flex; flex-direction: column; gap: var(--s3); padding-left: 1.2rem; }
+  ol.questions li { padding-left: 0.3rem; }
+  ol.questions b { display: block; font-family: var(--mono); font-size: 0.92rem; }
+  ol.questions p { font-size: 0.92rem; color: var(--ink-soft); margin-top: 0.2em; }
+
+  a { color: var(--accent); text-underline-offset: 0.18em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s3);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 34rem) {
+    h1 { font-size: 1.5rem; }
+    .wrap { padding-inline: var(--s2); }
+    .rung { grid-template-columns: 1fr; gap: var(--s1); }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">Pull request review · agentic-acss-plugins</span>
+    <h1>#111 — feat: integrate Web Platform Baseline into /css and /setup</h1>
+    <p>Both plugins adopt <a href="https://web.dev/baseline">Baseline</a> as their browser-support vocabulary. <code>/setup</code> writes a one-line <code>.browserslistrc</code>; <code>/css</code> gains a gate that decides whether a modern feature ships bare, wrapped in <code>@supports</code>, or not at all. No new checker was written — that is the whole design thesis.</p>
+    <div class="meta">
+      <span class="state">Merged</span>
+      <span><b>Author</b> shawn-sandy</span>
+      <span><b>Base</b> main ← claude/baseline-plugins-integration-95a09b</span>
+      <span><b>Squash</b> 5c57f39</span>
+      <span><b>Diff</b> +138 / −10 across 11 files</span>
+      <span><b>Commits</b> 2 (feature, then review fixes)</span>
+      <span><b>Open → merge</b> 72 min</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Verdict</h2>
+    <p><strong>The right architectural call, executed with real rigour, shipped with one paperwork casualty.</strong> Choosing Browserslist's native <code>baseline widely available</code> query over a vendored <code>baseline_check.py</code> is correct and well argued: the repo's Python is stdlib-only, Baseline data lives in npm, and a vendored snapshot would rot silently. One config line reaches autoprefixer, Lightning CSS, esbuild and <code>stylelint-browser-compat</code> for free. That is the laziest solution that actually holds.</p>
+    <p>The review round-trip is the strongest part of this PR. Three genuine correctness defects in the instructions were caught and fixed in the second commit — the <code>@supports</code> ordering inversion in particular would have produced enhancements that are dead code with no error message. The fixes are not patches over symptoms; each rewrites the rule and states why the rule is that way.</p>
+    <p>What warrants the team's attention is not the design, it is the <strong>gap between what this PR claims and what anything can check</strong>. The <code>0.6.0</code> section of the <code>style-agent</code> changelog was destroyed by this diff and nobody noticed, because nothing looks. The Baseline gate has no Baseline data source. Eight verification runs are described in prose and none of them are re-runnable. All three are the same problem in different clothes.</p>
+  </section>
+
+  <section>
+    <h2>Findings at a glance</h2>
+    <div class="scores">
+      <div class="score is-clay"><span class="n">1</span><span class="l">High</span></div>
+      <div class="score is-amber"><span class="n">3</span><span class="l">Medium</span></div>
+      <div class="score"><span class="n">2</span><span class="l">Process</span></div>
+      <div class="score is-moss"><span class="n">3</span><span class="l">Verified fixed</span></div>
+    </div>
+    <p style="font-size:0.88rem;color:var(--ink-soft)">Severity reflects impact on what the plugins actually do, not effort to fix. Everything below was checked against the merged tree at <code>5c57f39</code> in a worktree, not read from the PR description.</p>
+  </section>
+
+  <section>
+    <h2>What actually shipped</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Files</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Setup step</td>
+            <td><code>acss-kit/skills/setup/SKILL.md</code> (+29)</td>
+            <td>New Step 6.5. Probes three Browserslist config locations; writes <code>.browserslistrc</code> only when all three are absent.</td>
+          </tr>
+          <tr>
+            <td>Emit gate</td>
+            <td><code>style-agent/skills/css/SKILL.md</code> (+37/−4)</td>
+            <td>New stage 7 between "consult references" and "emit". Three outcomes, one-step override, mandatory summary line.</td>
+          </tr>
+          <tr>
+            <td>Reference</td>
+            <td><code>css/references/progressive-enhancement.md</code> (+30)</td>
+            <td>Defines "baseline" — a term the doc already leaned on. Adds the source-order warning. No date table, by design.</td>
+          </tr>
+          <tr>
+            <td>Component docs</td>
+            <td><code>component-popover/</code> reference.md + popover.component.md (+23)</td>
+            <td>Documents that popover is <em>below</em> the bar <code>/setup</code> writes, and why it ships anyway. Prose only — golden guard confirms byte-identical output.</td>
+          </tr>
+          <tr>
+            <td>Paperwork</td>
+            <td>2 × plugin.json, 2 × CHANGELOG, 2 × README</td>
+            <td>acss-kit 1.11.0 → 1.12.0, style-agent 0.6.0 → 0.7.0. Minor bumps for additive behaviour — correct semver. See F1.</td>
+          </tr>
+          <tr>
+            <td>Tests</td>
+            <td>—</td>
+            <td>Nothing added. <code>grep -ri "baseline\|browserslist" tests/</code> returns nothing. See F3.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>The gate, in its own vocabulary</h2>
+    <p>Baseline's three states map one-to-one onto three emission behaviours. This is the substance of the PR — everything else is plumbing that gets the classification to the right place.</p>
+    <div class="ladder">
+      <div class="rung wide">
+        <span class="name">Widely available<small>≥ 30 months interop</small></span>
+        <p>Emit bare. No <code>@supports</code>, no fallback, no narration beyond the summary line. Flexbox and <code>border-radius</code> don't even reach the gate — it fires only for modern features.</p>
+      </div>
+      <div class="rung newly">
+        <span class="name">Newly available<small>landed &lt; 30 months ago</small></span>
+        <p>Fallback <strong>first</strong>, then the <code>@supports</code> block. Name the fallback in the summary. Inline mode can't carry <code>@supports</code>, so this becomes a refusal there.</p>
+      </div>
+      <div class="rung ltd">
+        <span class="name">Limited availability<small>not interoperable</small></span>
+        <p>Withhold. Emit the fallback alone plus a one-line reason, so the user can override deliberately rather than discovering the omission later.</p>
+      </div>
+    </div>
+    <p>Two rules keep the ladder from being gamed. A declared browser target <strong>can tighten an outcome but never relax one</strong> — <code>last 2 versions</code> includes each browser's <em>previous</em> release, which may predate a Newly-available feature landing. And <strong>naming a feature is not a waiver</strong>: <code>"using field-sizing"</code> is intent, not consent. An explicit override in words moves an outcome by exactly one step, so Limited can reach <code>@supports</code>-with-fallback but never bare emit.</p>
+  </section>
+
+  <section>
+    <h2>The bug the review caught</h2>
+    <p>Worth reading closely, because it is the kind of defect that produces no error anywhere. The first commit told the skill to emit "inside <code>@supports</code> with a working fallback below it." Both rules share a selector and specificity, so the later one wins:</p>
+    <pre><code><span class="dim">/* first commit — the enhancement is dead code */</span>
+@supports (grid-template-rows: subgrid) {
+  .card { grid-template-rows: subgrid; }   <span class="bad">← applies…</span>
+}
+.card { grid-template-rows: auto auto; }   <span class="bad">← …then loses, in exactly
+                                              the browsers that support it</span>
+
+<span class="dim">/* second commit — source order is load-bearing */</span>
+.card { grid-template-rows: auto auto; }   <span class="good">← everyone gets this</span>
+@supports (grid-template-rows: subgrid) {
+  .card { grid-template-rows: subgrid; }   <span class="good">← supporting browsers upgrade</span>
+}</code></pre>
+    <p>The instruction contradicted <code>progressive-enhancement.md</code>, which had the order right in the same diff — a two-document inconsistency that a read-through of either file alone would never surface. The fix states the ordering in <em>both</em> documents and explains that it is cascade mechanics, not style preference. That is the correct depth of fix.</p>
+  </section>
+
+  <section>
+    <h2>Findings</h2>
+
+    <article class="finding sev-high">
+      <header>
+        <span class="id">F1</span>
+        <h3>The style-agent 0.6.0 release section was destroyed by this diff</h3>
+        <span class="chip high">High · shipped defect</span>
+      </header>
+      <p>The diff replaced the line <code>## [0.6.0] - 2026-07-20</code> with the new <code>## [0.7.0]</code> heading and its body, but left 0.6.0's <code>### Added</code> block sitting underneath. The <code>/css</code> skill — the entire 0.6.0 release, merged one day earlier in <a href="https://github.com/shawn-sandy/agentic-acss-plugins/pull/109">#109</a> — is now filed under 0.7.0, and 0.6.0 does not exist in the changelog at all.</p>
+      <pre><code><span class="dim">$ grep -n '^## \[' plugins/style-agent/CHANGELOG.md</span>
+5:## [Unreleased]
+7:## [0.7.0] - 2026-07-20
+20:## [0.5.1] - 2026-06-22   <span class="bad">← 0.6.0 is gone</span>
+
+<span class="dim">$ sed -n '7,19p' … </span>
+## [0.7.0] - 2026-07-20
+### Added     <span class="dim">← Baseline gate (correct)</span>
+### Changed   <span class="dim">← progressive-enhancement.md (correct)</span>
+### Added     <span class="bad">← duplicate heading; this is 0.6.0's /css entry</span></code></pre>
+      <p>Two Keep-a-Changelog violations in one section (duplicate <code>### Added</code>, missing version) and a factual error in the release history. Both plugins ship this file to users via the marketplace. Nothing in <code>tests/run.sh</code> parses changelogs, so it went green.</p>
+      <p class="fix"><b>Suggested fix</b>Restore the <code>## [0.6.0] - 2026-07-20</code> heading above the orphaned <code>### Added</code> block — a two-line edit, no content to rewrite. Then add a changelog shape check to <code>tests/run.sh</code>: assert the top version heading matches <code>plugin.json</code>, and that no version section repeats a change-type heading. That is roughly fifteen lines of stdlib Python and it catches the whole class.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F2</span>
+        <h3>The Baseline gate has no Baseline data source</h3>
+        <span class="chip med">Medium · design</span>
+      </header>
+      <p>The gate classifies each feature as Widely / Newly / Limited, and its correctness rests entirely on that classification. But nothing in the skill supplies the data. It says <em>"do not assert dates from memory"</em> — good — and then asks for a status level, which is the same recall problem one abstraction up. The <code>webstatus.dev</code> pointer is conditional (<em>"when status is genuinely uncertain"</em>), and a model that is confidently wrong is by definition not uncertain.</p>
+      <p>This is the sharp edge of the build-vs-buy decision. Declining to vendor a rotting snapshot was right. But the alternative shipped here isn't the ecosystem tool — <code>/setup</code> gets Browserslist, <code>/css</code> gets model recall. The failure mode is quiet and asymmetric: a feature recalled as Widely when it is Newly emits bare and drops a fallback, and the summary line will confidently report "Widely available" while doing it.</p>
+      <p class="fix"><b>Suggested fix</b>Two options, both cheap. (a) Make the <code>webstatus.dev</code> lookup <em>mandatory</em> rather than a fallback — one fetch per novel feature, cached for the session, with the gate refusing to classify without it. (b) Keep recall but require the summary to mark unverified classifications explicitly (<code>Newly available (unverified)</code>), so the uncertainty travels with the output instead of being smoothed away. (a) is more correct; (b) is a one-line edit and strictly better than today.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F3</span>
+        <h3>Eight verification runs, zero re-runnable checks</h3>
+        <span class="chip med">Medium · test strategy</span>
+      </header>
+      <p>The PR describes eight skill runs against purpose-built fixtures, and is admirably specific about what each proved. That method is right — two instruction defects surfaced only because identical input produced divergent CSS across fixtures, which no read-through would have caught. The problem is that none of it survived the PR. The fixtures aren't committed, the runs aren't scripted, and <code>tests/</code> contains no mention of Baseline or Browserslist.</p>
+      <p>So the evidence for the most subtle behaviour in either plugin is a table in a merged PR description. The next person to edit the Baseline gate has no way to know they broke the "target never relaxes" rule short of repeating the whole exercise by hand.</p>
+      <p class="fix"><b>Suggested fix</b>Not "test the prose" — that's a research project, and the same conclusion #109's review reached about the reference set. Commit the fixture projects (four tiny directories: no target, <code>package.json</code> key, <code>.browserslistrc</code>, plain <code>browserslist</code>) and add a structural gate that asserts Step 6.5 names all three lookup locations and that the gate's three outcomes are each present in <code>SKILL.md</code>. It won't prove the model behaves; it will catch a rule being deleted or reworded away, which is the realistic regression.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F4</span>
+        <h3>Browserslist searches parent directories; Step 6.5 checks only the project root</h3>
+        <span class="chip med">Medium · correctness</span>
+      </header>
+      <p>The review fix correctly expanded the probe from two locations to three. But all three are anchored at <code>&lt;projectRoot&gt;</code>, and Browserslist walks <em>up</em> the directory tree from the working directory until it finds a config. In a monorepo with a shared <code>browserslist</code> at the repo root and packages beneath it, all three checks miss, <code>/setup</code> writes a package-local <code>.browserslistrc</code>, and that file now outranks the shared config for that package.</p>
+      <p>That is precisely the silent retargeting the skip exists to prevent, just moved one directory up. The original CodeRabbit finding said "current or parent directories"; the fix absorbed the file it named and dropped the traversal.</p>
+      <p class="fix"><b>Suggested fix</b>Extend the probe to walk parent directories to the repo root (stop at <code>.git</code>), and when a parent-level target is found, record it in <code>kept[]</code> with its path so the user can see <em>which</em> config claimed the project. Roughly one sentence added to Step 6.5.</p>
+    </article>
+
+    <article class="finding sev-proc">
+      <header>
+        <span class="id">F5</span>
+        <h3>An editorial aside leaked into a literal output template</h3>
+        <span class="chip proc">Process · authoring</span>
+      </header>
+      <p>The <code>/setup</code> summary block is a fenced template the skill reproduces verbatim for the user. The new line reads:</p>
+      <pre><code>Created:
+  - .acss-target.json
+  - .browserslistrc     (omit when Step 6.5 skipped; it goes under Kept instead)</code></pre>
+      <p>That parenthetical is an instruction to the model, sitting inside text the model is told to print. Every other conditional in the file lives in prose outside the fence. The <code>Kept (already present):</code> example directly below still lists only <code>sass in devDependencies</code>, so the skipped branch has no worked example at all — the one case the reviewer specifically asked to be made visible.</p>
+      <p class="fix"><b>Suggested fix</b>Move the condition to a sentence beneath the fence, and add the kept-branch line to the <code>Kept</code> example (<code>- package.json browserslist  (existing target, left alone)</code>). Two-line edit; removes the chance of the aside being echoed to a user.</p>
+    </article>
+
+    <article class="finding sev-proc">
+      <header>
+        <span class="id">F6</span>
+        <h3>Popover is now documented as below the bar the same repo writes</h3>
+        <span class="chip proc">Process · worth watching</span>
+      </header>
+      <p>Not a defect — the honesty here is the good part, and the alternatives were worse. But note the shape of what shipped: <code>/setup</code> writes <code>baseline widely available</code>, and <code>/kit-add popover</code> generates a component that does not meet it. The resolution is three paragraphs of prose in two files explaining why that is fine.</p>
+      <p>It <em>is</em> fine, and the reasoning is sound — the native API is the accessible one, and JS alternatives reimplement focus handling and usually get it wrong. The thing to watch is that this is the first documented divergence between the target the tooling asserts and the code the tooling emits. If a second one appears, prose in the component doc stops being a scalable answer.</p>
+      <p class="fix"><b>Suggested fix</b>Nothing now. If a second component crosses the same line, the answer is probably a machine-readable <code>baseline:</code> field in each component's front-matter plus a <code>/kit-add</code> warning, not more prose. Worth deciding before it's forced.</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Review round-trip</h2>
+    <p>Seven actionable comments from CodeRabbit; the second commit addressed all of them. Three were genuine correctness defects rather than style, and the author's commit message says so plainly, which is the right way to report a review that found real things.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Finding</th><th>Severity</th><th>Outcome</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Fallback must precede <code>@supports</code></td><td>Major</td><td><span class="chip ok">Fixed</span> in both documents, with the cascade rationale stated</td></tr>
+          <tr><td>A looser target must not relax an outcome</td><td>Major</td><td><span class="chip ok">Fixed</span> — three bullets collapsed into one rule</td></tr>
+          <tr><td>Browserslist reads three locations, not two</td><td>Major</td><td><span class="chip ok">Fixed</span> at project root — <em>see F4 for what remains</em></td></tr>
+          <tr><td>Postcondition assumed the file was always written</td><td>Major</td><td><span class="chip ok">Fixed</span> — <em>see F5 for the template residue</em></td></tr>
+          <tr><td>Baseline coverage described as universal</td><td>Minor</td><td><span class="chip ok">Fixed</span> — README and CHANGELOG now say "most generated components"</td></tr>
+          <tr><td>Core browser set wording (mobile Edge)</td><td>Minor</td><td><span class="chip ok">Fixed</span> — members spelled out precisely</td></tr>
+          <tr><td>markdownlint MD040 fence language</td><td>Minor</td><td><span class="chip ok">Fixed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <p><strong>Method note worth keeping.</strong> The author's stated approach — drive the same request against fixtures that differ only in context, and treat divergent output as an ambiguity signal — found two defects that were invisible on a read-through. That is a genuinely good technique for prose-as-configuration, and it generalises to every <code>SKILL.md</code> in this repo. F3's ask is only that it leave artifacts behind.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open questions for the team</h2>
+    <ol class="questions">
+      <li>
+        <b>Does the Baseline gate need a real data source before it's trustworthy?</b>
+        <p>F2 is the load-bearing question in this PR. "Look it up when unsure" only works if uncertainty is detectable. Mandatory lookup costs a fetch; unverified-marking costs a line. Doing neither means the summary asserts a status with no backing.</p>
+      </li>
+      <li>
+        <b>What is the minimum test that would have caught F1?</b>
+        <p>A destroyed release section passed a green suite. A changelog shape check is small and catches a whole class — but it's the third PR in a row where the answer to "what would have caught this" is a check nobody has written yet. Worth deciding whether structural gates on markdown are in scope for <code>tests/run.sh</code> generally.</p>
+      </li>
+      <li>
+        <b>Should skill-verification fixtures be committed?</b>
+        <p>Eight manual runs is real work that evaporated on merge. <code>tests/setup.sh</code> already builds a sandbox fixture — extending it with browser-target variants is the obvious home, if the team wants agent-config changes to leave re-runnable evidence.</p>
+      </li>
+      <li>
+        <b>Is prose the right long-term answer for components below the target?</b>
+        <p>F6. One documented exception is fine. The question is what the second one triggers — a front-matter field and a <code>/kit-add</code> warning, or more paragraphs.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Check it yourself</h2>
+    <p>Everything above is reproducible from a clean checkout. F1 in particular takes about four seconds:</p>
+    <pre><code><span class="dim"># F1 — the missing 0.6.0 section</span>
+grep -n '^## \[' plugins/style-agent/CHANGELOG.md
+sed -n '7,19p'  plugins/style-agent/CHANGELOG.md
+
+<span class="dim"># F3 — no test mentions the new behaviour</span>
+grep -rni 'baseline\|browserslist' tests/
+
+<span class="dim"># F4 — the probe is anchored at project root</span>
+sed -n '160,182p' plugins/acss-kit/skills/setup/SKILL.md
+
+<span class="dim"># F5 — the aside inside the output template</span>
+sed -n '300,318p' plugins/acss-kit/skills/setup/SKILL.md
+
+<span class="dim"># the whole diff</span>
+git show 5c57f39</code></pre>
+  </section>
+
+  <footer>
+    Reviewed against the merged tree at <code>5c57f39</code> in a detached worktree. Findings are ranked by impact on shipped plugin behaviour, not by effort to fix. F1 is a two-line correction; the rest are conversations.
+  </footer>
+
+</div>
