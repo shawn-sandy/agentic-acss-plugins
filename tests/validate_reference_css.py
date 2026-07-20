@@ -43,10 +43,13 @@ FENCE_OPEN_RE = re.compile(r"^(\s*)(`{3,}|~{3,})\s*([A-Za-z0-9_+-]*)\s*$")
 
 
 def extract_fences(content: str):
-    """Yield (index, language, code) for every fenced block in a markdown file.
+    """Yield (index, language, code, closed) for every fenced block in a file.
 
     Index is 1-based and counts every fence in the file, not only the css
     ones, so a reported fence-index lines up with what a reader counts.
+    `closed` is False when the fence ran to EOF without a closing marker —
+    such a block silently absorbs the rest of the document, so a valid CSS
+    prefix would otherwise pass validation.
     """
     fences = []
     lines = content.splitlines()
@@ -61,6 +64,7 @@ def extract_fences(content: str):
         char = marker[0]
         min_len = len(marker)
         body = []
+        closed = False
         i += 1
         while i < len(lines):
             candidate = lines[i].strip()
@@ -71,11 +75,12 @@ def extract_fences(content: str):
                 and len(candidate) >= min_len
             ):
                 i += 1
+                closed = True
                 break
             body.append(lines[i][len(indent):] if lines[i].startswith(indent) else lines[i])
             i += 1
         index += 1
-        fences.append((index, lang.lower(), "\n".join(body)))
+        fences.append((index, lang.lower(), "\n".join(body), closed))
     return fences
 
 
@@ -97,8 +102,13 @@ def collect_failures_for_file(path: Path, root: Path):
     rel = path.relative_to(root) if root in path.parents or root == path.parent else path
     content = path.read_text(encoding="utf-8")
 
-    for index, lang, code in extract_fences(content):
+    for index, lang, code, closed in extract_fences(content):
         label = f"{rel}:fence-{index}"
+        if not closed:
+            failures.append(
+                f"{label}: unterminated fence — no closing marker before EOF",
+            )
+            continue
         if lang == "scss":
             failures.append(
                 f"{label}: scss fence found — the css references are plain-CSS-only",

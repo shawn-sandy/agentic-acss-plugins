@@ -204,13 +204,27 @@ green "TSX validator caught known-bad.tsx"
 # scss fence — so a regex or contract regression in either one is caught.
 # Passed as a file (not the directory) so the synthetic known-bad.md
 # written above can't make this assertion pass for the wrong reason.
+# Asserting only a non-zero exit would let one branch mask the other: a
+# regression in malformed-CSS parsing still "passes" on the scss rejection,
+# and vice versa. Require both diagnostics by name.
 cp "$REPO_ROOT/tests/fixtures/known-bad/known-bad-css-reference.md" "$KNOWN_BAD_TMP/"
+KNOWN_BAD_CSS_ERR="$KNOWN_BAD_TMP/known-bad-css.err"
 if python3 "$REPO_ROOT/tests/validate_reference_css.py" \
-     "$KNOWN_BAD_TMP/known-bad-css-reference.md" >/dev/null 2>&1; then
+     "$KNOWN_BAD_TMP/known-bad-css-reference.md" >/dev/null 2>"$KNOWN_BAD_CSS_ERR"; then
   red "known-bad: validate_reference_css.py PASSED on known-bad-css-reference.md (extraction regressed)"
   exit 1
 fi
-green "css reference validator caught known-bad-css-reference.md"
+if ! grep -q "parse error" "$KNOWN_BAD_CSS_ERR"; then
+  red "known-bad: validate_reference_css.py did not report a parse error (malformed-CSS detection regressed)"
+  cat "$KNOWN_BAD_CSS_ERR"
+  exit 1
+fi
+if ! grep -q "scss fence found" "$KNOWN_BAD_CSS_ERR"; then
+  red "known-bad: validate_reference_css.py did not report an scss fence (scss rejection regressed)"
+  cat "$KNOWN_BAD_CSS_ERR"
+  exit 1
+fi
+green "css reference validator caught known-bad-css-reference.md (both rejection modes)"
 
 # Step 7
 section "7. detect_package_manager.py --self-test"

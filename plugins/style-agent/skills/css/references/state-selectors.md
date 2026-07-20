@@ -8,7 +8,7 @@ Gotcha-first notes on the state selector family. The naive choice in each case i
 
 `:invalid` matches the moment the element exists. An empty `<input required>` is invalid on page load, before the user has typed a single character, so `input:invalid { border-color: red; }` paints an untouched form in error styling.
 
-`:user-invalid` (and its counterpart `:user-valid`) only match **after** the user has interacted with the control and left it — the browser tracks the interaction for you, which is exactly the behaviour hand-rolled `.touched` classes exist to reproduce.
+`:user-invalid` (and its counterpart `:user-valid`) only match **after** the user has meaningfully engaged with the control. Two triggers count: interacting with the field and leaving it, **or attempting to submit the form** — a failed submit marks every invalid field in that form, so submission-time validation still styles fields the user never touched. The browser tracks this for you, which is the behaviour hand-rolled `.touched` classes exist to reproduce.
 
 **Emit `:user-invalid` / `:user-valid` by default.** Reach for bare `:invalid` only when the user explicitly asks for a state that reflects the field's validity independent of interaction — for example, disabling a submit button while the form is incomplete, or styling a fieldset summary.
 

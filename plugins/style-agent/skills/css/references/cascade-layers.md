@@ -6,7 +6,7 @@
 
 ## The gotcha: unlayered styles win
 
-**Any style written outside a layer outranks every style written inside one**, no matter the layer order and no matter the specificity. Unlayered author styles are treated as a final, implicit layer that sits above all declared layers.
+**Any normal author declaration written outside a layer outranks every normal author declaration written inside one**, no matter the layer order and no matter the specificity. Unlayered author styles are treated as a final, implicit layer that sits above all declared layers. (`!important` inverts this — see below.)
 
 So a plain `.btn { color: red; }` sitting anywhere in the stylesheet beats `@layer components { .btn { color: blue; } }` — even though `components` was declared last, and even if the layered selector is far more specific.
 

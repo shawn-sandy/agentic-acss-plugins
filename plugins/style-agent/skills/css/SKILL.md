@@ -62,7 +62,8 @@ When no trigger fires, emit directly — a well-specified request must not be in
 - **Confirm before any append.** Before writing, explicitly confirm **the resolved target path and the class name** with the user — appending mutates a file in their project.
 - **Class name is proposed, not asked.** Derive it from the description (kebab-case, max 20 chars, matching the sibling skills' name rules) and **name the proposal in the summary**, so a bad guess costs one follow-up rather than a question up front.
 - **Collision rule** (reused from `inline-style-to-class`): on a **same-name-different-value** clash, append a numeric suffix `-2`, `-3`, … until unique, and **report the suffixing in the summary**.
-- **SCSS vs plain CSS is inferred** from the project's stylesheet extensions — glob for `**/*.{css,scss,sass}` (excluding `node_modules`, `.git`, `dist`, `build`) and match the dominant flavour. **No stylesheet at all means plain CSS.**
+- **SCSS vs plain CSS is inferred** from the project's stylesheet extensions — glob for `**/*.{css,scss}` (excluding `node_modules`, `.git`, `dist`, `build`) and match the dominant flavour. **No stylesheet at all means plain CSS.**
+- **`.sass` (indented syntax) is never an append target.** This skill emits brace-and-semicolon blocks, which are invalid in indented Sass. Exclude `.sass` from the inference glob; if the user names a `.sass` file as the target, refuse the append with a one-line reason and print the rule instead.
 
 ### Inline mode
 
