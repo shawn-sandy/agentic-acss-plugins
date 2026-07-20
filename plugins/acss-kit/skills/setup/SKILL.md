@@ -19,6 +19,7 @@ Front-load the one-time project configuration that would otherwise run piecemeal
 - `sass` is confirmed in `devDependencies` (or the user has the exact install command to run)
 - `.acss-target.json` exists at the project root
 - `<componentsDir>/ui.tsx` is present
+- `.browserslistrc` records a Baseline browser target
 - `src/styles/theme/light.css` and `dark.css` exist (unless `--no-theme` was passed)
 - The project's main CSS/SCSS entry imports `light.css` and `dark.css`, and `stack.cssEntryFile` records the choice in `.acss-target.json` (skipped with `--no-theme`)
 
@@ -156,6 +157,27 @@ Checkpoint: `Copied ui.tsx to <componentsDir>/` or `ui.tsx already present, skip
 
 ---
 
+## Step 6.5 — Write .browserslistrc (Baseline target)
+
+Check if `<projectRoot>/.browserslistrc` exists, and read `package.json` for a `browserslist` key.
+
+**If either is present:** Skip — the project already has a browser target and overwriting it would silently change what the user's build compiles for. Add `.browserslistrc` (or `package.json browserslist`) to `kept[]`.
+
+**If neither is present:** Write `<projectRoot>/.browserslistrc`:
+
+```
+# acss-kit — https://web.dev/baseline
+baseline widely available
+```
+
+Add `.browserslistrc` to `created[]`.
+
+[Browserslist supports Baseline queries](https://web.dev/blog/browserslist-supports-baseline) directly, so this one line propagates to every tool already reading Browserslist — autoprefixer, Lightning CSS, esbuild targets, `stylelint-browser-compat`. `baseline widely available` resolves to features interoperable for at least 30 months, which is the target the generated themes and components are written against.
+
+Checkpoint: `Wrote .browserslistrc (baseline widely available)` or `Browser target already configured, skipped`.
+
+---
+
 ## Step 7 — Seed starter theme (skip if --no-theme)
 
 If `--no-theme` was passed, skip this step entirely.
@@ -278,6 +300,7 @@ Setup complete.
 Created:
   - <componentsDir>/ui.tsx
   - .acss-target.json
+  - .browserslistrc
   - src/styles/theme/light.css
   - src/styles/theme/dark.css
   - <chosen cssEntryFile>   (theme imports wired in)

@@ -33,9 +33,10 @@ Stages run in this order. Nothing is emitted until the clarification gate resolv
 4. **Resolve tokens** — apply the three-tier token resolution below against the project's own custom properties.
 5. **Focus-visible** — apply the focus-visible step below for interactive elements.
 6. **Consult references** — load any bundled reference whose topic the parsed intent touches (see References).
-7. **Emit** — print the rule (or the inline attribute), and append to a stylesheet only under the conditions in the output-mode branch.
-8. **Summarise** — print the summary spec below.
-9. **Offer refinements** — close with two or three concrete next moves, per Refinement offer below.
+7. **Baseline check** — apply the Baseline gate below to every modern feature the rule is about to use.
+8. **Emit** — print the rule (or the inline attribute), and append to a stylesheet only under the conditions in the output-mode branch.
+9. **Summarise** — print the summary spec below.
+10. **Offer refinements** — close with two or three concrete next moves, per Refinement offer below.
 
 ---
 
@@ -94,6 +95,30 @@ Parity with `create-utilities` Step 4: without it, a generated button rule ships
 
 ---
 
+## Baseline gate
+
+Sits between the references and emit. [Baseline](https://web.dev/baseline) status decides whether a modern feature is emitted bare or wrapped — the three states and the decision rule are defined in `references/progressive-enhancement.md`, which this gate loads whenever it fires.
+
+**Fires only for modern features** — `@container`, `:has()`, `@layer`, `popover`, `field-sizing`, `text-wrap: balance`, `@starting-style`, subgrid, anchor positioning, and their kin. Flexbox, `border-radius`, and custom properties are decades old; do not narrate their status.
+
+Three outcomes:
+
+1. **Widely available** — emit unconditionally. Say nothing beyond the summary line.
+2. **Newly available** — emit inside `@supports` with a working fallback below it, and **name the fallback in the summary**. In inline mode, which cannot carry `@supports`, this is a refusal trigger under the Inline mode rules.
+3. **Limited availability** — do not emit it. Emit the fallback alone and state in one line what was withheld and why, so the user can override deliberately.
+
+**Naming a feature is not an override.** A request that says `"using field-sizing"` is describing intent, not waiving the gate — it is the ordinary case, and it still resolves to the outcome above. Downgrade an outcome **only** when the user explicitly overrides in words (`"emit it anyway"`, `"I don't care about Firefox"`, `"skip the @supports"`), and then downgrade by exactly one step: outcome 3 becomes outcome 2 (wrapped in `@supports` with a fallback), never straight to bare. **Nothing reaches bare emit from Limited.** Record the override and the step taken in the summary's Baseline line.
+
+**Read the project's target first.** Check for `.browserslistrc` or a `browserslist` key in `package.json`, and name the detected target in the summary. When the project declares one it wins over the default:
+
+- **Stricter than the default** (e.g. `baseline widely available`) — apply the outcomes as written.
+- **Looser** (e.g. `last 2 versions`) — this relaxes **outcome 2 only**: Newly-available features may be emitted bare, because the project has opted out of caring about older versions of browsers that already ship them.
+- **A loose target never relaxes outcome 3.** Limited availability means at least one browser in the core set has not shipped the feature *at any version* — `last 2 versions` still includes that browser's current release, so a loose target grants no coverage whatsoever. Withhold exactly as under outcome 3.
+
+**Do not assert dates from memory.** Baseline dates are revised — the Popover API's was [corrected by nine months after publication](https://web.dev/blog/popover-baseline). State the status level, not the month it landed. When status is genuinely uncertain, say so and point at [webstatus.dev](https://webstatus.dev) rather than guessing.
+
+---
+
 ## Token resolution
 
 Grep the project for custom-property declarations (`^\s*(--[A-Za-z0-9_-]+)\s*:\s*([^;\n]+);?`) across the same glob set, and **read the whole scale before mapping a relative word like "small"** — `"small"` is a position in a scale, not a value.
@@ -117,7 +142,7 @@ Loaded by **model judgment when the parsed intent touches their topic** — **no
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/container-queries.md` | `container-type` on the parent, a container cannot query itself, `cqi`/`cqb` units, `container-name`. |
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/cascade-layers.md` | Unlayered styles outrank layered ones, `@layer` order declared first, third-party CSS, `!important` inversion. |
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/responsive-text.md` | `clamp()` with a rem addend, pure-vw failing WCAG 1.4.4 at 200% zoom, slope formula, `text-wrap`. |
-| `${CLAUDE_PLUGIN_ROOT}/skills/css/references/progressive-enhancement.md` | `@supports` detecting upward rather than not-detection cascading down, `prefers-reduced-motion`, `prefers-contrast`. |
+| `${CLAUDE_PLUGIN_ROOT}/skills/css/references/progressive-enhancement.md` | Baseline statuses and the emit-bare/wrap/withhold rule, `@supports` detecting upward rather than not-detection cascading down, `prefers-reduced-motion`, `prefers-contrast`. |
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/logical-properties.md` | `inline-size`, `block-size`, `margin-inline`, `padding-block`, `inset`, writing-mode rationale. |
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/modern-selectors.md` | `:has()` restrictions, `:is()`/`:where()`/`:not()` specificity, `:nth-child(An+B of S)`, native nesting vs SCSS `&`. |
 | `${CLAUDE_PLUGIN_ROOT}/skills/css/references/state-selectors.md` | `:user-invalid` over `:invalid`, `[aria-disabled="true"]` over `:disabled`, `:focus-visible` rationale, `:empty`, `:placeholder-shown`. |
@@ -133,6 +158,7 @@ Print one concise block containing:
 - **Class name proposed** — the name derived from the description, and any `-2`/`-3` collision suffix that was applied.
 - **Tokens resolved** — each `value → var(--name)` reuse, naming any tier-2 semantic-name choice explicitly, and any literal emitted because nothing matched. State that no new custom property was created.
 - **Accessibility** — the `:focus-visible` rule emitted, or a warning that the mode cannot carry one.
+- **Baseline** — for each modern feature used, its status and what that produced: emitted bare (Widely available), wrapped in `@supports` with the named fallback (Newly available), or withheld (Limited). Name the project's detected browser target, or state that none was declared. Omit this line entirely when the rule uses no modern features.
 - **References consulted** — **name every reference file that was loaded, or state that none were.** This is required on every result: it is the visible failure signal when a footgun doc was silently skipped.
 - **Clarifications resolved** — any answers taken from the batched gate.
 
