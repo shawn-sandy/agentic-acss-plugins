@@ -1407,7 +1407,7 @@ img, video { max-width: 100%; height: auto; }
     <div class="progress-wrap" id="progress">
       <div class="progress-header">
         <span>Definition of done</span>
-        <span id="progress-label">0 / 28 done</span>
+        <span id="progress-label">0 / 29 done</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="progress-bar"
@@ -1526,12 +1526,12 @@ img, video { max-width: 100%; height: auto; }
             <div class="step-body">
               <div class="step-action">
                 <span class="step-chip">todo</span>
-                <span class="step-chip-text">Add a clarification gate to SKILL.md that runs before anything is emitted, batching every triggered question into a single AskUserQuestion call (never a second interrogation round, and never fired at all when the description is already concrete). Four triggers: (a) the description cannot be mapped to concrete properties with confidence, for example &quot;make it look nice&quot;; (b) a relative size word maps equally well to two adjacent scale steps, so &quot;small&quot; could be --space-2 or --space-3; (c) the description implies an interactive element, in which case ask which of hover, focus, active, and disabled to emit; (d) the description implies adaptive sizing, in which case ask whether it should respond to its container or to the viewport, since that routes to @container versus @media. When no trigger fires, emit directly — a well-specified request must not be interrogated</span>
+                <span class="step-chip-text">Add a clarification gate to SKILL.md that runs before anything is emitted, batching every triggered question into a single AskUserQuestion call (never a second interrogation round, and never fired at all when the description is already concrete). Four triggers: (a) the description cannot be mapped to concrete properties with confidence, for example &quot;make it look nice&quot;; (b) a relative size word maps equally well to two adjacent scale steps, so &quot;small&quot; could be --space-2 or --space-3; (c) the description implies an interactive element but does not say which states it wants, in which case ask which of hover, focus, active, and disabled to emit — when the description already names its states (&quot;a button with a hover state&quot;), emit exactly those and ask nothing; (d) the description implies adaptive sizing without saying what it adapts to, in which case ask whether it should respond to its container or to the viewport, since that routes to @container versus @media — when the description already says (&quot;adapts to its container&quot;, &quot;stacks below 768px&quot;), take it at its word. When no trigger fires, emit directly — a well-specified request must not be interrogated</span>
               </div>
               <div class="step-why">guessing on any of these silently changes the output in a way the user cannot see — a tie is a coin flip on someone&#39;s design system, and the prototype showed that &quot;a primary button with a hover state&quot; currently returns a rule with no :hover block at all; batching keeps the cost at one turn no matter how many triggers fire</div>
               <details class="step-verify-toggle">
                 <summary>How to check this worked</summary>
-                <div class="verify-body">the section names all four triggers, states that questions are batched into one call, states that a concrete description skips the gate entirely, and states that nothing is emitted until the answers resolve.</div>
+                <div class="verify-body">the section names all four triggers, states for triggers (c) and (d) that an explicitly-specified description is taken at its word rather than questioned, states that questions are batched into one call, states that a concrete description skips the gate entirely, and states that nothing is emitted until the answers resolve.</div>
               </details>
             </div>
           </div>
@@ -1778,87 +1778,91 @@ img, video { max-width: 100%; height: auto; }
         </li>
         <li>
           <input type="checkbox" id="ac8">
-          <label for="ac8">An interactive-element request asks which of hover, focus, active, disabled to emit, and emits exactly those</label>
+          <label for="ac8">An interactive-element request with unspecified states asks which of hover, focus, active, disabled to emit, and emits exactly those</label>
         </li>
         <li>
           <input type="checkbox" id="ac9">
-          <label for="ac9">An adaptive-sizing request asks container-versus-viewport before choosing @container or @media</label>
+          <label for="ac9">An interactive-element request that already names its states emits them without asking</label>
         </li>
         <li>
           <input type="checkbox" id="ac10">
-          <label for="ac10">A concrete, fully-specified description is emitted with no questions asked</label>
+          <label for="ac10">An adaptive-sizing request asks container-versus-viewport only when the description does not already say which</label>
         </li>
         <li>
           <input type="checkbox" id="ac11">
-          <label for="ac11">Every triggered question arrives in a single batched round, never a second interrogation</label>
+          <label for="ac11">A concrete, fully-specified description is emitted with no questions asked</label>
         </li>
         <li>
           <input type="checkbox" id="ac12">
-          <label for="ac12">Appending to a stylesheet confirms the target path and class name before writing</label>
+          <label for="ac12">Every triggered question arrives in a single batched round, never a second interrogation</label>
         </li>
         <li>
           <input type="checkbox" id="ac13">
-          <label for="ac13">Every result closes with two or three concrete refinement offers drawn from what was emitted</label>
+          <label for="ac13">Appending to a stylesheet confirms the target path and class name before writing</label>
         </li>
         <li>
           <input type="checkbox" id="ac14">
-          <label for="ac14">The emitted summary names which references were consulted, or states none</label>
+          <label for="ac14">Every result closes with two or three concrete refinement offers drawn from what was emitted</label>
         </li>
         <li>
           <input type="checkbox" id="ac15">
-          <label for="ac15">The css and create-utilities descriptions each name their output form and cross-reference the other</label>
+          <label for="ac15">The emitted summary names which references were consulted, or states none</label>
         </li>
         <li>
           <input type="checkbox" id="ac16">
-          <label for="ac16">/css inline emits a style attribute for a static description and refuses with a stated reason (falling back to class mode) when the description implies :hover, @media, @container, @layer, @supports, or a pseudo-element</label>
+          <label for="ac16">The css and create-utilities descriptions each name their output form and cross-reference the other</label>
         </li>
         <li>
           <input type="checkbox" id="ac17">
-          <label for="ac17">A container-query request produces CSS with container-type set on the parent, not only an @container block</label>
+          <label for="ac17">/css inline emits a style attribute for a static description and refuses with a stated reason (falling back to class mode) when the description implies :hover, :focus-visible, @media, @container, @layer, @supports, or a pseudo-element</label>
         </li>
         <li>
           <input type="checkbox" id="ac18">
-          <label for="ac18">A @layer request notes that unlayered styles outrank layered ones</label>
+          <label for="ac18">A container-query request produces CSS with container-type set on the parent, not only an @container block</label>
         </li>
         <li>
           <input type="checkbox" id="ac19">
-          <label for="ac19">A fluid-type request produces a clamp() whose preferred term includes a rem addend, never viewport units alone</label>
+          <label for="ac19">A @layer request notes that unlayered styles outrank layered ones</label>
         </li>
         <li>
           <input type="checkbox" id="ac20">
-          <label for="ac20">A form-validation request styles :user-invalid rather than :invalid, so empty untouched fields are not marked as errors on load</label>
+          <label for="ac20">A fluid-type request produces a clamp() whose preferred term includes a rem addend, never viewport units alone</label>
         </li>
         <li>
           <input type="checkbox" id="ac21">
-          <label for="ac21">A disabled-state request emits [aria-disabled=&quot;true&quot;] rather than :disabled, per .claude/rules/scss-conventions.md</label>
+          <label for="ac21">A form-validation request styles :user-invalid rather than :invalid, so empty untouched fields are not marked as errors on load</label>
         </li>
         <li>
           <input type="checkbox" id="ac22">
-          <label for="ac22">modern-selectors.md states both the :where() zero-specificity rule and the :not() multi-argument highest-of-list rule</label>
+          <label for="ac22">A disabled-state request emits [aria-disabled=&quot;true&quot;] rather than :disabled, per .claude/rules/scss-conventions.md</label>
         </li>
         <li>
           <input type="checkbox" id="ac23">
-          <label for="ac23">Reference files contain only fenced css blocks — the validator rejects scss fences</label>
+          <label for="ac23">modern-selectors.md states both the :where() zero-specificity rule and the :not() multi-argument highest-of-list rule</label>
         </li>
         <li>
           <input type="checkbox" id="ac24">
-          <label for="ac24">The committed known-bad fixture makes the validator exit non-zero, asserted by tests/run.sh</label>
+          <label for="ac24">Reference files contain only fenced css blocks — the validator rejects scss fences</label>
         </li>
         <li>
           <input type="checkbox" id="ac25">
-          <label for="ac25">No &quot;three skills&quot; or &quot;three CSS commands&quot; string remains under plugins/style-agent/</label>
+          <label for="ac25">The committed known-bad fixture makes the validator exit non-zero, asserted by tests/run.sh</label>
         </li>
         <li>
           <input type="checkbox" id="ac26">
-          <label for="ac26">tests/run.sh is green including the new validator stage</label>
+          <label for="ac26">No &quot;three skills&quot; or &quot;three CSS commands&quot; string remains under plugins/style-agent/</label>
         </li>
         <li>
           <input type="checkbox" id="ac27">
-          <label for="ac27">plugin.json version bumped and marketplace.json carries no version key</label>
+          <label for="ac27">tests/run.sh is green including the new validator stage</label>
         </li>
         <li>
           <input type="checkbox" id="ac28">
-          <label for="ac28">Root CLAUDE.md reflects four style-agent skills and four commands</label>
+          <label for="ac28">plugin.json version bumped and marketplace.json carries no version key</label>
+        </li>
+        <li>
+          <input type="checkbox" id="ac29">
+          <label for="ac29">Root CLAUDE.md reflects four style-agent skills and four commands</label>
         </li>
       </ul>
       <span id="criteria-status" aria-live="polite" aria-atomic="true"
