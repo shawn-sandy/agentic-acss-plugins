@@ -1,0 +1,567 @@
+<title>PR #109 Review — /css authoring skill</title>
+
+<style>
+  :root {
+    --ink:        #12141A;
+    --ink-soft:   #454A57;
+    --ink-faint:  #767C8C;
+    --paper:      #F7F7F4;
+    --panel:      #FFFFFF;
+    --rule:       #DEDEDA;
+    --accent:     #4C5B8C;
+    --accent-bg:  #ECEEF6;
+    --clay:       #A6432E;
+    --clay-bg:    #F7E9E5;
+    --amber:      #8A6A1F;
+    --amber-bg:   #F7F0DD;
+    --moss:       #3D6B4A;
+    --moss-bg:    #E7F0E8;
+
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --s1: 0.4rem;
+    --s2: 0.75rem;
+    --s3: 1.15rem;
+    --s4: 1.85rem;
+    --s5: 3rem;
+    --s6: 4.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:       #E6E7EC;
+      --ink-soft:  #A8ADBB;
+      --ink-faint: #767C8C;
+      --paper:     #121419;
+      --panel:     #191C23;
+      --rule:      #2C303A;
+      --accent:    #9BA9DC;
+      --accent-bg: #1E2333;
+      --clay:      #E0917C;
+      --clay-bg:   #2E1F1B;
+      --amber:     #D6B45F;
+      --amber-bg:  #2B2417;
+      --moss:      #8FC49E;
+      --moss-bg:   #1A2620;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:       #E6E7EC;
+    --ink-soft:  #A8ADBB;
+    --ink-faint: #767C8C;
+    --paper:     #121419;
+    --panel:     #191C23;
+    --rule:      #2C303A;
+    --accent:    #9BA9DC;
+    --accent-bg: #1E2333;
+    --clay:      #E0917C;
+    --clay-bg:   #2E1F1B;
+    --amber:     #D6B45F;
+    --amber-bg:  #2B2417;
+    --moss:      #8FC49E;
+    --moss-bg:   #1A2620;
+  }
+
+  :root[data-theme="light"] {
+    --ink:       #12141A;
+    --ink-soft:  #454A57;
+    --ink-faint: #767C8C;
+    --paper:     #F7F7F4;
+    --panel:     #FFFFFF;
+    --rule:      #DEDEDA;
+    --accent:    #4C5B8C;
+    --accent-bg: #ECEEF6;
+    --clay:      #A6432E;
+    --clay-bg:   #F7E9E5;
+    --amber:     #8A6A1F;
+    --amber-bg:  #F7F0DD;
+    --moss:      #3D6B4A;
+    --moss-bg:   #E7F0E8;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: var(--s5) var(--s3) var(--s6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s5);
+  }
+
+  /* ---- type ---- */
+
+  h1, h2, h3 {
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 1rem; letter-spacing: -0.01em; }
+
+  p { max-width: 68ch; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--accent-bg);
+    color: var(--ink);
+    padding: 0.1em 0.34em;
+    border-radius: 3px;
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 0.79rem;
+    line-height: 1.55;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: var(--s2) var(--s3);
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  /* ---- masthead ---- */
+
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: var(--s3);
+  }
+
+  .masthead p { color: var(--ink-soft); margin-block-start: var(--s1); }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .meta b { color: var(--ink-soft); font-weight: 600; }
+
+  .state {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.18em 0.5em;
+    border-radius: 3px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  /* ---- scoreboard ---- */
+
+  .scores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .score {
+    background: var(--panel);
+    padding: var(--s2) var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .score .n {
+    font-family: var(--mono);
+    font-size: 1.55rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+  .score .l {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .score.is-clay  .n { color: var(--clay); }
+  .score.is-amber .n { color: var(--amber); }
+  .score.is-moss  .n { color: var(--moss); }
+
+  /* ---- sections ---- */
+
+  section { display: flex; flex-direction: column; gap: var(--s3); }
+  section > h2 { padding-bottom: var(--s1); border-bottom: 1px solid var(--rule); }
+
+  .stack { display: flex; flex-direction: column; gap: var(--s2); }
+
+  ul { padding-inline-start: 1.15rem; max-width: 68ch; }
+  li { margin-block: 0.25rem; }
+  li::marker { color: var(--ink-faint); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.86rem;
+    min-width: 30rem;
+  }
+  th, td {
+    text-align: start;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    border-bottom-color: var(--ink-soft);
+  }
+  td code { font-size: 0.8em; }
+
+  /* ---- finding cards, styled as declaration blocks ---- */
+
+  .finding {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-inline-start: 4px solid var(--ink-faint);
+    border-radius: 4px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .finding.sev-high { border-inline-start-color: var(--clay); }
+  .finding.sev-med  { border-inline-start-color: var(--amber); }
+  .finding.sev-proc { border-inline-start-color: var(--accent); }
+  .finding.sev-ok   { border-inline-start-color: var(--moss); }
+
+  .finding > header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s1) var(--s2);
+  }
+  .finding h3 { flex: 1 1 20ch; }
+  .finding p:last-child { margin-block-end: 0; }
+
+  .id {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2em 0.5em;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .chip.high { background: var(--clay-bg);  color: var(--clay); }
+  .chip.med  { background: var(--amber-bg); color: var(--amber); }
+  .chip.proc { background: var(--accent-bg); color: var(--accent); }
+  .chip.ok   { background: var(--moss-bg);  color: var(--moss); }
+
+  .fix {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--rule);
+    padding-top: var(--s2);
+  }
+  .fix b {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+  }
+
+  .callout {
+    background: var(--accent-bg);
+    border-radius: 4px;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .callout p { max-width: 64ch; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s3);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 34rem) {
+    h1 { font-size: 1.5rem; }
+    .wrap { padding-inline: var(--s2); }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">Pull request review · agentic-acss-plugins</span>
+    <h1>#109 — feat(style-agent): add /css authoring skill</h1>
+    <p>A fourth <code>style-agent</code> skill that <em>authors</em> CSS from a plain-language description, where the existing three only transform styles that already exist. Eight bundled references carry the modern-CSS gotcha knowledge; a tinycss2 gate keeps their code fences parseable.</p>
+    <div class="meta">
+      <span class="state">Merged</span>
+      <span><b>Author</b> shawn-sandy</span>
+      <span><b>Base</b> main ← claude/plans-library-87b720</span>
+      <span><b>Squash</b> 0ce1834</span>
+      <span><b>Diff</b> +2074 / −550 across 25 files</span>
+      <span><b>Open → merge</b> 18 min</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Verdict</h2>
+    <p><strong>Sound work that shipped too fast.</strong> The skill contract is unusually well specified for a prompt artifact — the clarification gate, the three-tier token resolution, and the "never invent a custom property" inversion are all reasoned rather than assumed, and the reference set targets real footguns rather than restating MDN. The new validator is correct and I re-ran it green.</p>
+    <p>Two things are worth the team's attention. First, there is a <strong>live contradiction inside <code>SKILL.md</code></strong> between the inline-mode refusal list and the focus-visible step — which is also the crux of the one review finding the author declined, so declining it left the ambiguity in place rather than resolving it. Second, the automated gate <strong>validates the least valuable property of the deliverable</strong>: CSS fences tokenize, while the gotcha claims that are the actual product have no coverage at all.</p>
+    <p>Nothing here argues for a revert. F1 is a follow-up patch; the rest is process and test-strategy discussion.</p>
+  </section>
+
+  <section>
+    <h2>Findings at a glance</h2>
+    <div class="scores">
+      <div class="score is-clay"><span class="n">1</span><span class="l">High</span></div>
+      <div class="score is-amber"><span class="n">3</span><span class="l">Medium</span></div>
+      <div class="score"><span class="n">3</span><span class="l">Process</span></div>
+      <div class="score is-moss"><span class="n">4</span><span class="l">Verified green</span></div>
+    </div>
+    <p style="font-size:0.88rem;color:var(--ink-soft)">Severity reflects impact on shipped behaviour, not effort to fix. Everything below was checked against the merged tree in a worktree at <code>0ce1834</code>, not read from the PR description.</p>
+  </section>
+
+  <section>
+    <h2>What actually shipped</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Files</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Skill + command</td>
+            <td><code>skills/css/SKILL.md</code> (150 L), <code>commands/css.md</code> (11 L)</td>
+            <td>Command delegates wholly to the skill, per <code>.claude/rules/command-authoring.md</code>.</td>
+          </tr>
+          <tr>
+            <td>References</td>
+            <td>8 files, 750 lines under <code>skills/css/references/</code></td>
+            <td>Cascade layers, container queries, responsive text, state selectors, modern selectors, progressive enhancement, logical properties, viewport units.</td>
+          </tr>
+          <tr>
+            <td>Test</td>
+            <td><code>tests/validate_reference_css.py</code> (169 L), fixture, <code>run.sh</code> step 12</td>
+            <td>tinycss2 syntax gate + a committed known-bad fixture carrying both rejection modes.</td>
+          </tr>
+          <tr>
+            <td>Paperwork</td>
+            <td>plugin.json 0.5.1 → 0.6.0, CHANGELOG, 2 READMEs, docs, marketplace.json, CLAUDE.md</td>
+            <td>Minor bump for an additive skill is the right semver call. Repo checklist satisfied.</td>
+          </tr>
+          <tr>
+            <td>Unrelated</td>
+            <td><code>docs/plans/index.html</code> (+1163 / −550)</td>
+            <td>Plans-gallery regeneration. See P2.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Findings</h2>
+
+    <article class="finding sev-high">
+      <header>
+        <span class="id">F1</span>
+        <h3>Inline mode and the focus-visible step contradict each other</h3>
+        <span class="chip high">High · correctness</span>
+      </header>
+      <p>The inline-mode branch refuses inline output when the description "implies" any of seven things — item 2 on that list is <code>:focus-visible</code>. The focus-visible step three sections later says an interactive element <em>always</em> gets a <code>:focus-visible</code> rule emitted, and that inline mode should <em>warn</em> about its absence instead.</p>
+      <p>So for the single most common inline request — a button — the file gives two incompatible instructions. If the auto-emit rule counts as "implying <code>:focus-visible</code>", inline mode must refuse and the warning path is dead code. If it doesn't, the refusal list's item 2 only ever fires when a user types the words "focus" — a much narrower rule than it reads as.</p>
+      <pre><code>SKILL.md:72-80   Refuse inline mode … when the description implies:
+                   2. :focus-visible
+
+SKILL.md:90-91   emit a :focus-visible rule alongside the requested styling
+                 … warn about its absence in the summary</code></pre>
+      <p>This is also exactly the CodeRabbit finding that was declined. The decline rationale — that the plan's Step 5 specifies the warning path — is a reasonable process instinct, but it answers <em>"which document wins"</em> rather than <em>"which behaviour is correct"</em>, and it leaves the two clauses disagreeing regardless of which one was intended.</p>
+      <p class="fix"><b>Suggested fix</b>Pick one and edit both places in the same commit. My recommendation is refusal: an inline <code>style</code> attribute on a button that ships with no focus indicator is a WCAG 2.4.7 failure written into the user's markup, and a warning printed to chat does not travel with the code. A chat warning is the right tool for something recoverable; this isn't. Amend the plan alongside the skill so the two stay in sync.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F2</span>
+        <h3>The test gates syntax; the deliverable is correctness</h3>
+        <span class="chip med">Medium · test strategy</span>
+      </header>
+      <p>The PR description is explicit that "the real deliverable is the gotcha knowledge, not the words-to-properties transform." The validator's own docstring is equally explicit that it is "a tokenizer-level syntax gate, not a correctness gate" — it will happily accept an invalid <code>container-type</code> keyword or a <code>:has()</code> containing a pseudo-element.</p>
+      <p>Both statements are honest. Together they mean the automated coverage sits entirely on the property nobody was worried about. A reference could be silently rewritten to claim layered styles beat unlayered ones and every test would stay green.</p>
+      <p class="fix"><b>Suggested fix</b>Not "test the prose" — that's a research project. Two cheap gates buy most of the value: (a) assert each reference file still contains its one load-bearing claim, as a literal substring pinned in the test; (b) assert every <code>${CLAUDE_PLUGIN_ROOT}/…</code> path in the <code>SKILL.md</code> reference table resolves on disk. The second is roughly five lines and catches the most likely real regression — a renamed reference silently breaking the skill's own lookup table. There is currently no such check anywhere in <code>tests/</code>.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F3</span>
+        <h3>References are banned from showing SCSS, but the skill emits SCSS</h3>
+        <span class="chip med">Medium · consistency</span>
+      </header>
+      <p>The validator hard-fails any <code>```scss</code> fence: "the css references are plain-CSS-only by decision." Meanwhile the skill infers SCSS versus plain CSS from the project's dominant stylesheet flavour and emits SCSS accordingly, and <code>modern-selectors.md</code> is listed as covering "native nesting vs SCSS <code>&amp;</code>."</p>
+      <p>The consequence is that the reference set can never demonstrate the SCSS half of the skill's own output contract — the nesting comparison has to be described rather than shown on one side. The decision may still be right (one flavour keeps the gate simple), but it should be a stated trade-off rather than an unexamined constraint, especially as the SCSS path grows.</p>
+      <p class="fix"><b>Suggested fix</b>Either allow <code>scss</code> fences and skip them from tinycss2 parsing while still requiring them to be fenced and closed, or record the plain-CSS-only rule in the reference-authoring rule doc so the next author hits the reason rather than the error.</p>
+    </article>
+
+    <article class="finding sev-med">
+      <header>
+        <span class="id">F4</span>
+        <h3>Fence-opener regex misses fences with attributes</h3>
+        <span class="chip med">Medium · test soundness</span>
+      </header>
+      <p>The opener pattern is <code>^(\s*)(`{3,}|~{3,})\s*([A-Za-z0-9_+-]*)\s*$</code>. It matches <code>```css</code> but not <code>```css title="example"</code> or any other info-string with a space. Such a fence isn't skipped cleanly — it is never recognised as an opener, so the scanner keeps walking into its body and can pick up a phantom opener from the content inside it.</p>
+      <p>No current reference uses an attributed fence, so this is latent rather than live. It is the same class of bug as the unterminated-fence hole CodeRabbit caught, which suggests the fence parser deserves one more pass rather than one more patch.</p>
+      <p class="fix"><b>Suggested fix</b>Capture the first whitespace-delimited token as the language and ignore the remainder of the info string, rather than requiring the whole line to be language-only.</p>
+    </article>
+
+    <article class="finding sev-proc">
+      <header>
+        <span class="id">P1</span>
+        <h3>The final commit was merged with no completed review</h3>
+        <span class="chip proc">Process</span>
+      </header>
+      <p>Timeline: opened 12:46, review-fix commit <code>ee3791b</code> at 12:56, merged 13:04 — eight minutes after the fixes landed and eighteen after opening. Copilot returned a quota error on both attempts. CodeRabbit hit its rate limit and posted "next review available in 8 minutes," listing five files it had not yet reviewed — including <code>SKILL.md</code>, <code>tests/run.sh</code>, and <code>validate_reference_css.py</code>, i.e. every file the fix commit touched. No human review is recorded.</p>
+      <p>Worth naming plainly because the standing repo guidance is the opposite concern — don't loop endlessly on re-firing bots. That guidance is about <em>re-review of already-approved work</em>. Here the first pass on the final commit never completed, which is a different situation and the one case where waiting was cheap.</p>
+      <p class="fix"><b>Suggested fix</b>No action on this PR. Worth a shared rule of thumb: a merge is fine once one reviewer has completed a pass on the commit being merged — bot or human. "Rate limited" is not "approved."</p>
+    </article>
+
+    <article class="finding sev-proc">
+      <header>
+        <span class="id">P2</span>
+        <h3>Unrelated plans-gallery regeneration rides along</h3>
+        <span class="chip proc">Process</span>
+      </header>
+      <p><code>docs/plans/index.html</code> accounts for <strong>1163 of the 2074 added lines and all 550 deletions</strong> — more than half the diff by volume, and unrelated to the <code>/css</code> skill. The branch name, <code>claude/plans-library-87b720</code>, indicates the branch was reused from earlier plans-library work. CodeRabbit's out-of-scope pre-merge check flagged it and was not addressed.</p>
+      <p>The practical cost is that reviewer attention and any future <code>git blame</code> on the gallery both point at a PR titled "add /css authoring skill."</p>
+      <p class="fix"><b>Suggested fix</b>Generated-artifact refreshes belong in their own commit at minimum, their own PR ideally. Cheap habit: branch fresh from <code>main</code> per feature rather than continuing a session branch.</p>
+    </article>
+
+    <article class="finding sev-proc">
+      <header>
+        <span class="id">P3</span>
+        <h3>A declined nitpick contradicted a repo rule and went unrecorded</h3>
+        <span class="chip proc">Process</span>
+      </header>
+      <p>CodeRabbit's nitpick asked to move summary and emission presentation out of <code>SKILL.md</code> and into <code>commands/css.md</code>. <code>.claude/rules/command-authoring.md</code> says the opposite: "Body must delegate to the master SKILL.md — never re-implement logic inline." Ignoring it was correct. But the author's reply comment tabulates five applied findings and one declined, and this one appears in neither.</p>
+      <p>Low stakes on its own; it matters because the next reviewer — or the next bot run — will raise the same suggestion with no record of why it was rejected.</p>
+      <p class="fix"><b>Suggested fix</b>List silently-ignored findings in the reply with a one-line reason. Here: "contradicts <code>.claude/rules/command-authoring.md</code>."</p>
+    </article>
+
+  </section>
+
+  <section>
+    <h2>Verified independently</h2>
+    <p>Re-run in a worktree at the squash commit rather than taken from the PR description:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Claim</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Validator passes over the reference set</td>
+            <td><code>reference CSS OK — 8 markdown file(s) checked</code>, exit 0</td>
+          </tr>
+          <tr>
+            <td>Known-bad fixture is rejected on both branches</td>
+            <td>exit 1, reporting <code>parse error</code> at fence-2 <em>and</em> <code>scss fence found</code> at fence-3</td>
+          </tr>
+          <tr>
+            <td><code>run.sh</code> asserts both diagnostics by name, not just a non-zero exit</td>
+            <td>Confirmed — two separate <code>grep -q</code> gates on captured stderr</td>
+          </tr>
+          <tr>
+            <td>Every path in the <code>SKILL.md</code> reference table exists</td>
+            <td>All 8 resolve — but by inspection, not by any test (see F2)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Worth keeping</h2>
+    <div class="stack">
+      <ul>
+        <li><strong>The token-creation inversion is well argued.</strong> <code>/css</code> never invents a custom property, deliberately opposite to <code>inline-style-to-class</code>, and <code>SKILL.md</code> states the reason: there the value is already committed to the user's markup, here a throwaway request would write into someone's design system. That is a real distinction, reasoned rather than asserted.</li>
+        <li><strong>"Read the whole scale before mapping a relative word."</strong> Treating "small" as a position in a scale rather than a value, with a clarification trigger for adjacent-step ties, is the correct model — and consistent with prior feedback on this repo about preserving scale distinctness.</li>
+        <li><strong>The clarification gate has a skip path.</strong> A fully-specified description is emitted with no questions. Gates that always fire are how skills become annoying.</li>
+        <li><strong>References state the failure, not the feature.</strong> <code>cascade-layers.md</code> leads with "unlayered styles win" and names the symptom ("my <code>@layer</code> refactor changed nothing"). That is the shape that actually prevents a wrong answer.</li>
+        <li><strong>The known-bad fixture carries both rejection modes.</strong> After the hardening commit, a regression in either branch fails by name instead of being masked by the other. That is better than most validators in this repo.</li>
+        <li><strong>The <code>.sass</code> exclusion is a genuinely good catch</strong> from the Codex pass — brace-and-semicolon output is invalid in indented Sass, and it now refuses rather than corrupting a file.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>For the team to settle</h2>
+    <div class="callout">
+      <p><strong>1 · Warning or refusal when a mode can't carry a required a11y state?</strong> F1 forces the question. Refusal is safer but makes inline mode nearly useless for interactive elements — which may be the honest answer. Whichever way it goes, the plan and the skill need editing together.</p>
+      <p><strong>2 · What does a prompt-artifact test suite owe the reader?</strong> Syntax gates are cheap and catch little. Pinning load-bearing claims as literal substrings is slightly brittle but tests the thing being sold. Where should this repo sit?</p>
+      <p><strong>3 · What's the merge bar when every reviewer is a rate-limited bot?</strong> P1 isn't unique to this PR and will recur.</p>
+    </div>
+  </section>
+
+  <footer>
+    Prepared from the merged tree at <code>0ce1834</code>, the PR thread, and the two constituent commits. All test results reproduced locally. Findings are ordered by impact on shipped behaviour; nothing here blocks anything already released.
+  </footer>
+
+</div>

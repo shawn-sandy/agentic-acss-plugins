@@ -12,6 +12,7 @@ node_modules/
 # Claude Code
 .claude/worktrees/
 .claude/plans/
+.claude/artifacts/
 CLAUDE.local.md
 
 # Generated session scratch (Playwright MCP snapshots)
