@@ -104,16 +104,19 @@ Sits between the references and emit. [Baseline](https://web.dev/baseline) statu
 Three outcomes:
 
 1. **Widely available** — emit unconditionally. Say nothing beyond the summary line.
-2. **Newly available** — emit inside `@supports` with a working fallback below it, and **name the fallback in the summary**. In inline mode, which cannot carry `@supports`, this is a refusal trigger under the Inline mode rules.
+2. **Newly available** — write the fallback **first**, unconditionally, then the `@supports` block containing the modern declaration, and **name the fallback in the summary**. **Order is load-bearing:** a fallback placed after the `@supports` block has equal specificity and later source order, so it overrides the enhancement in exactly the browsers that support it — the upgrade silently never applies. Fallback above, enhancement below, always. In inline mode, which cannot carry `@supports`, this is a refusal trigger under the Inline mode rules.
 3. **Limited availability** — do not emit it. Emit the fallback alone and state in one line what was withheld and why, so the user can override deliberately.
 
 **Naming a feature is not an override.** A request that says `"using field-sizing"` is describing intent, not waiving the gate — it is the ordinary case, and it still resolves to the outcome above. Downgrade an outcome **only** when the user explicitly overrides in words (`"emit it anyway"`, `"I don't care about Firefox"`, `"skip the @supports"`), and then downgrade by exactly one step: outcome 3 becomes outcome 2 (wrapped in `@supports` with a fallback), never straight to bare. **Nothing reaches bare emit from Limited.** Record the override and the step taken in the summary's Baseline line.
 
-**Read the project's target first.** Check for `.browserslistrc` or a `browserslist` key in `package.json`, and name the detected target in the summary. When the project declares one it wins over the default:
+**Read the project's target first.** Check, in Browserslist's own lookup order, for a `browserslist` key in `package.json`, a `.browserslistrc`, or a plain `browserslist` file. Name the detected target in the summary.
 
-- **Stricter than the default** (e.g. `baseline widely available`) — apply the outcomes as written.
-- **Looser** (e.g. `last 2 versions`) — this relaxes **outcome 2 only**: Newly-available features may be emitted bare, because the project has opted out of caring about older versions of browsers that already ship them.
-- **A loose target never relaxes outcome 3.** Limited availability means at least one browser in the core set has not shipped the feature *at any version* — `last 2 versions` still includes that browser's current release, so a loose target grants no coverage whatsoever. Withhold exactly as under outcome 3.
+**A declared target never relaxes an outcome — it can only tighten one.** The temptation is to read `last 2 versions` as "this project has opted into a looser bar, so skip the `@supports`." That is unsound in both directions:
+
+- **Against outcome 2** — "Newly available" means the feature landed in all four browsers at *some* point in the last 30 months. `last 2 versions` includes each browser's *previous* release, which may predate that landing. Emitting bare would drop the fallback for users the project explicitly still targets.
+- **Against outcome 3** — "Limited" means a core browser has not shipped the feature *at any version*, so `last 2 versions` includes a release that will never support it. A loose target grants no coverage whatsoever.
+
+So a looser-looking target changes nothing: apply the outcomes as written. A target *stricter* than the outcomes assume (a pinned modern-evergreen list, an explicit `baseline widely available`) is worth naming in the summary, but it also never licenses dropping a fallback. Only an explicit user override moves an outcome, per the rule above.
 
 **Do not assert dates from memory.** Baseline dates are revised — the Popover API's was [corrected by nine months after publication](https://web.dev/blog/popover-baseline). State the status level, not the month it landed. When status is genuinely uncertain, say so and point at [webstatus.dev](https://webstatus.dev) rather than guessing.
 

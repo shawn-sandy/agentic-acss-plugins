@@ -19,7 +19,7 @@ Front-load the one-time project configuration that would otherwise run piecemeal
 - `sass` is confirmed in `devDependencies` (or the user has the exact install command to run)
 - `.acss-target.json` exists at the project root
 - `<componentsDir>/ui.tsx` is present
-- `.browserslistrc` records a Baseline browser target
+- a browser target is configured — `.browserslistrc` with `baseline widely available` when the project had none, otherwise whatever target it already declared
 - `src/styles/theme/light.css` and `dark.css` exist (unless `--no-theme` was passed)
 - The project's main CSS/SCSS entry imports `light.css` and `dark.css`, and `stack.cssEntryFile` records the choice in `.acss-target.json` (skipped with `--no-theme`)
 
@@ -159,13 +159,19 @@ Checkpoint: `Copied ui.tsx to <componentsDir>/` or `ui.tsx already present, skip
 
 ## Step 6.5 — Write .browserslistrc (Baseline target)
 
-Check if `<projectRoot>/.browserslistrc` exists, and read `package.json` for a `browserslist` key.
+Check for an existing browser target in **all three** of the places Browserslist reads, per its [documented lookup order](https://github.com/browserslist/browserslist#queries):
 
-**If either is present:** Skip — the project already has a browser target and overwriting it would silently change what the user's build compiles for. Add `.browserslistrc` (or `package.json browserslist`) to `kept[]`.
+1. a `browserslist` key in `<projectRoot>/package.json`
+2. `<projectRoot>/.browserslistrc`
+3. `<projectRoot>/browserslist` — a plain file, no dot and no extension
 
-**If neither is present:** Write `<projectRoot>/.browserslistrc`:
+**If any of the three is present:** Skip — the project already has a browser target and overwriting it would silently change what the user's build compiles for. Add the one you found to `kept[]`, named for where it lives (`package.json browserslist`, `.browserslistrc`, or `browserslist`).
 
-```
+Checking all three matters because a new `.browserslistrc` takes precedence over a plain `browserslist` file. Missing that case would cause the exact silent retargeting this skip exists to prevent.
+
+**If none of the three is present:** Write `<projectRoot>/.browserslistrc`:
+
+```text
 # acss-kit — https://web.dev/baseline
 baseline widely available
 ```
@@ -300,7 +306,7 @@ Setup complete.
 Created:
   - <componentsDir>/ui.tsx
   - .acss-target.json
-  - .browserslistrc
+  - .browserslistrc                 (omit when Step 6.5 skipped; it goes under Kept instead)
   - src/styles/theme/light.css
   - src/styles/theme/dark.css
   - <chosen cssEntryFile>   (theme imports wired in)

@@ -77,7 +77,7 @@ What it does:
 2. Checks for `sass`/`sass-embedded` in `devDependencies`. If missing, prints the exact install command and stops — no side effects.
 3. Writes `.acss-target.json` at your project root (or reuses existing).
 4. Copies `ui.tsx` (the polymorphic foundation component) verbatim to your target directory.
-5. Writes `.browserslistrc` with `baseline widely available` — the [Baseline](https://web.dev/baseline) target the generated themes and components are written against. Skipped when you already have a `.browserslistrc` or a `package.json` `browserslist` key.
+5. Writes `.browserslistrc` with `baseline widely available` — the [Baseline](https://web.dev/baseline) target the generated themes and most generated components are written against. `popover` is the known exception: it builds on the native Popover API, which is Newly available rather than Widely available ([details](skills/component-popover/reference.md)). Skipped when you already declare a target via `package.json` `browserslist`, `.browserslistrc`, or a plain `browserslist` file.
 6. Seeds `src/styles/theme/light.css` and `dark.css` from a prompt for a seed hex color.
 7. Detects your project's main CSS/SCSS entry (`src/styles/index.scss`, `src/index.css`, `app/globals.css`, etc.), prompts you to pick when multiple candidates exist or to specify a path when none are found, and idempotently appends `@import` lines for the new theme files. The chosen file is recorded under `stack.cssEntryFile` in `.acss-target.json`.
 
